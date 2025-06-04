@@ -18,7 +18,7 @@ async function startServer() {
 startServer();
 
 // Create tables
-app.get("/create", (req, res) => {
+app.get("/create", async (req, res) => {
   let create_users = `
     CREATE TABLE IF NOT EXISTS users (
       userid INT(20) NOT NULL AUTO_INCREMENT,
@@ -53,18 +53,12 @@ app.get("/create", (req, res) => {
       FOREIGN KEY (userid) REFERENCES users(userid)
     )`;
 
-  // Create all tables sequentially
-  dbconnection.query(create_users, (err) => {
-    if (err) return res.status(500).send("Error creating Users table");
-
-    dbconnection.query(create_questions, (err) => {
-      if (err) return res.status(500).send("Error creating Questions table");
-
-      dbconnection.query(create_answers, (err) => {
-        if (err) return res.status(500).send("Error creating Answers table");
-
-        res.send("All tables created successfully");
-      });
-    });
-  });
+  try {
+    await dbconnection.query(create_users);
+    await dbconnection.query(create_questions);
+    await dbconnection.query(create_answers);
+    res.send("All tables created successfully");
+  } catch (err) {
+    res.status(500).send("Error creating tables: " + err.message);
+  }
 });
