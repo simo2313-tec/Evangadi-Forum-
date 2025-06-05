@@ -1,6 +1,17 @@
 {
+  "name": "Evangadi Forum Project",
+  "version": "1.0.0",
+  "description": "This is a forum project for Evangadi",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
-    "express": "^5.1.0",
-    "mysql2": "^3.14.1"
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
