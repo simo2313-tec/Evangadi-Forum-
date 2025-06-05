@@ -1,3 +1,5 @@
 *.txt
-nodemodules
 /node_modules
+.packages
+.DS_Store
+node_modules/.package-lock.json
