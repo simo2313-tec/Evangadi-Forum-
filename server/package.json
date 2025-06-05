@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1"
+  },
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This guide will help you get the project up and running smoothly on your local machine. Follow these steps to start contributing or testing the backend API.",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
