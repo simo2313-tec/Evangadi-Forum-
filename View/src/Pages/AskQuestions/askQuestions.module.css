@@ -1,5 +1,5 @@
 .title {
-  color: #2c3e50;
+  color: var(--text-dark); /* Use normal text color for all headings */
   font-size: 2rem;
   text-align: center;
   margin-top: 2rem;
