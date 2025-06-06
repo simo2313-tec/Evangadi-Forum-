@@ -8,7 +8,7 @@
     "mysql2": "^3.14.1"
   },
   "name": "server",
-  "version": "1.0.0",
+"version": "1.0.0",
   "description": "This guide will help you get the project up and running smoothly on your local machine. Follow these steps to start contributing or testing the backend API.",
   "main": "app.js",
   "scripts": {
