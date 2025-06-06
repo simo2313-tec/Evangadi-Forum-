@@ -1,15 +1,13 @@
-import Header from "./Component/Header/Header"
-import Question from "./Component/Question/Question"
-
+import Header from "./Component/Header/Header";
+import Question from "./Component/Question/Question";
 
 function App() {
-
   return (
     <>
-      {/* <Question /> */}
-      <Header/>
+      <Question />
+      <Header />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
