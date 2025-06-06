@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
 :root {
   --primary: #ff8107; /* Primary Orange - main brand color, buttons, links, active elements */
   --primary-blue: #007bff; /* Primary Blue - used for submit/post actions */
@@ -11,8 +13,7 @@
   --text-gray: #6c757d; /* Text Secondary - placeholder, metadata */
   --accent: #fd7e14; /* Accent lighter version of our primary color Orange - highlights, links, important elements */
 
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  line-height: 1.6;
   font-weight: 400;
 
   font-synthesis: none;
@@ -25,4 +26,8 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Poppins", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: var(--text-dark);
+  background: var(--light-bg);
 }
