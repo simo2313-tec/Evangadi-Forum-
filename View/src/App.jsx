@@ -2,9 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import Landing from "./Pages/Landing";
 import AskQuestions from "./Pages/AskQuestions";
-import QuestionDetail from "./Pages/QuestionDetialAndAnswer";
+import QuestionDetail from "./Pages/QuestionDetailAndAnswer";
 import NotFound from "./Pages/NotFound";
 import "./App.css";
+import SignUp from "./Components/SignUp/SignUp";
 
 function App() {
   return (
@@ -17,9 +18,7 @@ function App() {
         <Route path="/question-detail" element={<QuestionDetail />} />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
-
-        {/*<Route path="/profile" element={<Profile />} />
-        <Route path="/reset-password" element={<ResetPassword />} /> */}
+        <Route path="/sign-up" element={<SignUp />} />
       </Routes>
     </>
   );
