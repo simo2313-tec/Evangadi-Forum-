@@ -3,6 +3,16 @@ const app = express();
 const port = 5400;
 const dbconnection = require("./db/db.Config");
 
+// User routes 
+const userRouters = require("./routes/userRoute");
+
+app.use("/api/users", userRouters);
+console.log(typeof userRouters);
+
+// o
+
+
+
 // Start server and test database connection
 async function startServer() {
   try {
@@ -85,7 +95,8 @@ app.get("/initdb", async (req, res) => {
     rootConn = await mysql.createConnection({
       host: "localhost",
       user: "root",
-      password: "root", // XAMPP default root password is empty string and for MAMP default root password is 'root'
+      // password: "", // XAMPP default root password is empty string
+      password: "root" // for MAMP default root password is root
     });
 
     // Create database
