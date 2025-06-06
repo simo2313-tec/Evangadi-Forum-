@@ -3,6 +3,16 @@ const app = express();
 const port = 5400;
 const dbconnection = require("./db/db.Config");
 
+// User routes 
+const userRouters = require("./routes/userRoute");
+
+app.use("/api/users", userRouters);
+console.log(typeof userRouters);
+
+// o
+
+
+
 // Start server and test database connection
 async function startServer() {
   try {
