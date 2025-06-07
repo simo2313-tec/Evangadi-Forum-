@@ -84,6 +84,16 @@
   align-items: center;
 }
 
+/* Hide browser's built-in password reveal icon (for Chrome, Edge, Opera) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-input-password-reveal-button,
+input[type="password"]::-webkit-input-password-reveal,
+input[type="password"]::-webkit-input-password-clear {
+  display: none !important;
+}
+
 .submitBtn {
   width: 100%;
   background: #5a78fa;
