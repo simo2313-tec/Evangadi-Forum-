@@ -1,14 +1,31 @@
-import Question from "./Component/Question/Question"
-import About from "./Component/About/About"
+import { Routes, Route } from "react-router-dom";
+import Home from "./Pages/Home";
+import Landing from "./Pages/Landing";
+import AskQuestions from "./Pages/AskQuestions";
+import QuestionDetail from "./Pages/QuestionDetailAndAnswer";
+import NotFound from "./Pages/NotFound";
+import "./App.css";
+import SignUp from "./Components/SignUp";
+
 
 function App() {
-
   return (
     <>
-      <Question />
-      <About/>
+
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/ask-questions" element={<AskQuestions />} />
+        <Route path="/question-detail" element={<QuestionDetail />} />
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/sign-up" element={<SignUp />} />
+      </Routes>
+
+
     </>
-  )
+  );
 }
 
-export default App
+export default App;
