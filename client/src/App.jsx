@@ -5,7 +5,7 @@ import AskQuestions from "./Pages/AskQuestions";
 import QuestionDetail from "./Pages/QuestionDetailAndAnswer";
 import NotFound from "./Pages/NotFound";
 import "./App.css";
-import SignUp from "./Components/SignUp/SignUp";
+import SignUp from "./Components/SignUp";
 
 function App() {
   return (
