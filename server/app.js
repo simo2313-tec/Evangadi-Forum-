@@ -22,7 +22,7 @@ app.use("/api/users", userRouters);
 // Start server and test database connection
 async function startServer() {
   try {
-    const result = await dbconnection.execute("SELECT 'test'");
+    // const result = await dbconnection.execute("SELECT 'test'");
     await app.listen(port);
     console.log(`Server is running on: http://localhost:${port}`);
     console.log("Database connection successful");
@@ -102,7 +102,7 @@ app.get("/initdb", async (req, res) => {
       host: "localhost",
       user: "root",
       // password: "", // XAMPP default root password is empty string
-      password: "root" // for MAMP default root password is root
+      password: "root", // for MAMP default root password is root
     });
 
     // Create database
@@ -125,3 +125,6 @@ app.get("/initdb", async (req, res) => {
     if (rootConn) await rootConn.end();
   }
 });
+
+
+// 
