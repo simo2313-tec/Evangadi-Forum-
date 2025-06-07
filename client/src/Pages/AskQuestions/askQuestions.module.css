@@ -50,5 +50,8 @@ textarea {
 }
 .btn button {
   border: none;
-  background-color: #ff8500;
+  background-color: var(--primary);
+}
+.btn button:hover {
+  background-color: var(--accent);
 }
