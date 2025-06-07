@@ -56,6 +56,11 @@
   border: 1.5px solid var(--primary-blue);
 }
 
+.inputError {
+  border: 1.5px solid var(--error) !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.08);
+}
+
 .nameRow {
   display: flex;
   gap: 0.7rem;

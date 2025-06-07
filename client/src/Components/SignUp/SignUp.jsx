@@ -11,6 +11,7 @@ function SignUp() {
     userName: "",
     password: "",
   });
+  const [errors, setErrors] = useState({});
 
   // Handle input changes
   const handleChange = (e) => {
@@ -26,6 +27,17 @@ function SignUp() {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    if (!formData.email.match(/^[^@]+@[^@]+\.[^@]+$/))
+      newErrors.email = "Please enter a valid email address.";
+    if (!formData.firstName) newErrors.firstName = "First name is required.";
+    if (!formData.lastName) newErrors.lastName = "Last name is required.";
+    if (!formData.userName) newErrors.userName = "User name is required.";
+    if (!formData.password || formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters.";
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     try {
       const response = await api.post("/users/register", {
         username: formData.userName,
@@ -47,7 +59,9 @@ function SignUp() {
       });
       // console.log(response.data);
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed.");
+      setErrors({
+        api: error.response?.data?.message || "Registration failed.",
+      });
     }
   };
 
@@ -55,6 +69,7 @@ function SignUp() {
     <div className={styles.signupContainer}>
       <form className={styles.signupForm} onSubmit={handleSubmit}>
         <h2 className={styles.title}>Join the network</h2>
+
         <p className={styles.subtitle}>
           Already have an account?{" "}
           <a href="#" className={styles.signInLink}>
@@ -65,17 +80,26 @@ function SignUp() {
           type="email"
           name="email"
           placeholder="Email"
-          className={styles.input}
+          className={
+            styles.input + (errors.email ? " " + styles.inputError : "")
+          }
           required
           value={formData.email}
           onChange={handleChange}
         />
+        {errors.email && (
+          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
+            {errors.email}
+          </div>
+        )}
         <div className={styles.nameRow}>
           <input
             type="text"
             name="firstName"
             placeholder="First Name"
-            className={styles.input}
+            className={
+              styles.input + (errors.firstName ? " " + styles.inputError : "")
+            }
             required
             value={formData.firstName}
             onChange={handleChange}
@@ -84,27 +108,43 @@ function SignUp() {
             type="text"
             name="lastName"
             placeholder="Last Name"
-            className={styles.input}
+            className={
+              styles.input + (errors.lastName ? " " + styles.inputError : "")
+            }
             required
             value={formData.lastName}
             onChange={handleChange}
           />
         </div>
+        {(errors.firstName || errors.lastName) && (
+          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
+            {errors.firstName || errors.lastName}
+          </div>
+        )}
         <input
           type="text"
           name="userName"
           placeholder="User Name"
-          className={styles.input}
+          className={
+            styles.input + (errors.userName ? " " + styles.inputError : "")
+          }
           required
           value={formData.userName}
           onChange={handleChange}
         />
+        {errors.userName && (
+          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
+            {errors.userName}
+          </div>
+        )}
         <div className={styles.passwordWrapper}>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Password"
-            className={styles.input}
+            className={
+              styles.input + (errors.password ? " " + styles.inputError : "")
+            }
             required
             value={formData.password}
             onChange={handleChange}
@@ -155,9 +195,27 @@ function SignUp() {
             )}
           </button>
         </div>
+        {errors.password && (
+          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
+            {errors.password}
+          </div>
+        )}
         <button type="submit" className={styles.submitBtn}>
           Agree and Join
         </button>
+
+        {errors.api && (
+          <div
+            style={{
+              color: "var(--error)",
+              marginBottom: "1em",
+              textAlign: "center",
+            }}
+          >
+            {errors.api}
+          </div>
+        )}
+
         <p className={styles.agreeText}>
           I agree to the{" "}
           <a href="#" className={styles.link}>
