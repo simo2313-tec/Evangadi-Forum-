@@ -11,27 +11,27 @@
   background: var(--white);
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  padding: 50px 30px 40px 30px;
   width: 100%;
   max-width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 7px;
 }
 
 .title {
-  font-size: 1.3rem;
+  font-size: 2.2rem;
   font-weight: 600;
   text-align: center;
-  margin-bottom: 0.2rem;
+  margin-bottom: 12px;
   color: var(--text-dark);
 }
 
 .subtitle {
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 1.6rem;
   color: var(--text-gray);
-  margin-bottom: 0.5rem;
+  margin-bottom: 5px;
 }
 
 .signInLink {
@@ -42,13 +42,13 @@
 
 .input {
   width: 100%;
-  padding: 0.9rem 1rem;
+  padding: 9px 10px;
   border: 1px solid var(--border);
   border-radius: 7px;
-  font-size: 1.05rem;
+  font-size: 1.4rem;
   background: var(--white);
   color: var(--text-dark);
-  margin-bottom: 0.2rem;
+  margin-bottom: 2px;
   outline: none;
   transition: border 0.2s;
 }
@@ -63,26 +63,26 @@
 
 .nameRow {
   display: flex;
-  gap: 0.7rem;
+  gap: 7px;
 }
 
 .passwordWrapper {
   width: 100%;
-  position: relative; /* to put the toggle password visibility icon */
+  position: relative;
   display: flex;
   align-items: center;
 }
 
 .togglePassword {
   position: absolute;
-  right: 1rem;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--text-gray);
   user-select: none;
   display: flex;
@@ -105,10 +105,10 @@ input[type="password"]::-webkit-input-password-clear {
   color: var(--white);
   border: none;
   border-radius: 7px;
-  padding: 0.95rem 0;
-  font-size: 1.15rem;
+  padding: 9.5px 0;
+  font-size: 1.5rem;
   font-weight: 500;
-  margin-top: 0.5rem;
+  margin-top: 5px;
   cursor: pointer;
   transition: background 0.2s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
@@ -118,10 +118,10 @@ input[type="password"]::-webkit-input-password-clear {
 }
 
 .agreeText {
-  font-size: 0.97rem;
+  font-size: 1.2rem;
   color: var(--text-gray);
   text-align: center;
-  margin-top: 0.7rem;
+  margin-top: 7px;
 }
 .link {
   color: var(--accent);
@@ -130,24 +130,28 @@ input[type="password"]::-webkit-input-password-clear {
 }
 .alreadyAccount {
   text-align: center;
-  margin-top: 0.7rem;
-  font-size: 1.01rem;
+  margin-top: 7px;
+  font-size: 1.2rem;
 }
 
 .errorMessage {
   color: var(--error);
-  font-size: 0.95em;
-  margin: 0.1em 0 0.2em 0;
+  font-size: 1.4rem;
+  margin: 1px 0 2px 0;
   text-align: left;
 }
 
 @media (max-width: 600px) {
+  .errorMessage {
+    font-size: 1.2rem;
+    text-align: left;
+  }
   .signupForm {
-    padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-    max-width: 98vw;
+    padding: 12px 5px 15px 5px;
+    max-width: 95vw;
   }
   .input {
-    font-size: 0.98rem;
-    padding: 0.7rem 0.7rem;
+    font-size: 1.4rem;
+    padding: 7px 7px;
   }
 }
