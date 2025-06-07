@@ -3,7 +3,7 @@
 export { default } from "./Home";
 
 //* export * from './Home';
-export { default as Home } from "./Home";
+// export { default as Home } from "./Home";
 
 //* This file is used to re-export the Home component for easier imports in other parts of the application.
 // import Home from './Home';

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./singnp.module.css";
+import styles from "./signup.module.css";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
