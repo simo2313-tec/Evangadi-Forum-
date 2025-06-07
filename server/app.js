@@ -1,15 +1,21 @@
 const express = require("express");
 const app = express();
+const bcrypt = require("bcrypt");
 const port = 5400;
 const dbconnection = require("./db/db.Config");
 
 // User routes 
 const userRouters = require("./routes/userRoute");
+app.use(express.json()); // to parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); // to parse URL-encoded request bodies
 
 app.use("/api/users", userRouters);
 console.log(typeof userRouters);
 
-// o
+//login route
+app.use("/api/users", userRouters);
+
+// Other routes can be added here
 
 
 
