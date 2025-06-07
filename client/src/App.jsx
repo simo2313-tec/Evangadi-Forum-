@@ -7,9 +7,11 @@ import NotFound from "./Pages/NotFound";
 import "./App.css";
 import SignUp from "./Components/SignUp";
 
+
 function App() {
   return (
     <>
+
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
@@ -20,6 +22,8 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/sign-up" element={<SignUp />} />
       </Routes>
+
+
     </>
   );
 }
