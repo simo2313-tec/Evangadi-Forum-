@@ -3,6 +3,8 @@ const app = express();
 const bcrypt = require("bcrypt");
 const port = 5400;
 const dbconnection = require("./db/db.Config");
+const cors = require("cors");
+app.use(cors({origin:true, credentials: true})); // allow resource sharing from all origins DEV only
 
 // User routes 
 const userRouters = require("./routes/userRoute");
@@ -22,7 +24,7 @@ app.use("/api/users", userRouters);
 // Start server and test database connection
 async function startServer() {
   try {
-    // const result = await dbconnection.execute("SELECT 'test'");
+    const result = await dbconnection.execute("SELECT 'test'");
     await app.listen(port);
     console.log(`Server is running on: http://localhost:${port}`);
     console.log("Database connection successful");
