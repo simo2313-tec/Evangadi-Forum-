@@ -88,9 +88,7 @@ function SignUp() {
           onChange={handleChange}
         />
         {errors.email && (
-          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
-            {errors.email}
-          </div>
+          <div className={styles.errorMessage}>{errors.email}</div>
         )}
         <div className={styles.nameRow}>
           <input
@@ -117,7 +115,7 @@ function SignUp() {
           />
         </div>
         {(errors.firstName || errors.lastName) && (
-          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
+          <div className={styles.errorMessage}>
             {errors.firstName || errors.lastName}
           </div>
         )}
@@ -133,9 +131,7 @@ function SignUp() {
           onChange={handleChange}
         />
         {errors.userName && (
-          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
-            {errors.userName}
-          </div>
+          <div className={styles.errorMessage}>{errors.userName}</div>
         )}
         <div className={styles.passwordWrapper}>
           <input
@@ -196,9 +192,7 @@ function SignUp() {
           </button>
         </div>
         {errors.password && (
-          <div style={{ color: "var(--error)", fontSize: "0.95em" }}>
-            {errors.password}
-          </div>
+          <div className={styles.errorMessage}>{errors.password}</div>
         )}
         <button type="submit" className={styles.submitBtn}>
           Agree and Join
@@ -206,11 +200,8 @@ function SignUp() {
 
         {errors.api && (
           <div
-            style={{
-              color: "var(--error)",
-              marginBottom: "1em",
-              textAlign: "center",
-            }}
+            className={styles.errorMessage}
+            style={{ textAlign: "center", marginBottom: "1em" }}
           >
             {errors.api}
           </div>
