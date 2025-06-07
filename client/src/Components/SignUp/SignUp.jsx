@@ -1,12 +1,59 @@
 import React, { useState } from "react";
 import styles from "./signup.module.css";
+import api from "../../Utility/axios";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    userName: "",
+    password: "",
+  });
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // console.log(e.target);
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post("/users/register", {
+        username: formData.userName,
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+      alert("Registration successful!");
+      // TODO: Redirect to login or home page
+      // TODO: Store token in local storage or context
+      // TODO: Clear form data
+      setFormData({
+        email: "",
+        firstName: "",
+        lastName: "",
+        userName: "",
+        password: "",
+      });
+      // console.log(response.data);
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration failed.");
+    }
+  };
 
   return (
     <div className={styles.signupContainer}>
-      <form className={styles.signupForm}>
+      <form className={styles.signupForm} onSubmit={handleSubmit}>
         <h2 className={styles.title}>Join the network</h2>
         <p className={styles.subtitle}>
           Already have an account?{" "}
@@ -16,36 +63,51 @@ function SignUp() {
         </p>
         <input
           type="email"
+          name="email"
           placeholder="Email"
           className={styles.input}
           required
+          value={formData.email}
+          onChange={handleChange}
         />
         <div className={styles.nameRow}>
           <input
             type="text"
+            name="firstName"
             placeholder="First Name"
             className={styles.input}
             required
+            value={formData.firstName}
+            onChange={handleChange}
           />
           <input
             type="text"
+            name="lastName"
             placeholder="Last Name"
             className={styles.input}
             required
+            value={formData.lastName}
+            onChange={handleChange}
           />
         </div>
         <input
           type="text"
+          name="userName"
           placeholder="User Name"
           className={styles.input}
           required
+          value={formData.userName}
+          onChange={handleChange}
         />
         <div className={styles.passwordWrapper}>
           <input
             type={showPassword ? "text" : "password"}
+            name="password"
             placeholder="Password"
             className={styles.input}
             required
+            value={formData.password}
+            onChange={handleChange}
           />
           <button
             type="button"
