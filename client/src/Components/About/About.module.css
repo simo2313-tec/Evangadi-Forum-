@@ -55,7 +55,7 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .about_section {
+   .about_section {
     padding: 2rem 1rem;
     max-width: 95vw;
   }
