@@ -13,7 +13,7 @@ async function postQuestion(req, res) {
     }
 
     // Generate a unique post_id 
-    const postId = Date.now() + Math.floor(Math.random() * 1000);
+    const postId = Date.now() + Math.floor(Math.random() * 10000);
 
     // Insert question into database
     const [result] = await dbConnection.query(
