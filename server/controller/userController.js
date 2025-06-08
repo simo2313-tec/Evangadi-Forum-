@@ -34,13 +34,15 @@ async function register(req, res) {
       "SELECT * FROM registration WHERE user_name = ? OR user_email = ?",
       [username, email]
     );
+    // return res.json({username: username})
     if (existing.length > 0) {
       return res
         .status(409)
         .json({ message: "Username or email already exists" });
     }
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt);
 
 
     // Insert user into registration table

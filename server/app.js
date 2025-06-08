@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
-const port = 5400;
+const port = 5500;
 const dbconnection = require("./db/db.Config");
+
+app.use(express.json())
 
 // User routes 
 const userRouters = require("./routes/userRoute");
