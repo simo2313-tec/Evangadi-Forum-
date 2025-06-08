@@ -8,7 +8,7 @@ async function postQuestion(req, res) {
     // Validate required fields
     if (!title || !description || !userId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "Title, description and user ID are required",
+        message: "Title, description and user-ID are required",
       });
     }
 
