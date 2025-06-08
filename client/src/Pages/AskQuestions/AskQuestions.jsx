@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
-import styles from "./Question.module.css";
+import styles from "./askQuestions.module.css";
 
-function Question() {
+function AskQuestions() {
   const [question, setQuestion] = useState({
     question_title: "",
     question_description: "",
@@ -63,4 +63,4 @@ function Question() {
   );
 }
 
-export default Question;
+export default AskQuestions;
