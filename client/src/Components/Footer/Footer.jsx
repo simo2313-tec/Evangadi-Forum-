@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Footer.module.css";
-import logo from "../Footer/Image/logo-footer.png";
+import logo from "../Footer/Image/logo.png";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
@@ -42,6 +42,9 @@ const Footer = () => {
       <div className={styles.contactSection}>
         <h3>Contact Info</h3>
         <ul>
+          <li>
+            <a href="mailto:support@evangadi.com">Evangadi Networks</a>
+          </li>
           <li>
             <a href="mailto:support@evangadi.com">support@evangadi.com</a>
           </li>
