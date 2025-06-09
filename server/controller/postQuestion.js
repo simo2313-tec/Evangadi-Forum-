@@ -44,10 +44,9 @@ async function postQuestion(req, res) {
   }
 }
 
-// Get all questions 
 
 
-module.exports = {
-  postQuestion,
-  // Add other functions like getAllQuestions, getQuestion/single, etc. here
-};
+
+module.exports = { postQuestion };
+ 
+
