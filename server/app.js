@@ -21,7 +21,7 @@ app.use("/api/users", userRouters);
 
 // post-Question routes
 const questionRoutes = require("./routes/PostQuestions");
-app.use("/api/questions", questionRoutes);
+app.use("/api/postQuestions", questionRoutes);
 
 // post answer Route .....Added by seid
 const answerRoutes = require("./routes/answer");
