@@ -19,13 +19,23 @@ app.use("/api/users", userRouters);
 
 // Other routes can be added here
 
+// question routes middleware file
+const questionRoutes = require ("./routes/questionsRoute");
+
+// questions routes middeware ??
+app.use ("/api/questions", authMiddleware, questtionRoutes)
+
+
 // post-Question routes
-const questionRoutes = require("./routes/PostQuestions");
-app.use("/api/postQuestions", questionRoutes);
+const PostQuestionRoutes = require("./routes/PostQuestions");
+app.use("/api/postQuestions", PostQuestionRoutes);
 
 // post answer Route .....Added by seid
 const answerRoutes = require("./routes/answer");
 app.use("/api/answer", answerRoutes);
+
+
+
 
 // Start server and test database connection
 async function startServer() {
