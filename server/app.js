@@ -26,6 +26,13 @@ const questionRoutes = require ("./routes/questionsRoute");
 app.use ("/api/questions", authMiddleware, questtionRoutes)
 
 
+// post-Question routes
+const PostQuestionRoutes = require("./routes/PostQuestions");
+app.use("/api/postQuestions", PostQuestionRoutes);
+
+// post answer Route .....Added by seid
+const answerRoutes = require("./routes/answer");
+app.use("/api/answer", answerRoutes);
 
 
 
