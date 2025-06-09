@@ -4,12 +4,11 @@
 
 // to Add route in Express (routes/answer.js)
 
-const express = require("express");
-const router = express.Router();
+
 const dbconnection = require("../db/db.Config");
 
-// POST /api/answer
-router.post("/", async (req, res) => {
+
+async function postAnswer (req, res) {
   const { answer, user_id, question_id } = req.body;
 
   // to Validate input
@@ -38,6 +37,6 @@ router.post("/", async (req, res) => {
       message: "Server error while posting answer.",
     });
   }
-});
+};
 
-module.exports = router;
+module.exports = {postAnswer};
