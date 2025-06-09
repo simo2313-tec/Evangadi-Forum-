@@ -8,8 +8,9 @@ function AskQuestions() {
   const token = localStorage.getItem("token");
 
   const [question, setQuestion] = useState({
-    question_title: "",
-    question_description: "",
+    title: "",
+    description: "",
+    userId: "test",
   });
 
   const [response, setResponse] = useState(null);
@@ -30,7 +31,7 @@ function AskQuestions() {
     setError(null);
 
     axios
-      .post("/user/questions", question, {
+      .post("/users/ask", question, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -49,9 +50,9 @@ function AskQuestions() {
   if (response) {
     return (
       <div className={styles.success__msg}>
-        <h1 className={styles.thanks_note}>{response.messageToTheFront}</h1>
-        <Link className={styles.nav_to} to={response.navigation}>
-          {response.messageToUser}
+        <h1 className={styles.thanks_note}>{response.message}</h1>
+        <Link className={styles.nav_to} to={"/"}>
+          {"Go to home"}
         </Link>
       </div>
     );
@@ -77,20 +78,20 @@ function AskQuestions() {
           <input
             type="text"
             placeholder="Title"
-            name="question_title"
+            name="title"
             id="question_title"
             onChange={handleChange}
-            value={question.question_title}
+            value={question.title}
             required
           />
 
           <textarea
             maxLength={250}
             placeholder="Question Description ..."
-            name="question_description"
+            name="description"
             id="question_description"
             onChange={handleChange}
-            value={question.question_description}
+            value={question.description}
             required
           ></textarea>
 

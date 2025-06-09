@@ -56,8 +56,7 @@ function QuestionDetailAndAnswer() {
     setLoading(true);
     setError(null);
     axios
-      // .get(`/user/getAllAnswers/${question_id}`, {
-      .get(`/user/getAllAnswers/1`, {
+      .get(`/user/getAllAnswers/${question_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -77,8 +76,7 @@ function QuestionDetailAndAnswer() {
     setLoading(true);
     setError(null);
     axios
-      // .get(`/user/getQuestionDetail/${question_id}`, {
-      .get(`/user/getQuestionDetail/1`, {
+      .get(`/user/getQuestionDetail/${question_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
