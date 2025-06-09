@@ -4,6 +4,7 @@ const dbConnection = require("../db/db.Config");
 async function postQuestion(req, res) {
   try {
     const { title, description, tag, userId } = req.body;
+    console.log(title, description, userId);
 
     // Validate required fields
     if (!title || !description || !userId) {
@@ -13,7 +14,7 @@ async function postQuestion(req, res) {
     }
 
     // Generate a unique post_id 
-    const postId = Date.now() + Math.floor(Math.random() * 10000);
+    const postId = Math.floor(Math.random() * 2147483647) + 1;
 
     // Insert question into database
     const [result] = await dbConnection.query(
@@ -33,7 +34,7 @@ async function postQuestion(req, res) {
 
     res.status(StatusCodes.CREATED).json({
       message: "Question posted successfully",
-      question: question[0],
+      // question: question[0],
     });
   } catch (error) {
     console.error("Error posting question:", error);
