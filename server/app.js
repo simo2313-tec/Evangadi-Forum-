@@ -18,6 +18,11 @@ console.log(typeof userRouters);
 app.use("/api/users", userRouters);
 
 // Other routes can be added here
+
+// post-Question routes
+const questionRoutes = require("./routes/PostQuestions");
+app.use("/api/questions", questionRoutes);
+
 // post answer Route .....Added by seid
 const answerRoutes = require("./routes/answer");
 app.use("/api/answer", answerRoutes);

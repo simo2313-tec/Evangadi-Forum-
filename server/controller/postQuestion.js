@@ -22,14 +22,14 @@ async function postQuestion(req, res) {
     );
 
     // Fetch the created question with user details
-    const [question] = await dbConnection.query(
-      `SELECT q.*, u.user_name, p.first_name, p.last_name 
-             FROM question q 
-             JOIN registration u ON q.user_id = u.user_id 
-             JOIN profile p ON u.user_id = p.user_id 
-             WHERE q.question_id = ?`,
-      [result.insertId]
-    );
+    // const [question] = await dbConnection.query(
+    //   `SELECT q.*, u.user_name, p.first_name, p.last_name 
+    //          FROM question q 
+    //          JOIN registration u ON q.user_id = u.user_id 
+    //          JOIN profile p ON u.user_id = p.user_id 
+    //          WHERE q.question_id = ?`,
+    //   [result.insertId]
+    // );
 
     res.status(StatusCodes.CREATED).json({
       message: "Question posted successfully",
