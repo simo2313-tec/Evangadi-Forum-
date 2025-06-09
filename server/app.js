@@ -19,6 +19,15 @@ app.use("/api/users", userRouters);
 
 // Other routes can be added here
 
+// question routes middleware file
+const questionRoutes = require ("./routes/questionsRoute");
+
+// questions routes middeware ??
+app.use ("/api/questions", authMiddleware, questtionRoutes)
+
+
+
+
 
 
 // Start server and test database connection
