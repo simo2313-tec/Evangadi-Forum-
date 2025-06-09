@@ -5,10 +5,7 @@ import styles from './About.module.css'
 function About() {
   return (
     <>
-      <main className={styles.main_content}>
-        <div className={styles.login_container}>
-          {/* LOGIN || SINGUP FORM HERE */}
-        </div>
+      
 
         <div className={styles.about_section}>
           <p className={styles.about_title}>About</p>
@@ -33,9 +30,9 @@ function About() {
           </p>
           <button className={styles.how_it_works_btn}>HOW IT WORKS</button>
         </div>
-      </main>
+    
 
-      {/* <Footer /> */}
+    
     </>
   );
 }

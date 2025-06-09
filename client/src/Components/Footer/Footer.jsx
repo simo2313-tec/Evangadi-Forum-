@@ -43,6 +43,9 @@ const Footer = () => {
         <h3>Contact Info</h3>
         <ul>
           <li>
+            <a href="mailto:support@evangadi.com">Evangadi Networks</a>
+          </li>
+          <li>
             <a href="mailto:support@evangadi.com">support@evangadi.com</a>
           </li>
           <li>
