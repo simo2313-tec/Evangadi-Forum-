@@ -18,9 +18,24 @@ console.log(typeof userRouters);
 app.use("/api/users", userRouters);
 
 // Other routes can be added here
+
+// question routes middleware file Eden
+const getquestions = require ("./routes/getquestions");
+
+// questions routes middeware Eden??
+app.use ("/api/questions", authMiddleware, getquesttions)
+
+
+// post-Question routes
+const PostQuestionRoutes = require("./routes/PostQuestions");
+app.use("/api/postQuestions", PostQuestionRoutes);
+
 // post answer Route .....Added by seid
 const answerRoutes = require("./routes/answer");
 app.use("/api/answer", answerRoutes);
+
+
+
 
 // Start server and test database connection
 async function startServer() {
