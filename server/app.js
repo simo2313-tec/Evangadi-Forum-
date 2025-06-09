@@ -4,9 +4,9 @@ const bcrypt = require("bcrypt");
 const port = 5400;
 const dbconnection = require("./db/db.Config");
 const cors = require("cors");
-app.use(cors({origin:true, credentials: true})); // allow resource sharing from all origins DEV only
+app.use(cors({ origin: true, credentials: true })); // allow resource sharing from all origins DEV only
 
-// User routes 
+// User routes
 const userRouters = require("./routes/userRoute");
 app.use(express.json()); // to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded request bodies
@@ -137,5 +137,4 @@ app.get("/initdb", async (req, res) => {
   }
 });
 
-
-// 
+//
