@@ -38,11 +38,9 @@ async function login(req, res) {
       const userid = rows.user_id;
       const username = rows.user_name;
   
-      const token = jwt.sign(
-        { userid, username },
-        "your_jwt_secret",
-        { expiresIn: "30d" }
-      );
+      const token = jwt.sign({ userid, username }, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      });
   
       res.status(StatusCodes.OK).json({
         userid: rows.user_id,
