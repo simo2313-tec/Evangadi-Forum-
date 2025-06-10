@@ -12,19 +12,22 @@
 // export default Home;
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../Utility/axios";
 import Header from "../../Components/Header/Header";
 import Footer from "../../Components/Footer/Footer";
+import LayOut from "../../Components/Layout/Layout";
 const Home = () => {
   const [questions, setQuestions] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:5400/api/question")
-      .then(({ data }) => setQuestions(data))
+    axios.get("users/all-question")
+      .then((res) => { 
+        console.log(res.data.question)  
+        setQuestions(res.data.question)}
+      )
       .catch((err) => console.error("Failed to fetch questions:", err));
   }, []);
   return (
-    <div>
-      <Header />
+    <LayOut>
       <h1>Evangadi Forum</h1>
       {questions.map((q) => (
         <div key={q.question_id}>
@@ -33,8 +36,7 @@ const Home = () => {
           <p>By: {q.user_name} | Tag: {q.tag}</p>
         </div>
       ))}
-      <Footer />
-    </div>
+    </LayOut>
   );
 };
 export default Home;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./style.css";
 import logo from "../../assets/imgs/logo.png";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [mobile, setMobile] = useState(false);
@@ -16,8 +17,8 @@ const Header = () => {
       </div>
 
       <nav className={`nav mobile-nav ${mobile ? "show" : ""}`}>
-        <a href="#">Home</a>
-        <a href="#">How it works</a>
+        <Link to="/home">Home</Link>
+        <Link to="#">How it works</Link>
       </nav>
 
       <button className="sign-in-btn">SIGN IN</button>

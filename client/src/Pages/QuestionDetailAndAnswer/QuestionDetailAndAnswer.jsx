@@ -4,6 +4,7 @@ import styles from "./questionDetailAndAnswer.module.css";
 import Button from "react-bootstrap/Button";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
+import LayOut from "../../Components/Layout/Layout";
 
 function QuestionDetailAndAnswer() {
   const token = localStorage.getItem("token");
@@ -112,7 +113,7 @@ function QuestionDetailAndAnswer() {
   }
 
   return (
-    <>
+    <LayOut>
       <div className={styles.outer__container}>
         <div className={styles.theQuestion}>
           <h3 className={styles.title}>Question</h3>
@@ -170,7 +171,7 @@ function QuestionDetailAndAnswer() {
           </form>
         </div>
       </div>
-    </>
+    </LayOut>
   );
 }
 

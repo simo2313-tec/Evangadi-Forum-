@@ -6,14 +6,21 @@
 }
 
 .landingPageContainer {
-  display: block; 
-  min-height: 100vh; 
-  width: 100%; 
-  background-color: #f5f5f5; 
-  padding: 0; 
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem; 
+  padding: 20px;
+  height: 100vh; 
+  box-sizing: border-box;
+  background-color: aliceblue;
+}
+
+.login, .about {
+  flex: 1; 
+  max-width: 50%;
+  border-radius: 8px;
+}
+
+.login {
   position: relative;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
