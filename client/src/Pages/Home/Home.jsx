@@ -43,7 +43,7 @@ function Home() {
                     <div className={styles.usericon_and_username}>
                       <div className={styles.inner_center}>
                         <FaUserCircle size={80} className={styles.usericon} />
-                        <span>By:{q.username}</span>
+                        <span>{q.user_name}</span>
                       </div>
                     </div>
                     <p className={styles.title}>{q.question_title}</p>
