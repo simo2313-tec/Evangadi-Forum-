@@ -39,4 +39,4 @@ async function postAnswer (req, res) {
   }
 };
 
-module.exports = postAnswer;
+module.exports = {postAnswer};

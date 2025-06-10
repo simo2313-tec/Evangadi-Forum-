@@ -61,7 +61,7 @@ async function register(req, res) {
     // Generate JWT
     const token = jwt.sign(
       { userid: result.insertId, username },
-      "your_jwt_secret",
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
     res
