@@ -1,4 +1,4 @@
-// imports 
+// imports
 const express = require("express");
 const cors = require("cors");
 const dbconnection = require("./db/db.Config");
@@ -7,27 +7,22 @@ const dotenv = require("dotenv");
 //configuring detenv
 dotenv.config();
 
-
-// middlewares 
+// middlewares
 const app = express();
 app.use(cors({ origin: true, credentials: true })); // allow resource sharing from all origins DEV only
 app.use(express.json()); // to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded request bodies
 
-
-
 // import admin routes
-const initDB_Router = require("./routes/initDB_route")
+const initDB_Router = require("./routes/initDB_route");
 const createTableRouter = require("./routes/createTablesRoute");
 // import user routes
 const registerRouter = require("./routes/registerRoute");
-const loginRouter = require("./routes/loginRoute")
+const loginRouter = require("./routes/loginRoute");
 const answerRoutes = require("./routes/postAnswerRoute");
-const getquestions = require ("./routes/getquestionsRoute");
+const getquestions = require("./routes/getquestionsRoute");
 const postQuestionRoutes = require("./routes/postQuestionsRoute");
-
-
-
+const getAnswerRouter = require("./routes/getAnswerRoute");
 
 // admin routes middleware
 app.use("/api/admin", initDB_Router);
@@ -38,9 +33,7 @@ app.use("/api/users", loginRouter);
 app.use("/api/users", answerRoutes);
 app.use("/api/users", getquestions);
 app.use("/api/users", postQuestionRoutes);
-
-
-
+app.use("/api/users", getAnswerRouter);
 
 // Start server and test database connection
 async function startServer() {
@@ -55,36 +48,3 @@ async function startServer() {
 }
 
 startServer();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

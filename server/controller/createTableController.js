@@ -1,9 +1,12 @@
-
 const dbconnection = require("../db/db.Config");
-const  { create_registration, create_answer, create_profile, create_question } = require ("../db/tables");
+const {
+  create_registration,
+  create_answer,
+  create_profile,
+  create_question,
+} = require("../db/tables.js");
 
-
-async function createTable (req, res){
+async function createTable(req, res) {
   try {
     await dbconnection.query(create_registration);
     await dbconnection.query(create_profile);
@@ -13,6 +16,6 @@ async function createTable (req, res){
   } catch (err) {
     res.status(500).send("Error creating tables: " + err.message);
   }
-};
+}
 
 module.exports = { createTable };
