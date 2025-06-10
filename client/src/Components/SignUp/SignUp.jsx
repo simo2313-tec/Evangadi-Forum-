@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./signup.module.css";
 import api from "../../Utility/axios";
+import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +13,7 @@ function SignUp() {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   // Handle input changes
   const handleChange = (e) => {
@@ -47,7 +49,7 @@ function SignUp() {
         password: formData.password,
       });
       alert("Registration successful!");
-      // TODO: Redirect to login or home page
+      navigate("/login");
       // TODO: Store token in local storage or context
       // TODO: Clear form data
       setFormData({
@@ -72,7 +74,7 @@ function SignUp() {
 
         <p className={styles.subtitle}>
           Already have an account?{" "}
-          <a href="#" className={styles.signInLink}>
+          <a onClick={() => navigate("/login")} className={styles.signInLink}>
             Sign in
           </a>
         </p>
@@ -219,7 +221,10 @@ function SignUp() {
           .
         </p>
         <p className={styles.alreadyAccount}>
-          <a href="#" className={styles.link}>
+          <a
+            onClick={() => navigate("/login")}
+            className={styles.link}
+          >
             Already have an account?
           </a>
         </p>
