@@ -25,6 +25,7 @@ const loginRouter = require("./routes/loginRoute")
 const answerRoutes = require("./routes/postAnswerRoute");
 const getquestions = require ("./routes/getquestionsRoute");
 const postQuestionRoutes = require("./routes/postQuestionsRoute");
+const getSingleQuestion = require("./routes/getquestionsRoute") //!
 
 
 
@@ -36,8 +37,9 @@ app.use("/api/admin", createTableRouter);
 app.use("/api/users", registerRouter);
 app.use("/api/users", loginRouter);
 app.use("/api/users", answerRoutes);
-app.use("/api/users", getquestions);
+app.use("/api/users", getquestions);  //! check the exported file name syntax must be the same 
 app.use("/api/users", postQuestionRoutes);
+app.use("/api/users", getSingleQuestion);  //!
 
 
 
