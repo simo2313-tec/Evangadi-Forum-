@@ -11,7 +11,7 @@
   margin-top: 0; /* Ensure no conflicting margin */
   position: absolute; /* Set to absolute position */
   top: 50%; /* Position 50% from the top */
-  left: 50%; /* Position 50% from the left */
+  left: 75%; 
   transform: translate(-50%, -50%); /* Adjust by half its own width and height to truly center */
   /* Removed margin-top to avoid conflict and centralize positioning on parent */
 }
