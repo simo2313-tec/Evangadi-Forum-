@@ -11,7 +11,7 @@ function AskQuestions() {
   const [question, setQuestion] = useState({
     title: "",
     description: "",
-    userId: 1,
+    userId: 2,
   });
 
   const [response, setResponse] = useState(null);
