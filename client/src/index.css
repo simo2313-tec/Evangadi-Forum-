@@ -28,9 +28,11 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  outline: none;
 }
 
 body {
   font-size: 16px;
   color: var(--text-dark);
+  overflow-x: hidden;
 }
