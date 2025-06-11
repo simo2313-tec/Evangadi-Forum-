@@ -1,22 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 
 function AskQuestions() {
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
 
   const [question, setQuestion] = useState({
     title: "",
     description: "",
-    userId: 2,
+    userId: user?.userid || null,
   });
 
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,6 +40,12 @@ function AskQuestions() {
     setLoading(true);
     setError(null);
 
+    if (!token || !user) {
+      setError("Please login to ask a question");
+      setLoading(false);
+      return;
+    }
+
     axios
       .post("/users/ask", question, {
         headers: {
@@ -40,8 +55,13 @@ function AskQuestions() {
       .then((res) => {
         setResponse(res.data);
       })
-      .catch(() => {
-        setError("Failed to submit question. Please try again.");
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          setError("Please login to ask a question");
+          navigate("/login");
+        } else {
+          setError("Failed to submit question. Please try again.");
+        }
       })
       .finally(() => {
         setLoading(false);
