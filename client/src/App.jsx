@@ -20,7 +20,10 @@ function App() {
         <Route path="/landing" element={<Landing />} />
         <Route path="/footer" element={<Footer />} />
         <Route path="/ask-questions" element={<AskQuestions />} />
-        <Route path="/question-detail" element={<QuestionDetail />} />
+        <Route
+          path="/question-detail/:question_id/:user_id"
+          element={<QuestionDetail />}
+        />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/sign-up" element={<SignUp />} />

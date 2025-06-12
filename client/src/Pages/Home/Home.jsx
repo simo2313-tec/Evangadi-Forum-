@@ -61,7 +61,7 @@ function Home() {
             // Added key prop to the Link component for proper React list rendering
             <Link
               key={q.question_id}
-              to={`/question-detail/${q.question_id}`}
+              to={`/question-detail/${q.question_id}/${user.userid}`}
               className={styles.link_container}
             >
               <div>
