@@ -1,7 +1,5 @@
 const dbconnection = require("../db/db.Config");
 
-const dbconnection = require("../db/db.Config");
-
 async function getAnswer(req, res) {
   const questionId = req.params.question_id;
   try {
