@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./login.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import api from "../../Utility/axios";
+import { UserContext } from "../Context/userContext";
 
 function Login() {
+  const [userData, setUserData] = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
