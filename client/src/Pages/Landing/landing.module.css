@@ -8,19 +8,39 @@
 .landingPageContainer {
   display: flex;
   justify-content: space-between;
-  gap: 1rem; 
+  align-items: center;
   padding: 20px;
-  height: 100vh; 
-  box-sizing: border-box;
+  min-height: 100vh;
   background-color: aliceblue;
+  overflow-y: auto;
+  gap: 10px;
 }
 
 .login, .about {
-  flex: 1; 
-  max-width: 50%;
-  border-radius: 8px;
+  width: 48%;
 }
 
 .login {
   position: relative;
+}
+
+/* Only add media query for small screens */
+@media (max-width: 768px) {
+  .landingPageContainer {
+    flex-direction: column;
+    padding: 20px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .about {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .login {
+    width: 100%;
+    min-height: 450px;
+    margin-bottom: 20px;
+  }
 }

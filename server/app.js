@@ -7,9 +7,17 @@ const dotenv = require("dotenv");
 //configuring detenv
 dotenv.config();
 
-// middlewares
+
+// middlewares 
 const app = express();
-app.use(cors({ origin: true, credentials: true })); // allow resource sharing from all origins DEV only
+
+app.use(cors({
+  origin: "http://localhost:5173", // Vite's default port
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json()); // to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded request bodies
 
@@ -36,6 +44,7 @@ app.use("/api/users", getquestions); //! check the exported file name syntax mus
 app.use("/api/users", postQuestionRoutes);
 app.use("/api/users", getSingleQuestion); //!
 app.use("/api/users", getAnswerRouter);
+
 
 // Start server and test database connection
 async function startServer() {
