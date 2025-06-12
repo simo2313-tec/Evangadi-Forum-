@@ -25,6 +25,14 @@ function SignUp() {
       ...prev,
       [name]: value,
     }));
+    // Clear the error for the field being edited / when the user starts typing
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      // Also clear API error if present
+      if (prev.api) delete newErrors.api;
+      return newErrors;
+    });
   };
 
   // Handle form submit
@@ -190,10 +198,7 @@ function SignUp() {
           .
         </p>
         <p className={styles.alreadyAccount}>
-          <a
-            onClick={() => navigate("/login")}
-            className={styles.link}
-          >
+          <a onClick={() => navigate("/login")} className={styles.link}>
             Already have an account?
           </a>
         </p>
