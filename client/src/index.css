@@ -2,7 +2,7 @@
 
 :root {
   --primary: #ff8107; /* Primary Orange - main brand color, buttons, links, active elements */
-  --primary-blue: #007bff; /* Primary Blue - used for submit/post actions */
+  --primary-blue: #516cf1; /* Primary Blue - used for submit/post actions */
   --dark-bg: #343a40; /* Dark Background - footers */
   --white: #ffffff; /* Clean White - main content background */
   --light-bg: #f8f9fa; /* Light Background - subtle contrast for content areas */

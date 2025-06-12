@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import "./style.css";
+
+import styles from "../../../src/Components/Header/style.module.css"; //
+
 import logo from "../../assets/imgs/logo.png";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [mobile, setMobile] = useState(false);
@@ -10,22 +13,27 @@ const Header = () => {
   };
 
   return (
-    <header className="header">
-      <div className="logo">
-        <img src={logo} alt="ENGADI Logo" />
-      </div>
-
-      <nav className={`nav mobile-nav ${mobile ? "show" : ""}`}>
-        <a href="#">Home</a>
-        <a href="#">How it works</a>
-      </nav>
-
-      <button className="sign-in-btn">SIGN IN</button>
-
-      <div className="menu-toggle" onClick={toggleMobile}>
-        &#9776;
-      </div>
-    </header>
+    <section className={styles.header_container}>
+      <header className={styles.header}>
+        <div className={styles.logo}>
+          <img src={logo} alt="ENGADI Logo" />
+        </div>
+        <div className={styles.navbar}>
+          <nav
+            className={`${styles.nav} ${styles.mobileNav} ${
+              mobile ? styles.show : ""
+            }`}
+          >
+            <Link to="/home">Home</Link>
+            <Link to="#">How it works</Link>
+          </nav>
+          <button className={styles.sign_in_btn}>SIGN IN</button>
+          <div className={styles.menu_toggle} onClick={toggleMobile}>
+            &#9776;
+          </div>
+        </div>
+      </header>
+    </section>
   );
 };
 

@@ -1,16 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import styles from "./askQuestions.module.css";
+import axios from "../../Utility/axios";
+import { Link, useNavigate } from "react-router-dom";
+import LayOut from "../../Components/Layout/Layout";
 
 function AskQuestions() {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
+
   const [question, setQuestion] = useState({
-    question_title: "",
-    question_description: "",
+    title: "",
+    description: "",
+    userId: user?.userid || null,
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,46 +35,99 @@ function AskQuestions() {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (!token || !user) {
+      setError("Please login to ask a question");
+      setLoading(false);
+      return;
+    }
+
+    axios
+      .post("/users/ask", question, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setResponse(res.data);
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          setError("Please login to ask a question");
+          navigate("/login");
+        } else {
+          setError("Failed to submit question. Please try again.");
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  if (response) {
+    return (
+      <div className={styles.success__msg}>
+        <h1 className={styles.thanks_note}>{response.message}</h1>
+        <Link className={styles.nav_to} to={"/home"}>
+          {"Go to home"}
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className={styles.first__div}>
-        <h3>Steps to write a good question.</h3>
-        <ul>
-          <li>Summarize your problem in one-line title.</li>
-          <li>Describe your problem in more detail.</li>
-          <li>Describe what you tried and what you expected to happen.</li>
-          <li>Review your question and post it to the site.</li>
-        </ul>
+    <LayOut>
+      <div className={styles.outer__container}>
+        <div className={styles.steps__container}>
+          <h2>Steps to write a good question.</h2>
+          <ul>
+            <li>Summarize your problem in one-line title.</li>
+            <li>Describe your problem in more detail.</li>
+            <li>Describe what you tried and what you expected to happen.</li>
+            <li>Review your question and post it to the site.</li>
+          </ul>
+        </div>
+
+        <div className={`container mt-5 ${styles.question__container}`}>
+          <h3 className={styles.title}>Ask a Public Question</h3>
+          <Link to="/home">Go to Question page</Link>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Title"
+              name="title"
+              id="question_title"
+              onChange={handleChange}
+              value={question.title}
+              required
+            />
+
+            <textarea
+              maxLength={250}
+              placeholder="Question Description ..."
+              name="description"
+              id="question_description"
+              onChange={handleChange}
+              value={question.description}
+              required
+            ></textarea>
+
+            {error && <p className={styles.error}>{error}</p>}
+
+            <div className={styles.btn}>
+              <Button type="submit" variant="success" disabled={loading}>
+                {loading ? "Posting..." : "Post Your Question"}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
-      <div className={`container mt-5 ${styles.second__div}`}>
-        <h3 className={styles.title}>Ask a Public Question</h3>
-
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Question Title"
-            name="question_title"
-            id="question_title"
-            onChange={handleChange}
-            value={question.question_title}
-          />
-
-          <textarea
-            maxLength="250"
-            placeholder="Question detail"
-            name="question_description"
-            onChange={handleChange}
-            value={question.question_description}
-          ></textarea>
-
-          <div className={styles.btn}>
-            <Button type="submit" variant="success">
-              Post Your Question
-            </Button>
-          </div>
-        </form>
-      </div>
-    </>
+    </LayOut>
   );
 }
 

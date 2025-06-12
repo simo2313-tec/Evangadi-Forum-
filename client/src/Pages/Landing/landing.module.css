@@ -1,6 +1,46 @@
 .title {
-  color: var(--text-dark); /* Use normal text color for all headings */
+  color: var(--text-dark);
   font-size: 2rem;
   text-align: center;
   margin-top: 2rem;
+}
+
+.landingPageContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: aliceblue;
+  overflow-y: auto;
+  gap: 10px;
+}
+
+.login, .about {
+  width: 48%;
+}
+
+.login {
+  position: relative;
+}
+
+/* Only add media query for small screens */
+@media (max-width: 768px) {
+  .landingPageContainer {
+    flex-direction: column;
+    padding: 20px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .about {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .login {
+    width: 100%;
+    min-height: 450px;
+    margin-bottom: 20px;
+  }
 }
