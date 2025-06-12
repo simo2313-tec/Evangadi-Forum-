@@ -12,7 +12,7 @@ import Login from "./Components/Login/Login";
 
 function App() {
   return (
-    <div style={{ height: '100vh', width: '100vw' }}>
+    <div style={{ height: "100vh", width: "100vw" }}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
