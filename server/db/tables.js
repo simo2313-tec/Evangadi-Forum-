@@ -1,3 +1,4 @@
+
 const create_registration = `
     CREATE TABLE IF NOT EXISTS registration (
       user_id int NOT NULL AUTO_INCREMENT,
@@ -19,6 +20,7 @@ const create_profile = `
     )`;
 
 // Question table
+
 const create_question = `
     CREATE TABLE IF NOT EXISTS question (
       question_id int NOT NULL AUTO_INCREMENT,
@@ -42,6 +44,7 @@ const create_answer = `
       FOREIGN KEY (user_id) REFERENCES registration(user_id),
       FOREIGN KEY (question_id) REFERENCES question(question_id)
     )`;
+
 
 module.exports = {
   create_registration,

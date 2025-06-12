@@ -9,6 +9,7 @@ import "./App.css";
 import SignUp from "./Components/SignUp";
 import Footer from "./Components/Footer/Footer";
 import Login from "./Components/Login/Login";
+import Header from "./Components/Header/Header";
 
 function App() {
   return (
