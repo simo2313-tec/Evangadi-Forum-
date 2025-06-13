@@ -5,7 +5,7 @@ const { postQuestion } = require("../controller/postQuestionController");
 const postQuestionRouter = express.Router()
 
 // Post a new question (protected route)
-postQuestionRouter.post("/ask", postQuestion);
+postQuestionRouter.post("/question", postQuestion);
 
 
 

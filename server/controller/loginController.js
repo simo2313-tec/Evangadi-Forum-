@@ -11,7 +11,10 @@ async function login(req, res) {
     if (!email || !password) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Email and password are required" });
+        .json({
+          error: "Bad Request",
+          message: "Please provide all required fields",
+        });
     }
   
     try {
@@ -43,6 +46,7 @@ async function login(req, res) {
       });
   
       res.status(StatusCodes.OK).json({
+        message: "User login successful",
         userid: rows.user_id,
         username: rows.user_name,
         email: rows.user_email,
@@ -52,7 +56,10 @@ async function login(req, res) {
       console.error(error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Error logging in", error: error.message });
+        .json({
+          error: "Internal Server Error",
+          message: "An unexpected error occurred.",
+        });
     }
   }
 module.exports = { login };  
