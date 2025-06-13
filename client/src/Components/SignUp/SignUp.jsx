@@ -29,6 +29,14 @@ function SignUp() {
       ...prev,
       [name]: value,
     }));
+    // Remove error for the field being edited / when the user starts typing
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      // Also clear API error on any input
+      if (newErrors.api) delete newErrors.api;
+      return newErrors;
+    });
   };
 
   const togglePasswordVisibility = () => {
@@ -61,7 +69,7 @@ function SignUp() {
       navigate("/home");
       // TODO: Store token in local storage or context
       // On successful sign up
-      console.log(response)
+      console.log(response);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem(
         "user",
@@ -77,7 +85,7 @@ function SignUp() {
         username: response.data.username,
         email: response.data.email,
       });
-      
+
       // TODO: Clear form data
       setFormData({
         email: "",
@@ -175,14 +183,15 @@ function SignUp() {
             onChange={handleChange}
           />
 
-          <span
+          <button
+            type="button"
             className={styles.passwordToggle}
             onClick={togglePasswordVisibility}
           >
             {showPassword ? (
-              <FiEye size={22} color="#6c757d" />
-            ) : (
               <FiEyeOff size={22} color="#6c757d" />
+            ) : (
+              <FiEye size={22} color="#6c757d" />
             )}
           </button>
         </div>
