@@ -11,12 +11,14 @@ dotenv.config();
 // middlewares 
 const app = express();
 
-app.use(cors({
-  origin: "http://localhost:5173", // Vite's default port
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+  cors({
+    origin: "http://localhost:4321",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json()); // to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded request bodies
@@ -37,13 +39,13 @@ const getAnswerRouter = require("./routes/getAnswerRoute");
 app.use("/api/admin", initDB_Router);
 app.use("/api/admin", createTableRouter);
 // user routes middleware
-app.use("/api/users", registerRouter);
-app.use("/api/users", loginRouter);
-app.use("/api/users", answerRoutes);
-app.use("/api/users", getquestions); //! check the exported file name syntax must be the same
-app.use("/api/users", postQuestionRoutes);
-app.use("/api/users", getSingleQuestion); //!
-app.use("/api/users", getAnswerRouter);
+app.use("/api/user", registerRouter);
+app.use("/api/user", loginRouter);
+app.use("/api", answerRoutes);
+app.use("/api", getquestions);
+app.use("/api", postQuestionRoutes);
+app.use("/api", getSingleQuestion); 
+app.use("/api", getAnswerRouter);
 
 
 // Start server and test database connection

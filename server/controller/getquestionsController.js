@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 async function getquestions(req, res) {
   try {
     const [question] = await dbconnection.query(
-      "SELECT q.*, r.user_name FROM question q JOIN registration r ON q.user_id=r.user_id"
+      "SELECT q.*, r.user_name FROM question q JOIN registration r ON q.user_id=r.user_id ORDER BY q.created_at DESC"
     );
     res.status(StatusCodes.ACCEPTED).json({ question });
   } catch (error) {

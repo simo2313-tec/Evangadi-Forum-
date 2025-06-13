@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS registration (
   user_name varchar(50) NOT NULL,
   user_email varchar(254) NOT NULL,
   password varchar(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id)
 );
 
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS question (
   tag varchar(20),
   user_id int NOT NULL,
   post_id int NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (question_id),
   FOREIGN KEY (user_id) REFERENCES registration(user_id)
 );
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS answer (
   user_id int NOT NULL,
   question_id int NOT NULL,
   PRIMARY KEY (answer_id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES registration(user_id),
   FOREIGN KEY (question_id) REFERENCES question(question_id)
 );

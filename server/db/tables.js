@@ -4,6 +4,7 @@ const create_registration = `
       user_id int NOT NULL AUTO_INCREMENT,
       user_name varchar(50) NOT NULL,
       user_email varchar(254) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       password varchar(100) NOT NULL,
       PRIMARY KEY (user_id)
     )`;
@@ -29,6 +30,7 @@ const create_question = `
       tag varchar(20),
       user_id int NOT NULL,
       post_id int NOT NULL UNIQUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (question_id),
       FOREIGN KEY (user_id) REFERENCES registration(user_id)
     )`;
@@ -41,6 +43,7 @@ const create_answer = `
       user_id int NOT NULL,
       question_id int NOT NULL,
       PRIMARY KEY (answer_id),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES registration(user_id),
       FOREIGN KEY (question_id) REFERENCES question(question_id)
     )`;

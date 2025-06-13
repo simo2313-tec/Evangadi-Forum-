@@ -1,46 +1,44 @@
-.title {
-  color: var(--text-dark);
-  font-size: 2rem;
-  text-align: center;
-  margin-top: 2rem;
-}
-
 .landingPageContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
   min-height: 100vh;
-  background-color: aliceblue;
-  overflow-y: auto;
-  gap: 10px;
-}
-
-.login, .about {
-  width: 48%;
+  background-color: var(--landing-bg);
+  overflow: hidden;
 }
 
 .login {
+  width: 50%;
   position: relative;
+  overflow: hidden;
 }
 
-/* Only add media query for small screens */
-@media (max-width: 768px) {
-  .landingPageContainer {
-    flex-direction: column;
-    padding: 20px;
-    height: auto;
-    min-height: 100vh;
-  }
 
-  .about {
-    width: 100%;
-    margin-bottom: 10px;
-  }
 
-  .login {
-    width: 100%;
-    min-height: 450px;
-    margin-bottom: 20px;
-  }
+.sliderWrapper {
+  display: flex;
+  width: 200%; 
+  transition: transform 0.6s ease-in-out;
+}
+
+.formPane {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+
+
+.about {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.shrinkAbout {
+  transform: scale(0.8);
+  transform-origin: left center;
+}
+
+.shrink {
+  transform: scale(0.8);
+  transform-origin: right center;
 }

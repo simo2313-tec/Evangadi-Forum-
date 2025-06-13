@@ -6,7 +6,8 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: #ffffff;
+  background-color: var(--white);
+  border-bottom: 0.5px solid var(--border);
 }
 .header {
   width: 60%;
@@ -14,8 +15,8 @@
   text-align: center;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #ffffff;
+  padding: 2rem;
+  background-color: var(--white);
 
   position: relative;
   z-index: 100;
@@ -51,7 +52,7 @@
 
 .sign_in_btn {
   padding: 0.5rem 4.5rem;
-  background-color: #007bff;
+  background: var(--primary-blue);
   color: white;
   border: none;
   border-radius: 6px;
@@ -61,7 +62,7 @@
 }
 
 .sign_in_btn:hover {
-  background-color: #0056b3;
+  filter: brightness(0.9);
 }
 
 .menu_toggle {
