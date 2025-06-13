@@ -60,7 +60,7 @@ function Login() {
         autoClose: 3000,
         style: {
           marginTop: "70px",
-          padding: "8px 12px", // reduce padding
+          padding: "7px 7px", // reduce padding
           fontSize: "1.5rem", // smaller font
           color: "#ff8107",
           fontWeight: "bold",
