@@ -133,6 +133,18 @@
   cursor: pointer;
 }
 
+.errorMessage{
+    color: red;
+    background-color: rgb(255, 235, 238);
+    font-size: 14px;
+    margin: 10px;
+    border: 1px solid rgb(247, 111, 134);
+    box-shadow: 0 0 5px rgba(247, 111, 134, 0.5);
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .loginContainer {
