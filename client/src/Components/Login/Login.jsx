@@ -141,12 +141,12 @@ function Login() {
         >
           {loading ? "Logging in..." : "Submit"}
         </button>
-        <Link
+        <a
           onClick={() => navigate("/sign-up")}
           className={styles.createAccountLinkBottom}
         >
           Create an account?
-        </Link>
+        </a>
       </form>
     </div>
   );
