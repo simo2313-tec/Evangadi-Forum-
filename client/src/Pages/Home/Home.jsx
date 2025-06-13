@@ -13,14 +13,20 @@ function Home() {
   const [questions, setQuestions] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    
-    // If no user data found, redirect to login page
-    if (!userData) {
-      navigate("/landing");
-      return;
+  // handler for Ask Question button
+  const handleAskQuestion = () => {
+    if (!userData?.userid) {
+      // redirect with message
+      navigate("/landing", {
+        state: { message: "Please login to ask question" },
+      });
+    } else {
+      // user logged in, go to ask question page
+      navigate("/ask-questions");
     }
+  };
 
+  useEffect(() => {
     // Fetch questions from the API
     axios
       .get("/question")
@@ -43,9 +49,9 @@ function Home() {
           <div className={styles.upper_section}>
             <div className={styles.title}>
               {/* Changed route from "/" to "/ask-questions" to fix navigation */}
-              <Link to="/ask-questions" className={styles.Askbtn}>
+              <button onClick={handleAskQuestion} className={styles.Askbtn}>
                 Ask Question
-              </Link>
+              </button>
               {/* Display actual username from user state, fallback to "User" if not available */}
               <p>Welcome: {userData?.username || "User"}</p>
             </div>
@@ -54,29 +60,30 @@ function Home() {
           {questions.length === 0 ? (
             <p>No questions yet. Be the first to post a question!</p>
           ) : (
-          questions.map((q) => (
-            // Added key prop to the Link component for proper React list rendering
-            <Link
-              key={q.question_id}
-              to={`/question-detail/${q.question_id}`}
-              className={styles.link_container}
-            >
-              <div>
-                <div className={styles.user_container}>
-                  <div className={styles.user_question}>
-                    <div className={styles.usericon_and_username}>
-                      <div className={styles.inner_center}>
-                        <FaUserCircle size={80} className={styles.usericon} />
-                        <span>{q.user_name}</span>
+            questions.map((q) => (
+              // Added key prop to the Link component for proper React list rendering
+              <Link
+                key={q.question_id}
+                to={`/question-detail/${q.question_id}`}
+                className={styles.link_container}
+              >
+                <div>
+                  <div className={styles.user_container}>
+                    <div className={styles.user_question}>
+                      <div className={styles.usericon_and_username}>
+                        <div className={styles.inner_center}>
+                          <FaUserCircle size={80} className={styles.usericon} />
+                          <span>{q.user_name}</span>
+                        </div>
                       </div>
+                      <p className={styles.title}>{q.question_title}</p>
                     </div>
-                    <p className={styles.title}>{q.question_title}</p>
+                    <FaChevronRight size={20} className={styles.chevron} />
                   </div>
-                  <FaChevronRight size={20} className={styles.chevron} />
                 </div>
-              </div>
-            </Link>
-          )))}
+              </Link>
+            ))
+          )}
         </div>
       </section>
     </LayOut>

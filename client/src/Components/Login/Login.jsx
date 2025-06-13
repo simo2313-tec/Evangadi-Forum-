@@ -1,12 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./login.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../Utility/axios";
 import { UserContext } from "../Context/userContext";
 import { toast } from "react-toastify";
 
 function Login() {
+  const location = useLocation();
   const [userData, setUserData] = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",

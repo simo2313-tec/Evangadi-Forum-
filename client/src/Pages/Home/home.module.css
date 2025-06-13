@@ -25,6 +25,7 @@
   text-decoration: none;
   color: white;
   padding: 5px 30px;
+  border: none;
 }
 .Askbtn:hover{
   filter: brightness(0.9);
