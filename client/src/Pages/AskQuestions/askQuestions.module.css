@@ -2,14 +2,18 @@
   padding: 5px;
 }
 .steps__container {
-  padding: 30px;
-  text-align: center;
+  margin: 3% auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
-.steps__container ul {
-  margin: auto;
-  width: 36%;
-  text-align: start;
-  font-size: 14px;
+.lists {
+  width: auto;
+}
+.lists ul {
+  list-style-type: disc;
+  padding-left: 20px;
 }
 
 .question__container {
@@ -30,6 +34,11 @@ a {
   text-decoration: none;
   color:rgb(156, 156, 156);
 }
+.askform{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 ::placeholder {
   text-align: start;
 }
@@ -39,6 +48,7 @@ textarea {
   width: 100%;
   border: 1px solid rgb(156, 156, 156);
   padding: 20px !important;
+  font-size: 18px;
 }
 
 textarea {  
@@ -53,16 +63,16 @@ input {
 }
 
 
-.btn {
-  text-align: start;
-}
-.btn button {
+.askBtn {
   border: none;
   background-color: var(--primary-blue);
-  height: 3rem;
+  color: var(--white);
+  height: 4rem;
   width: 15rem;
+  border-radius: 5px;
+  margin: 2% 0;
 }
-.btn button:hover {
+.askBtn:hover {
   background-color: var(--accent);
 }
 

@@ -3,15 +3,16 @@
 :root {
   --primary: #ff8107; /* Primary Orange - main brand color, buttons, links, active elements */
   --primary-blue: #516cf1; /* Primary Blue - used for submit/post actions */
-  --dark-bg: #343a40; /* Dark Background - footers */
+  --dark-bg: #3A4559; /* Dark Background - footers */
   --white: #ffffff; /* Clean White - main content background */
-  --light-bg: #f8f9fa; /* Light Background - subtle contrast for content areas */
+  --light-bg: #fbfbfb; /* Light Background - subtle contrast for content areas */
   --success: #28a745; /* Success Green - positive actions, notifications */
   --error: #dc3545; /* Error Red - error messages, alerts */
   --border: #dee2e6; /* Border/Light Gray - form borders, dividers */
   --text-dark: #212529; /* Text Primary - headings, body text */
   --text-gray: #6c757d; /* Text Secondary - placeholder, metadata */
   --accent: #fd7e14; /* Accent lighter version of our primary color Orange - highlights, links, important elements */
+  --landing-bg: #f5f5f5; /* landing page */
 
   line-height: 1.6;
   font-weight: 400;

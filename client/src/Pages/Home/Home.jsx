@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./home.module.css";
 import { useState, useEffect } from "react";
 import axios from "../../Utility/axios";
@@ -6,38 +6,32 @@ import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
 import LayOut from "../../Components/Layout/Layout"
+import { UserContext } from "../../Components/Context/userContext";
 
 function Home() {
-  // State for storing questions from the API
+  const [userData, setUserData] = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
-  // Added state to store user data from localStorage
-  const [user, setUser] = useState(null);
-  // Added useNavigate hook for redirecting users
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get user data from localStorage to check if user is logged in
-    const userData = JSON.parse(localStorage.getItem("user"));
+    
     // If no user data found, redirect to login page
     if (!userData) {
-      navigate("/login");
+      navigate("/landing");
       return;
     }
-    // Store user data in state for display
-    setUser(userData);
 
     // Fetch questions from the API
     axios
-      .get("users/all-question")
+      .get("/question")
       .then((res) => {
-        console.log(res.data.question);
         setQuestions(res.data.question);
       })
       .catch((err) => {
         console.error("Failed to fetch questions:", err);
         // If unauthorized (401), redirect to login
         if (err.response?.status === 401) {
-          navigate("/login");
+          navigate("/landing");
         }
       });
   }, [navigate]); // Added navigate to dependency array
@@ -49,19 +43,22 @@ function Home() {
           <div className={styles.upper_section}>
             <div className={styles.title}>
               {/* Changed route from "/" to "/ask-questions" to fix navigation */}
-              <Link to="/ask-questions" className={styles.btn}>
-                <p>Ask Question</p>
+              <Link to="/ask-questions" className={styles.Askbtn}>
+                Ask Question
               </Link>
               {/* Display actual username from user state, fallback to "User" if not available */}
-              <p>Welcome: {user?.username || "User"}</p>
+              <p>Welcome: {userData?.username || "User"}</p>
             </div>
             <h1 className={styles.questions_list}>Questions</h1>
           </div>
-          {questions.map((q) => (
+          {questions.length === 0 ? (
+            <p>No questions yet. Be the first to post a question!</p>
+          ) : (
+          questions.map((q) => (
             // Added key prop to the Link component for proper React list rendering
             <Link
               key={q.question_id}
-              to={`/question-detail/${q.question_id}/${user.userid}`}
+              to={`/question-detail/${q.question_id}`}
               className={styles.link_container}
             >
               <div>
@@ -79,7 +76,7 @@ function Home() {
                 </div>
               </div>
             </Link>
-          ))}
+          )))}
         </div>
       </section>
     </LayOut>

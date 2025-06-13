@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
 import styles from "./login.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../Utility/axios";
 import { UserContext } from "../Context/userContext";
+import { toast } from "react-toastify";
 
 function Login() {
   const [userData, setUserData] = useContext(UserContext);
@@ -32,18 +33,43 @@ function Login() {
     setError("");
 
     try {
-      const response = await api.post("/users/login", formData);
-      
-      // Store the token and user data in localStorage
+      const response = await api.post("/user/login", formData);
+
+      // On successful login
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify({
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userid: response.data.userid,
+          username: response.data.username,
+          email: response.data.email,
+        })
+      );
+
+      setUserData({
         userid: response.data.userid,
         username: response.data.username,
-        email: response.data.email
-      }));
+        email: response.data.email,
+      });
 
       // Navigate to home page on successful login
       navigate("/home");
+      toast.success("Logged in successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        style: {
+          marginTop: "70px",
+          padding: "8px 12px", // reduce padding
+          fontSize: "1.5rem", // smaller font
+          color: "#ff8107",
+          fontWeight: "bold",
+          borderRadius: "8px",
+          minHeight: "unset", // override default height
+        },
+        progressStyle: {
+          color: "#ff8107",
+        },
+      });
     } catch (error) {
       if (error.response?.status === 401) {
         setError("Invalid email or password");
@@ -63,18 +89,18 @@ function Login() {
 
   return (
     <div className={styles.loginContainer}>
-      <h2 className={styles.loginTitle}>Login to your account</h2>
-      <p className={styles.createAccountPrompt}>
-        Don't have an account?{" "}
-        <a
-          onClick={() => navigate("/sign-up")}
-          className={styles.createAccountLink}
-        >
-          Create a new account
-        </a>
-      </p>
-      {error && <div className={styles.errorMessage}>{error}</div>}
       <form onSubmit={handleSubmit} className={styles.loginForm}>
+        <h2 className={styles.loginTitle}>Login to your account</h2>
+        <p className={styles.createAccountPrompt}>
+          Don't have an account?{" "}
+          <a
+            onClick={() => navigate("/sign-up")}
+            className={styles.createAccountLink}
+          >
+            Create a new account
+          </a>
+        </p>
+        {error && <div className={styles.errorMessage}>{error}</div>}
         <div className={styles.formGroup}>
           <input
             type="email"
@@ -103,23 +129,23 @@ function Login() {
               className={styles.passwordToggle}
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
             </span>
           </div>
         </div>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className={styles.submitButton}
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Logging in..." : "Submit"}
         </button>
-        <a
+        <Link
           onClick={() => navigate("/sign-up")}
           className={styles.createAccountLinkBottom}
         >
           Create an account?
-        </a>
+        </Link>
       </form>
     </div>
   );

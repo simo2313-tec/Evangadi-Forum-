@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import Button from "react-bootstrap/Button";
+import React, { useState, useEffect, useContext } from "react";
 import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
+import { UserContext } from "../../Components/Context/userContext";
 
 function AskQuestions() {
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [userData, setUserData] = useContext(UserContext);
   const navigate = useNavigate();
 
   const [question, setQuestion] = useState({
     title: "",
     description: "",
-    userId: user?.userid || null,
+    userId: userData?.userid || null,
   });
 
   const [response, setResponse] = useState(null);
@@ -22,10 +22,10 @@ function AskQuestions() {
 
   useEffect(() => {
     // Check if user is logged in
-    if (!token || !user) {
-      navigate("/login");
+    if (!token || !userData?.userid) {
+      navigate("/landing");
     }
-  }, [token, user, navigate]);
+  }, [token, userData?.userid, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,14 +40,14 @@ function AskQuestions() {
     setLoading(true);
     setError(null);
 
-    if (!token || !user) {
+    if (!token || !userData?.userid) {
       setError("Please login to ask a question");
       setLoading(false);
       return;
     }
 
     axios
-      .post("/users/ask", question, {
+      .post("/question", question, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,7 +58,7 @@ function AskQuestions() {
       .catch((error) => {
         if (error.response?.status === 401) {
           setError("Please login to ask a question");
-          navigate("/login");
+          navigate("/landing");
         } else {
           setError("Failed to submit question. Please try again.");
         }
@@ -84,19 +84,21 @@ function AskQuestions() {
       <div className={styles.outer__container}>
         <div className={styles.steps__container}>
           <h2>Steps to write a good question.</h2>
-          <ul>
-            <li>Summarize your problem in one-line title.</li>
-            <li>Describe your problem in more detail.</li>
-            <li>Describe what you tried and what you expected to happen.</li>
-            <li>Review your question and post it to the site.</li>
-          </ul>
+          <div className={styles.lists}>
+            <ul>
+              <li>Summarize your problem in one-line title.</li>
+              <li>Describe your problem in more detail.</li>
+              <li>Describe what you tried and what you expected to happen.</li>
+              <li>Review your question and post it to the site.</li>
+            </ul>
+          </div>
         </div>
 
         <div className={`container mt-5 ${styles.question__container}`}>
           <h3 className={styles.title}>Ask a Public Question</h3>
           <Link to="/home">Go to Question page</Link>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className={styles.askform}>
             <input
               type="text"
               placeholder="Title"
@@ -108,7 +110,6 @@ function AskQuestions() {
             />
 
             <textarea
-              maxLength={250}
               placeholder="Question Description ..."
               name="description"
               id="question_description"
@@ -119,11 +120,14 @@ function AskQuestions() {
 
             {error && <p className={styles.error}>{error}</p>}
 
-            <div className={styles.btn}>
-              <Button type="submit" variant="success" disabled={loading}>
-                {loading ? "Posting..." : "Post Your Question"}
-              </Button>
-            </div>
+            <button
+              type="submit"
+              className={styles.askBtn}
+              variant="success"
+              disabled={loading}
+            >
+              {loading ? "Posting..." : "Post Your Question"}
+            </button>
           </form>
         </div>
       </div>

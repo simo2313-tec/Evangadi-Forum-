@@ -6,10 +6,8 @@ import AskQuestions from "./Pages/AskQuestions";
 import QuestionDetail from "./Pages/QuestionDetailAndAnswer";
 import NotFound from "./Pages/NotFound";
 import "./App.css";
-import SignUp from "./Components/SignUp";
-import Footer from "./Components/Footer/Footer";
-import Login from "./Components/Login/Login";
-import Header from "./Components/Header/Header";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -18,17 +16,28 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/landing" element={<Landing />} />
-        <Route path="/footer" element={<Footer />} />
         <Route path="/ask-questions" element={<AskQuestions />} />
         <Route
-          path="/question-detail/:question_id/:user_id"
+          path="/question-detail/:question_id"
           element={<QuestionDetail />}
         />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Landing />} />
+        <Route path="/sign-up" element={<Landing />} />
       </Routes>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }
