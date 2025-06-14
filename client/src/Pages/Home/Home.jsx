@@ -76,7 +76,7 @@ function Home() {
                           <span>{q.user_name}</span>
                         </div>
                       </div>
-                      <p className={styles.title}>{q.question_title}</p>
+                      <p className={styles.Qtitle}>{q.question_title}</p>
                     </div>
                     <FaChevronRight size={20} className={styles.chevron} />
                   </div>

@@ -62,7 +62,7 @@
   border-radius: 20px;
   width: 100%;
   margin: 50px auto;
-  padding: 30px 30px;
+  padding: 5%;
   text-align: center;
 }
 
@@ -116,10 +116,10 @@ textarea {
   margin: 40px auto;
   padding: 30px;
   background-color: #e6ffed; 
-  border: 2px solid #2ecc71; 
+  border: 2px solid var(--success); 
   border-radius: 20px;
   text-align: center;
-  color: #2ecc71;
+  color: var(--success); 
   font-weight: 600;
   font-size: 1.2rem;
   box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
@@ -146,4 +146,22 @@ textarea {
 
 .nav_to:hover {
   background-color: var(--accent);
+}
+
+
+
+
+
+
+/* For tablets and phones (max-width 768px) */
+@media (max-width: 768px) {
+  .answer__box{
+    padding: 0;
+  }
+ 
+}
+
+/* For phones (max-width 576px) */
+@media (max-width: 576px) {
+  
 }

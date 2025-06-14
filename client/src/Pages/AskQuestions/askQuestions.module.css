@@ -83,10 +83,10 @@ input {
   margin: 40px auto;
   padding: 30px;
   background-color: #e6ffed; 
-  border: 2px solid #2ecc71; 
+  border: 2px solid var(--success); 
   border-radius: 20px;
   text-align: center;
-  color: #2ecc71;
+  color: var(--success); 
   font-weight: 600;
   font-size: 1.2rem;
   box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
@@ -113,4 +113,27 @@ input {
 
 .nav_to:hover {
   background-color: var(--accent);
+}
+
+
+
+/* For tablets and phones (max-width 768px) */
+@media (max-width: 768px) {
+  .question__container{
+    width: 80%
+  }
+  .steps__container {
+    font-size: 2rem;
+  }
+ 
+}
+
+/* For phones (max-width 576px) */
+@media (max-width: 576px) {
+  .question__container{
+    width: 100%
+  }
+  .steps__container {
+    font-size: 1.5rem;
+  }
 }

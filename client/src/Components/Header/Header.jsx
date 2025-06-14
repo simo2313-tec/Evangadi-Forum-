@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 const Header = () => {
   const [mobile, setMobile] = useState(false);
   const [userData, setUserData] = useContext(UserContext);
-  console.log(userData)
   const navigate = useNavigate()
 
   const toggleMobile = () => {
@@ -53,24 +52,20 @@ const Header = () => {
           >
             <Link to="/home">Home</Link>
             <Link to="#">How it works</Link>
+
+            {userData?.userid ? (
+              <button onClick={logout} className={styles.sign_in_btn}>
+                LOGOUT
+              </button>
+            ) : (
+              <Link to="/landing">
+                <button className={styles.sign_in_btn}>SIGN IN</button>
+              </Link>
+            )}
           </nav>
 
-
-          
-          {userData?.userid ? (
-        <button onClick={logout} className={styles.sign_in_btn}>
-          LOGOUT
-        </button>
-      ) : (
-        <Link to="/landing">
-          <button className={styles.sign_in_btn}>SIGN IN</button>
-        </Link>
-      )}
-
-
-          
           <div className={styles.menu_toggle} onClick={toggleMobile}>
-            &#9776;
+            {mobile ? "✕" : "☰"}
           </div>
         </div>
       </header>
