@@ -29,6 +29,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  outline: none;
 }
 
 body {
@@ -36,4 +37,5 @@ body {
   color: var(--text-dark);
   overflow-x: hidden;
   /* max-width: 100%; */
+  overflow-x: hidden;
 }
