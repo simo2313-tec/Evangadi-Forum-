@@ -8,7 +8,7 @@ import { UserContext } from "../Context";
 import { toast } from "react-toastify";
 
 function SignUp() {
-  const { userData, setUserData } = useContext(UserContext); // Changed to object destructuring
+  const { userData, setUserData } = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",

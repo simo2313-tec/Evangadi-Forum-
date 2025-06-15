@@ -9,7 +9,7 @@ import { UserContext } from "../../Components/Context";
 import { ClipLoader } from "react-spinners";
 
 function Home() {
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const navigate = useNavigate();

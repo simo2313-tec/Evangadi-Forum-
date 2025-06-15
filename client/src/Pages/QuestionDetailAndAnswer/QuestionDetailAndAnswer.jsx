@@ -7,17 +7,24 @@ import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
 
 function QuestionDetailAndAnswer() {
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext); // Changed to object destructuring
   const token = userData?.token; // Get token from UserContext
   const { question_id } = useParams();
 
   const navigate = useNavigate();
 
   const [answer, setAnswer] = useState({
-    user_id: userData?.userid,
+    user_id: userData?.userid, // Ensure this updates if userData changes
     question_id,
     answer: "",
   });
+
+  // Update answer.user_id if userData.userid changes after initial load
+  useEffect(() => {
+    if (userData?.userid) {
+      setAnswer((prev) => ({ ...prev, user_id: userData.userid }));
+    }
+  }, [userData?.userid]);
 
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);

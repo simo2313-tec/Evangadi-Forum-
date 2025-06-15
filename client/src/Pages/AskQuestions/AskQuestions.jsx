@@ -4,7 +4,7 @@ import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
 
 function AskQuestions() {
   const { userData, setUserData, loadingAuth } = useContext(UserContext);
@@ -36,21 +36,14 @@ function AskQuestions() {
     }
 
     if (!initialAuthCheckComplete) {
-      // This is the first check after authentication status is resolved
       if (!token || !userData?.userid) {
-        // User is not authenticated on initial visit
         navigate("/landing", {
           state: { message: "Please login to ask a question." }, // Message for Landing page
         });
       }
-      // Mark that the initial authentication check has been performed
       setInitialAuthCheckComplete(true);
     } else {
-      // Initial check was already done. This means userData or token changed (e.g., user logged out).
       if (!token || !userData?.userid) {
-        // User is no longer authenticated (e.g., logged out while on the page)
-        // The logout process in Header.jsx should show "Logged out successfully!"
-        // Navigate to landing without a specific "please login" message.
         navigate("/landing");
       }
     }
