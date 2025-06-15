@@ -20,6 +20,10 @@ function SignUp() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
