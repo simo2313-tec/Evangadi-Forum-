@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FiEyeOff, FiEye } from "react-icons/fi";
 import styles from "./signup.module.css";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { ClipLoader } from "react-spinners";
 import api from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import { UserContext } from "../Context";
 
 function SignUp() {
@@ -18,6 +17,7 @@ function SignUp() {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
@@ -56,7 +56,14 @@ function SignUp() {
       newErrors.password = "Password must be at least 8 characters.";
     }
     setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoading(true);
+    setErrors({}); // Clear previous API errors
+
     try {
       const response = await api.post("/user/register", {
         username: formData.userName,
@@ -65,7 +72,6 @@ function SignUp() {
         email: formData.email,
         password: formData.password,
       });
-      alert("Registration successful!");
 
       // UserContext's setUserData function will handle localStorage
       setUserData({
@@ -78,7 +84,6 @@ function SignUp() {
 
       navigate("/home");
 
-      // TODO: Clear form data
       setFormData({
         email: "",
         firstName: "",
@@ -91,6 +96,8 @@ function SignUp() {
       setErrors({
         api: error.response?.data?.message || "Registration failed.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,8 +197,12 @@ function SignUp() {
         {errors.password && (
           <div className={styles.errorMessage}>{errors.password}</div>
         )}
-        <button type="submit" className={styles.submitBtn}>
-          Agree and Join
+        <button type="submit" className={styles.submitBtn} disabled={loading}>
+          {loading ? (
+            <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+          ) : (
+            "Agree and Join"
+          )}
         </button>
 
         {errors.api && (
