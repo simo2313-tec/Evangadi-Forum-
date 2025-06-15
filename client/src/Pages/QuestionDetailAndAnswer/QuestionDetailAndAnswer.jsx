@@ -4,10 +4,11 @@ import styles from "./questionDetailAndAnswer.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
-import { UserContext } from "../../Components/Context/UserContext";
+import { UserContext } from "../../Components/Context";
+import getTimeDifference from "../../Utility/helpers";
 
 function QuestionDetailAndAnswer() {
-  const { userData, setUserData, loadingAuth } = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const token = userData?.token;
   const { question_id } = useParams();
 
@@ -79,7 +80,7 @@ function QuestionDetailAndAnswer() {
         },
       })
       .then((res) => {
-        setAllQuestionAnswers(res.data);
+        setAllQuestionAnswers(res.data.answers);
       })
       .catch((err) => {
         const errorMessage =
@@ -167,7 +168,12 @@ function QuestionDetailAndAnswer() {
                     <div>{answerItem.user_name}</div>
                   </div>
                   <div className={styles.theAnswer}>
-                    <p>{answerItem.answer}</p>
+                    <div className={styles.eachAnswer}>
+                      <p>{answerItem.answer}</p>
+                      <p className={styles.timestamp_title}>
+                        {getTimeDifference(answerItem.created_at)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))
