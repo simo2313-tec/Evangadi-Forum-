@@ -3,7 +3,7 @@ import styles from "./login.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../Utility/axios";
-import { UserContext } from "../Context/userContext";
+import { UserContext } from "../Context";
 import { toast } from "react-toastify";
 
 function Login() {
@@ -36,21 +36,12 @@ function Login() {
     try {
       const response = await api.post("/user/login", formData);
 
-      // On successful login
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          userid: response.data.userid,
-          username: response.data.username,
-          email: response.data.email,
-        })
-      );
-
       setUserData({
         userid: response.data.userid,
         username: response.data.username,
         email: response.data.email,
+        token: response.data.token,
+        firstname: response.data.first_name,
       });
 
       // Navigate to home page on successful login
