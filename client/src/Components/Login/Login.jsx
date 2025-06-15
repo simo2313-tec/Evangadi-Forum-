@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./login.module.css";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../Utility/axios";
 import { UserContext } from "../Context";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 function Login() {
   const location = useLocation();
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -120,7 +120,7 @@ function Login() {
               className={styles.passwordToggle}
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
             </span>
           </div>
         </div>
