@@ -42,6 +42,29 @@ function Home() {
       });
   }, [navigate]); // Added navigate to dependency array
 
+  // For Timestamp
+
+  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  function getTimeDifference(pastTime) {
+    const currentTime = new Date(); // current time
+    const diffMs = currentTime - new Date(pastTime); // in milliseconds
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSeconds < 60) return formatter.format(-diffSeconds, "second");
+    if (diffMinutes < 60) return formatter.format(-diffMinutes, "minute");
+    if (diffHours < 24) return formatter.format(-diffHours, "hour");
+    return formatter.format(-diffDays, "day");
+  }
+
+  {
+    /* for timestamp */
+  }
+  // after question_title we will put it
+  
+
   return (
     <LayOut>
       <section className={styles.main_container}>
@@ -76,7 +99,14 @@ function Home() {
                           <span>{q.user_name}</span>
                         </div>
                       </div>
-                      <p className={styles.Qtitle}>{q.question_title}</p>
+                      <div>
+                        <div className={styles.Qbox}>
+                          <p className={styles.Qtitle}>{q.question_title}</p>
+                          <p className={styles.timestamp_title}>
+                            {getTimeDifference(q.created_at)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <FaChevronRight size={20} className={styles.chevron} />
                   </div>

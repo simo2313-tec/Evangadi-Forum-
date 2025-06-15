@@ -78,7 +78,7 @@ function QuestionDetailAndAnswer() {
         },
       })
       .then((res) => {
-        setAllQuestionAnswers(res.data);
+        setAllQuestionAnswers(res.data.answers);
       })
       .catch((err) => {
         const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
