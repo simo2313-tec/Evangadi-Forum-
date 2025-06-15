@@ -5,6 +5,7 @@ import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context/userContext";
+import getTimeDifference from "../../Utility/helpers";
 
 function QuestionDetailAndAnswer() {
   const token = localStorage.getItem("token");
@@ -124,23 +125,7 @@ function QuestionDetailAndAnswer() {
     getAllAnswers();
   }, [question_id]);
 
-  // For Timestamp
-
-  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-  function getTimeDifference(pastTime) {
-    const currentTime = new Date(); // current time
-    const diffMs = currentTime - new Date(pastTime); // in milliseconds
-    const diffSeconds = Math.floor(diffMs / 1000);
-    const diffMinutes = Math.floor(diffSeconds / 60);
-    const diffHours = Math.floor(diffMinutes / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffSeconds < 60) return formatter.format(-diffSeconds, "second");
-    if (diffMinutes < 60) return formatter.format(-diffMinutes, "minute");
-    if (diffHours < 24) return formatter.format(-diffHours, "hour");
-    return formatter.format(-diffDays, "day");
-  }
-
+  
   if (response) {
     return (
       <div className={styles.success__msg}>
