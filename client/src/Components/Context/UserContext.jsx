@@ -14,7 +14,21 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUserDataState(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUserDataState(parsedUser);
+      } catch (error) {
+        console.error("Failed to parse user data from localStorage:", error);
+        localStorage.removeItem("user"); // Clear corrupted data
+        setUserDataState({
+          // Reset to initial empty state or specific logged-out state
+          userid: undefined,
+          username: undefined,
+          email: undefined,
+          firstname: undefined,
+          token: undefined,
+        });
+      }
     }
   }, []);
 
