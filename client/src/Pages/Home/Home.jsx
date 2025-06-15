@@ -6,12 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
-import { ClipLoader } from "react-spinners"; // Import ClipLoader
+import { ClipLoader } from "react-spinners";
 
 function Home() {
   const [userData, setUserData] = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
-  const [loadingQuestions, setLoadingQuestions] = useState(true); // Add loading state, default to true
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const navigate = useNavigate();
 
   // handler for Ask Question button
