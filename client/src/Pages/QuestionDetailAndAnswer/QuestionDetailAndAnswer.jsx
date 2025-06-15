@@ -4,12 +4,12 @@ import styles from "./questionDetailAndAnswer.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
-import { UserContext } from "../../Components/Context/userContext";
+import { UserContext } from "../../Components/Context";
 import getTimeDifference from "../../Utility/helpers";
 
 function QuestionDetailAndAnswer() {
-  const token = localStorage.getItem("token");
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
+  const token = userData?.token;
   const { question_id } = useParams();
 
   const navigate = useNavigate();
@@ -125,7 +125,6 @@ function QuestionDetailAndAnswer() {
     getAllAnswers();
   }, [question_id]);
 
-  
   if (response) {
     return (
       <div className={styles.success__msg}>

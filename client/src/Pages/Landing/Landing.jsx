@@ -1,21 +1,19 @@
 import React, { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Login from "../../Components/Login/Login";
-import SignUp from "../../Components/Signup/Signup";
+import SignUp from "../../Components/SignUp/SignUp";
 import About from "../../Components/About/About";
 import LayOut from "../../Components/Layout/Layout";
 import styles from "./landing.module.css";
-import { UserContext } from "../../Components/Context/userContext";
+import { UserContext } from "../../Components/Context/UserContext";
 import { toast } from "react-toastify";
 
 function Landing() {
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const location = useLocation();
   const message = location.state?.message;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const isSignupPage = location.pathname === "/sign-up";
-
-
 
   useEffect(() => {
     // If user data found, redirect to home page
@@ -40,8 +38,6 @@ function Landing() {
       });
     }
   }, [message]);
-
-
 
   return (
     <LayOut>
