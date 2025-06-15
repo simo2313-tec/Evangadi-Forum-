@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { UserContext } from "../Context/userContext";
+import { UserContext } from "../Context";
 
 function SignUp() {
   const [userData, setUserData] = useContext(UserContext);
