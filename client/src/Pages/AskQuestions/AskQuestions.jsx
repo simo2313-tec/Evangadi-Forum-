@@ -3,12 +3,15 @@ import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
-import { UserContext } from "../../Components/Context/userContext";
+import { UserContext } from "../../Components/Context";
+import { toast } from "react-toastify";
 
 function AskQuestions() {
-  const token = localStorage.getItem("token");
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData, loadingAuth } = useContext(UserContext);
+  const token = userData?.token;
   const navigate = useNavigate();
+  const [initialAuthCheckComplete, setInitialAuthCheckComplete] =
+    useState(false);
 
   const [question, setQuestion] = useState({
     title: "",
@@ -16,16 +19,41 @@ function AskQuestions() {
     userId: userData?.userid || null,
   });
 
+  // Update question.userId if userData.userid changes after initial load
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in
-    if (!token || !userData?.userid) {
-      navigate("/landing");
+    if (loadingAuth) {
+      return; // Wait for auth to load
     }
-  }, [token, userData?.userid, navigate]);
+
+    if (!initialAuthCheckComplete) {
+      if (!token || !userData?.userid) {
+        navigate("/landing", {
+          state: { message: "Please login to ask a question." }, // Message for Landing page
+        });
+      }
+      setInitialAuthCheckComplete(true);
+    } else {
+      if (!token || !userData?.userid) {
+        navigate("/landing");
+      }
+    }
+  }, [
+    token,
+    userData?.userid,
+    navigate,
+    loadingAuth,
+    initialAuthCheckComplete,
+  ]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,7 +69,10 @@ function AskQuestions() {
     setError(null);
 
     if (!token || !userData?.userid) {
-      setError("Please login to ask a question");
+      toast.error("Authentication required. Redirecting to login.");
+      navigate("/landing", {
+        state: { message: "Please login to ask a question." },
+      });
       setLoading(false);
       return;
     }
@@ -57,8 +88,10 @@ function AskQuestions() {
       })
       .catch((error) => {
         if (error.response?.status === 401) {
-          setError("Please login to ask a question");
-          navigate("/landing");
+          toast.error("Authentication failed. Please log in again.");
+          navigate("/landing", {
+            state: { message: "Session expired. Please log in again." },
+          });
         } else {
           setError("Failed to submit question. Please try again.");
         }

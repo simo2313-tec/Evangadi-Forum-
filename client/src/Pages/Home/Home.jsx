@@ -1,16 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styles from "./home.module.css";
-import { useState, useEffect } from "react";
 import axios from "../../Utility/axios";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
-import LayOut from "../../Components/Layout/Layout"
-import { UserContext } from "../../Components/Context/userContext";
+import LayOut from "../../Components/Layout/Layout";
+import { UserContext } from "../../Components/Context";
+import { ClipLoader } from "react-spinners";
 
 function Home() {
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const navigate = useNavigate();
 
   // handler for Ask Question button
@@ -27,6 +28,7 @@ function Home() {
   };
 
   useEffect(() => {
+    setLoadingQuestions(true); // Set loading to true when fetching starts
     // Fetch questions from the API
     axios
       .get("/question")
@@ -39,8 +41,11 @@ function Home() {
         if (err.response?.status === 401) {
           navigate("/landing");
         }
+      })
+      .finally(() => {
+        setLoadingQuestions(false); // Set loading to false when fetching finishes (success or error)
       });
-  }, [navigate]); // Added navigate to dependency array
+  }, [navigate]);
 
   return (
     <LayOut>
@@ -52,13 +57,30 @@ function Home() {
               <button onClick={handleAskQuestion} className={styles.Askbtn}>
                 Ask Question
               </button>
-              {/* Display actual username from user state, fallback to "User" if not available */}
-              <p>Welcome: {userData?.username || "User"}</p>
+              {/* Display welcome message with firstname, then username, then email prefix, then fallback */}
+              <p>
+                Welcome,{" "}
+                {userData?.firstname ||
+                  userData?.username ||
+                  (userData?.email ? userData.email.split("@")[0] : null) ||
+                  "User"}
+                !
+              </p>
             </div>
             <h1 className={styles.questions_list}>Questions</h1>
           </div>
-          {questions.length === 0 ? (
-            <p>No questions yet. Be the first to post a question!</p>
+          {loadingQuestions ? (
+            <div className={styles.spinner_container}>
+              <ClipLoader
+                color={"var(--primary)"}
+                loading={loadingQuestions}
+                size={50}
+              />
+            </div>
+          ) : questions.length === 0 ? (
+            <p className={styles.no_questions_message}>
+              No questions yet. Be the first to post a question!
+            </p>
           ) : (
             questions.map((q) => (
               // Added key prop to the Link component for proper React list rendering
@@ -76,7 +98,14 @@ function Home() {
                           <span>{q.user_name}</span>
                         </div>
                       </div>
-                      <p className={styles.title}>{q.question_title}</p>
+                      <div>
+                        <div className={styles.Qbox}>
+                          <p className={styles.Qtitle}>{q.question_title}</p>
+                          <p className={styles.timestamp_title}>
+                            {getTimeDifference(q.created_at)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <FaChevronRight size={20} className={styles.chevron} />
                   </div>

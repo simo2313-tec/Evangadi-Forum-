@@ -5,15 +5,18 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true
+  withCredentials: true,
 });
 
 // Add a request interceptor to add the token to all requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const userString = localStorage.getItem("user"); // Get the whole user object string
+    if (userString) {
+      const userData = JSON.parse(userString);
+      if (userData && userData.token) {
+        config.headers.Authorization = `Bearer ${userData.token}`; // Use token from user object
+      }
     }
     return config;
   },

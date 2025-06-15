@@ -10,7 +10,8 @@
   border-bottom: 0.5px solid var(--border);
 }
 .header {
-  width: 60%;
+  width: 80%;
+  margin: auto;
   display: flex;
   text-align: center;
   justify-content: space-between;
@@ -27,9 +28,9 @@
 }
 
 .navbar {
-  flex: 1;
   display: flex;
-  justify-content: end;
+  align-items: center;
+  gap: 1rem;  /* Space between nav links, button, and menu icon */
 }
 
 .nav {
@@ -73,27 +74,40 @@
 
 /* === MOBILE STYLES === */
 @media (max-width: 768px) {
+  .header {
+    width: 100%;
+    padding: 1rem;
+  }
+
   .nav {
-    display: none;
-    position: absolute;
-    top: 70px;
-    right: 1.2rem;
+    overflow: hidden;
+    max-height: 0;
     flex-direction: column;
     background-color: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
+    padding: 0;
+    border-radius: 0;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    top: 100%;  /* directly below the header */
+    left: 0;
+    width: 100%;  /* FULL width */
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    z-index: 50;
   }
 
   .mobileNav.show {
-    display: flex;
+    max-height: 500px;
+    padding: 1rem;
   }
 
   .menu_toggle {
     display: block;
+    font-size: 3rem;
   }
 
+  .nav a,
   .sign_in_btn {
-    display: none;
+    margin: 0.5rem 0;
+    text-align: center;
   }
 }
