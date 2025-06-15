@@ -5,6 +5,7 @@ import { ClipLoader } from "react-spinners";
 import api from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../Context";
+import { toast } from "react-toastify"; // Import toast
 
 function SignUp() {
   const [userData, setUserData] = useContext(UserContext);
@@ -47,22 +48,35 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.email.match(/^[^@]+@[^@]+\.[^@]+$/))
+    if (!formData.email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
       newErrors.email = "Please enter a valid email address.";
-    if (!formData.firstName) newErrors.firstName = "First name is required.";
-    if (!formData.lastName) newErrors.lastName = "Last name is required.";
-    if (!formData.userName) newErrors.userName = "User name is required.";
+      toast.warn("Please enter a valid email address.");
+    }
+    if (!formData.firstName) {
+      newErrors.firstName = "First name is required.";
+      toast.warn("First name is required.");
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "Last name is required.";
+      toast.warn("Last name is required.");
+    }
+    if (!formData.userName) {
+      newErrors.userName = "User name is required.";
+      toast.warn("User name is required.");
+    }
     if (!formData.password || formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters.";
+      toast.warn("Password must be at least 8 characters.");
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+      // No need to setErrors again, already done above.
+      // Displaying individual toasts for each validation error is handled above.
       return;
     }
 
     setLoading(true);
-    setErrors({}); // Clear previous API errors
+    setErrors({}); // Clear previous form errors displayed below inputs
 
     try {
       const response = await api.post("/user/register", {
@@ -73,7 +87,6 @@ function SignUp() {
         password: formData.password,
       });
 
-      // UserContext's setUserData function will handle localStorage
       setUserData({
         userid: response.data.userid,
         username: response.data.username,
@@ -82,6 +95,7 @@ function SignUp() {
         firstname: response.data.first_name,
       });
 
+      toast.success("Registration successful! Welcome!"); // Success toast
       navigate("/home");
 
       setFormData({
@@ -93,9 +107,11 @@ function SignUp() {
       });
       // console.log(response.data);
     } catch (error) {
+      const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
       setErrors({
-        api: error.response?.data?.message || "Registration failed.",
+        api: errorMessage, // Keep this if you still want to display an error message within the form
       });
+      toast.error(errorMessage); // Error toast
     } finally {
       setLoading(false);
     }
