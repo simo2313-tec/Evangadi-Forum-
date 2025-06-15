@@ -90,7 +90,7 @@ function Home() {
                         </div>
                       </div>
                     </div>
-                    <FaChevronRight size={20} className={styles.chevron} />
+                    <FaChevronRight size={30} className={styles.chevron} />
                   </div>
                 </div>
               </Link>
