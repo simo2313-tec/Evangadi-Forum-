@@ -35,7 +35,7 @@ async function postAnswer(req, res) {
 
     res.status(201).json({
       success: true,
-      message: "Answer posted successfully and email sent.",
+      message: "Answer posted successfully.",
     });
   } catch (error) {
     console.error("Error posting answer:", error);
