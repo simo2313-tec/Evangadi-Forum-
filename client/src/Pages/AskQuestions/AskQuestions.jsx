@@ -3,11 +3,11 @@ import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
-import { UserContext } from "../../Components/Context/userContext";
+import { UserContext } from "../../Components/Context";
 
 function AskQuestions() {
-  const token = localStorage.getItem("token");
   const [userData, setUserData] = useContext(UserContext);
+  const token = userData?.token; // Get token from UserContext
   const navigate = useNavigate();
 
   const [question, setQuestion] = useState({
