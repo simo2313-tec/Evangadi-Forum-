@@ -1,46 +1,90 @@
-.title {
-  color: var(--text-dark);
-  font-size: 2rem;
-  text-align: center;
-  margin-top: 2rem;
-}
-
 .landingPageContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
   min-height: 100vh;
-  background-color: aliceblue;
-  overflow-y: auto;
-  gap: 10px;
-}
-
-.login, .about {
-  width: 48%;
+  background-color: var(--landing-bg);
+  overflow: hidden;
 }
 
 .login {
+  width: 50%;
   position: relative;
+  overflow: hidden;
 }
 
-/* Only add media query for small screens */
+
+
+.sliderWrapper {
+  display: flex;
+  width: 200%; 
+  transition: transform 0.6s ease-in-out;
+}
+
+.formPane {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+
+
+.about {
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.shrinkAbout {
+  transform: scale(0.8);
+  transform-origin: left center;
+}
+
+.shrink {
+  transform: scale(0.8);
+  transform-origin: right center;
+}
+
+
+/* Small devices (phones, 576px and below) */
 @media (max-width: 768px) {
+ .shrink, .shrinkAbout{
+  transform: scale(0.9);
+  margin: 0 2px;
+ }
+}
+
+
+/* Small devices (phones, 576px and below) */
+@media (max-width: 576px) {
   .landingPageContainer {
     flex-direction: column;
-    padding: 20px;
-    height: auto;
-    min-height: 100vh;
-  }
-
-  .about {
-    width: 100%;
-    margin-bottom: 10px;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 1rem;
   }
 
   .login {
     width: 100%;
-    min-height: 450px;
-    margin-bottom: 20px;
   }
+
+  .sliderWrapper {
+    width: 200%;
+    display: flex;
+    transition: transform 0.6s ease-in-out;
+  }
+
+  .formPane {
+    width: 100%;
+  }
+
+  .about {
+    width: 100%;
+  }
+.shrink {
+  transform: scale(1);
+  transform-origin: center;
+}
+.shrinkAbout {
+  transform-origin: top center;
+}
+
 }

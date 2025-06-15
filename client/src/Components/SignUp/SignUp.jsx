@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { FiEyeOff, FiEye } from "react-icons/fi";
 import styles from "./signup.module.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../Utility/axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../Context/userContext";
 
 function SignUp() {
+  const [userData, setUserData] = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -50,16 +54,34 @@ function SignUp() {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     try {
-      const response = await api.post("/users/register", {
+      const response = await api.post("/user/register", {
         username: formData.userName,
-        firstname: formData.firstName,
-        lastname: formData.lastName,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         email: formData.email,
         password: formData.password,
       });
       alert("Registration successful!");
-      navigate("/login");
+      navigate("/home");
       // TODO: Store token in local storage or context
+      // On successful sign up
+      console.log(response)
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userid: response.data.userid,
+          username: response.data.username,
+          email: response.data.email,
+        })
+      );
+
+      setUserData({
+        userid: response.data.userid,
+        username: response.data.username,
+        email: response.data.email,
+      });
+      
       // TODO: Clear form data
       setFormData({
         email: "",
@@ -156,12 +178,10 @@ function SignUp() {
             value={formData.password}
             onChange={handleChange}
           />
-          <button
-            type="button"
-            className={styles.togglePassword}
-            onClick={() => setShowPassword((prev) => !prev)}
-            tabIndex={0}
-            aria-label="Toggle password visibility"
+
+          <span
+            className={styles.passwordToggle}
+            onClick={togglePasswordVisibility}
           >
             {showPassword ? (
               <FiEye size={22} color="#6c757d" />
@@ -198,6 +218,7 @@ function SignUp() {
           .
         </p>
         <p className={styles.alreadyAccount}>
+          <a onClick={() => navigate("/login")} className={styles.link}>
           <a onClick={() => navigate("/login")} className={styles.link}>
             Already have an account?
           </a>

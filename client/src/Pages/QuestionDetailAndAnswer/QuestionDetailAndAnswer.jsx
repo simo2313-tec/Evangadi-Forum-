@@ -1,44 +1,57 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styles from "./questionDetailAndAnswer.module.css";
-import Button from "react-bootstrap/Button";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
+import { UserContext } from "../../Components/Context/userContext";
 
 function QuestionDetailAndAnswer() {
   const token = localStorage.getItem("token");
-  const { question_id, user_id } = useParams();
+  const [userData, setUserData] = useContext(UserContext);
+  const { question_id} = useParams();
+
+  const navigate = useNavigate()
 
   const [answer, setAnswer] = useState({
-    user_id,
+    user_id: userData?.userid,
     question_id,
     answer: "",
   });
 
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({
+    getAnswerError: null,
+    getQuestionDetailError: null,
+    postAnswerError: null
+  });
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
   const [questionDetail, setQuestionDetail] = useState(null); 
 
+
+
   const submitAnswer = (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError({
+      ...error, postAnswerError: null,
+    });
 
     axios
-      .post("/user/answer", answer, {
+      .post("/answer", answer, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
+       console.log(res.data);
         setResponse(res.data);
       })
-      .catch(() => {
-        setError("Failed to submit answer. Please try again.");
+      .catch((err) => {
+        const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+        setError((prev) => ({ ...prev, postAnswerError: errorMessage }));
       })
       .finally(() => {
         setLoading(false);
@@ -55,9 +68,11 @@ function QuestionDetailAndAnswer() {
 
   const getAllAnswers = () => {
     setLoading(true);
-    setError(null);
+    setError({
+      ...error, getAnswerError: null
+    });
     axios
-      .get(`/user/getAllAnswers/${question_id}`, {
+      .get(`/answer/${question_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,8 +80,10 @@ function QuestionDetailAndAnswer() {
       .then((res) => {
         setAllQuestionAnswers(res.data);
       })
-      .catch(() => {
-        setError("Failed to get all answers. Please try again.");
+      .catch((err) => {
+        const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+        console.log(errorMessage);
+        setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
       })
       .finally(() => {
         setLoading(false);
@@ -75,19 +92,23 @@ function QuestionDetailAndAnswer() {
 
   const getQuestionDetail = () => {
     setLoading(true);
-    setError(null);
+    setError({
+      ...error, getQuestionDetailError: null,
+    });
     axios
-      .get(`/user/getQuestionDetail/${question_id}`, {
+      .get(`/question/${question_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
-        console.log(res.data);
-        setQuestionDetail(res.data);
+        setQuestionDetail(res.data.question);
+        
       })
-      .catch(() => {
-        setError("Failed to load question detail. Please try again.");
+      .catch((err) => {
+        const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+        console.log(errorMessage);
+        setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
       })
       .finally(() => {
         setLoading(false);
@@ -104,14 +125,13 @@ function QuestionDetailAndAnswer() {
   if (response) {
     return (
       <div className={styles.success__msg}>
-        <h1 className={styles.thanks_note}>{response.messageToTheFront}</h1>
-        <Link className={styles.nav_to} to={response.navigation}>
-          {response.messageToUser}
+        <h1 className={styles.thanks_note}>{response.message}</h1>
+        <Link className={styles.nav_to} to={"/home"}>
+          Go to home
         </Link>
       </div>
     );
   }
-
   return (
     <LayOut>
       <div className={styles.outer__container}>
@@ -119,55 +139,64 @@ function QuestionDetailAndAnswer() {
           <h3 className={styles.title}>Question</h3>
 
           {questionDetail ? (
-            <>
+            <> 
               <p className={styles.Qtitle}>{questionDetail.question_title}</p>
               <p>{questionDetail.question_description}</p>
             </>
           ) : (
-            <p>Loading question...</p>
+            <p>{error?.getQuestionDetailError}</p>
           )}
         </div>
 
-        <div className={`mt-5 container ${styles.community_answer}`}>
+        <div className={styles.community_answer}>
           <hr />
           <h2 className={styles.title}>Answers From the Community</h2>
           <hr />
-          {answersForQuestion.length === 0 ? (
-            <p>No answers yet. Be the first to answer!</p>
-          ) : (
-            answersForQuestion.map((answerItem) => (
-              <div key={answerItem.answer_id} className="d-flex my-5">
-                <div className={styles.avater}>
-                  <FaUserCircle size={50} color="#888" />
-                  <div>{answerItem.user_name}</div>
+          <div className={styles.answers_container}>
+            {error.getAnswerError ? (
+              <p>{error?.getAnswerError}</p>) : answersForQuestion.length === 0 ? (
+              <p>No answers yet. Be the first to answer!</p>
+            ) : (
+              answersForQuestion.map((answerItem) => (
+                <div key={answerItem.answer_id} className={styles.singleAnswer}>
+                  <div className={styles.user}>
+                    <FaUserCircle size={50} className={styles.usericon} />
+                    <div>{answerItem.user_name}</div>
+                  </div>
+                  <div className={styles.theAnswer}>
+                    <p>{answerItem.answer}</p>
+                  </div>
                 </div>
-                <div className={styles.forAnswer}>
-                  <p>{answerItem.answer}</p>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
 
-        <div className={`container mt-5 ${styles.answer__box}`}>
+        <div className={styles.answer__box}>
           <h3 className={styles.title}>Answer the Top Question</h3>
           <Link to="/home">Go to Question page</Link>
-          <form onSubmit={submitAnswer}>
+          <form onSubmit={submitAnswer} className={styles.answerform}>
             <textarea
               name="answer"
               id="answer"
-              maxLength="115"
               placeholder="Your answer here"
               onChange={handleChange}
               value={answer.answer}
               required
             ></textarea>
-            {error && <p className={styles.error}>{error}</p>}
-            <div className={styles.btn}>
-              <Button type="submit" variant="success" disabled={loading}>
-                {loading ? "Submitting..." : "Submit Answer"}
-              </Button>
-            </div>
+
+            {error?.postAnswerError && (
+              <p className={styles.error}>{error.postAnswerError}</p>
+            )}
+
+            <button
+              type="submit"
+              className={styles.answerBtn}
+              variant="success"
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : "Post your Answer"}
+            </button>
           </form>
         </div>
       </div>

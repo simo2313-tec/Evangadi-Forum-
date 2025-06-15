@@ -5,19 +5,23 @@ const dbConnection = require("../db/db.Config");
 
 async function register(req, res) {
   try {
-    const { username, firstname, lastname, email, password } = req.body;
-    if (!username || !firstname || !lastname || !email || !password) {
+    const { username, first_name, last_name, email, password } = req.body;
+    if (!username || !first_name || !last_name || !email || !password) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "All fields are required" });
+        .json({
+          error: "Bad Request",
+          message: "Please provide all required fields",
+        });
     }
 
 
-    // Validate email format
+    // Validate email format - additional
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Invalid email format" });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: "Bad Request",
+        message: "Invalid email format",
+      });
     }
 
 
@@ -25,7 +29,10 @@ async function register(req, res) {
     if (password.length < 8) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Password must be at least 8 characters" });
+        .json({
+          error: "Bad Request",
+          message: "Password must be at least 8 characters",
+        });
     }
 
     
@@ -37,8 +44,8 @@ async function register(req, res) {
     // return res.json({username: username})
     if (existing.length > 0) {
       return res
-        .status(409)
-        .json({ message: "Username or email already exists" });
+        .status(StatusCodes.CONFLICT)
+        .json({ error: "Conflict", message: "User already existed" });
     }
     // Hash password
     const salt = await bcrypt.genSalt(10)
@@ -55,30 +62,30 @@ async function register(req, res) {
     // Insert into profile table
     await dbConnection.query(
       "INSERT INTO profile (user_id, first_name, last_name) VALUES (?, ?, ?)",
-      [result.insertId, firstname, lastname]
+      [result.insertId, first_name, last_name]
     );
 
     // Generate JWT
     const token = jwt.sign(
       { userid: result.insertId, username },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1d" }
     );
-    res
-      .status(StatusCodes.CREATED)
-      .json({
-        userid: result.insertId,
-        username,
-        firstname,
-        lastname,
-        email,
-        token,
-      });
+    res.status(StatusCodes.CREATED).json({
+      message: "User registered successfully",
+      userid: result.insertId,
+      username,
+      email,
+      token,
+    });
   } catch (error) {
     console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "Error registering user", error: error.message });
+      .json({
+        error: "Internal Server Error",
+        message: "An unexpected error occurred.",
+      });
   }
 }
 
