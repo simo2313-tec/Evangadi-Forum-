@@ -66,25 +66,17 @@ function SignUp() {
         password: formData.password,
       });
       alert("Registration successful!");
-      navigate("/home");
-      // TODO: Store token in local storage or context
-      // On successful sign up
-      console.log(response);
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          userid: response.data.userid,
-          username: response.data.username,
-          email: response.data.email,
-        })
-      );
 
+      // UserContext's setUserData function will handle localStorage
       setUserData({
         userid: response.data.userid,
         username: response.data.username,
         email: response.data.email,
+        token: response.data.token,
+        firstname: response.data.first_name,
       });
+
+      navigate("/home");
 
       // TODO: Clear form data
       setFormData({
