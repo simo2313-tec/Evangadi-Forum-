@@ -29,13 +29,13 @@ function SignUp() {
       ...prev,
       [name]: value,
     }));
-    // Clear the error for the field being edited / when the user starts typing
-    setErrors((prev) => {
-      const newErrors = { ...prev };
-      delete newErrors[name];
-      // Also clear API error if present
-      if (prev.api) delete newErrors.api;
-      return newErrors;
+    // clear the error for the field being edited and any general API error / when the user starts typing
+    setErrors((prevErrors) => {
+      // clear only the error of the current filed being edited
+      const updatedErrors = { ...prevErrors };
+      delete updatedErrors[name];
+      delete updatedErrors.api;
+      return updatedErrors;
     });
   };
 
