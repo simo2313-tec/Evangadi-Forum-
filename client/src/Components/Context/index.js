@@ -1,1 +1,3 @@
-export { default } from "./UserContext";
+export { UserContext, UserProvider } from "./UserContext";
+// or
+// export * from './UserContext';
