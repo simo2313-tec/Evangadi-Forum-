@@ -84,6 +84,20 @@ function SignUp() {
         email: formData.email,
         password: formData.password,
       });
+      alert("Registration successful!");
+      navigate("/home");
+      // TODO: Store token in local storage or context
+      // On successful sign up
+      console.log(response);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userid: response.data.userid,
+          username: response.data.username,
+          email: response.data.email,
+        })
+      );
 
       setUserData({
         userid: response.data.userid,
@@ -92,6 +106,8 @@ function SignUp() {
         token: response.data.token,
         firstname: response.data.first_name,
       });
+
+      // TODO: Clear form data
 
       toast.success("Registration successful! Welcome!");
       navigate("/home");
@@ -204,9 +220,9 @@ function SignUp() {
             onClick={togglePasswordVisibility}
           >
             {showPassword ? (
-              <FiEye size={22} color="#6c757d" />
-            ) : (
               <FiEyeOff size={22} color="#6c757d" />
+            ) : (
+              <FiEye size={22} color="#6c757d" />
             )}
           </button>
         </div>

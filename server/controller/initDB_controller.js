@@ -1,8 +1,6 @@
 const mysql = require("mysql2/promise");
 
-
-async function initDB (req, res) {
-  
+async function initDB(req, res) {
   let rootConn;
   try {
     rootConn = await mysql.createConnection({
@@ -31,6 +29,6 @@ async function initDB (req, res) {
     // to make sure that the root connection is closed; finally block execute independently of try/catch
     if (rootConn) await rootConn.end();
   }
-};
+}
 
 module.exports = { initDB };
