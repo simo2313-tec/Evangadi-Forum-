@@ -298,6 +298,7 @@ function Home() {
       });
   }, []);
 
+  //  Vote handle
   const handleVote = async (question_id, action) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -371,6 +372,7 @@ function Home() {
                   </div>
                 </Link>
                 <div className={styles.vote_section}>
+                  {/* Vote Buttons  */}
                   <VoteButtons
                     likes={q.likes ?? 0}
                     dislikes={q.dislikes ?? 0}
