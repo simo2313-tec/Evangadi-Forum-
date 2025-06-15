@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import styles from "../../../src/Components/Header/header.module.css"; //
 
 import logo from "../../assets/imgs/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import { UserContext } from "../Context";
 import { toast } from "react-toastify";
 
 const Header = () => {
   const [mobile, setMobile] = useState(false);
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
   const toggleMobile = () => {
