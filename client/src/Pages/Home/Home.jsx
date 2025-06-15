@@ -98,7 +98,14 @@ function Home() {
                           <span>{q.user_name}</span>
                         </div>
                       </div>
-                      <p className={styles.Qtitle}>{q.question_title}</p>
+                      <div>
+                        <div className={styles.Qbox}>
+                          <p className={styles.Qtitle}>{q.question_title}</p>
+                          <p className={styles.timestamp_title}>
+                            {getTimeDifference(q.created_at)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <FaChevronRight size={20} className={styles.chevron} />
                   </div>
