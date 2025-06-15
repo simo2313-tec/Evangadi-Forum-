@@ -4,11 +4,14 @@ import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
+import { toast } from "react-toastify"; // Import toast
 
 function AskQuestions() {
-  const [userData, setUserData] = useContext(UserContext);
-  const token = userData?.token; // Get token from UserContext
+  const { userData, setUserData, loadingAuth } = useContext(UserContext);
+  const token = userData?.token;
   const navigate = useNavigate();
+  const [initialAuthCheckComplete, setInitialAuthCheckComplete] =
+    useState(false);
 
   const [question, setQuestion] = useState({
     title: "",
@@ -16,16 +19,48 @@ function AskQuestions() {
     userId: userData?.userid || null,
   });
 
+  // Update question.userId if userData.userid changes after initial load
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in
-    if (!token || !userData?.userid) {
-      navigate("/landing");
+    if (loadingAuth) {
+      return; // Wait for auth to load
     }
-  }, [token, userData?.userid, navigate]);
+
+    if (!initialAuthCheckComplete) {
+      // This is the first check after authentication status is resolved
+      if (!token || !userData?.userid) {
+        // User is not authenticated on initial visit
+        navigate("/landing", {
+          state: { message: "Please login to ask a question." }, // Message for Landing page
+        });
+      }
+      // Mark that the initial authentication check has been performed
+      setInitialAuthCheckComplete(true);
+    } else {
+      // Initial check was already done. This means userData or token changed (e.g., user logged out).
+      if (!token || !userData?.userid) {
+        // User is no longer authenticated (e.g., logged out while on the page)
+        // The logout process in Header.jsx should show "Logged out successfully!"
+        // Navigate to landing without a specific "please login" message.
+        navigate("/landing");
+      }
+    }
+  }, [
+    token,
+    userData?.userid,
+    navigate,
+    loadingAuth,
+    initialAuthCheckComplete,
+  ]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,7 +76,10 @@ function AskQuestions() {
     setError(null);
 
     if (!token || !userData?.userid) {
-      setError("Please login to ask a question");
+      toast.error("Authentication required. Redirecting to login.");
+      navigate("/landing", {
+        state: { message: "Please login to ask a question." },
+      });
       setLoading(false);
       return;
     }
@@ -57,8 +95,10 @@ function AskQuestions() {
       })
       .catch((error) => {
         if (error.response?.status === 401) {
-          setError("Please login to ask a question");
-          navigate("/landing");
+          toast.error("Authentication failed. Please log in again.");
+          navigate("/landing", {
+            state: { message: "Session expired. Please log in again." },
+          });
         } else {
           setError("Failed to submit question. Please try again.");
         }
