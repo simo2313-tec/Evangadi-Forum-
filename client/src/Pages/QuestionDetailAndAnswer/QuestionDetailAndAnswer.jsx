@@ -4,27 +4,20 @@ import styles from "./questionDetailAndAnswer.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
-import { UserContext } from "../../Components/Context";
+import { UserContext } from "../../Components/Context/UserContext";
 
 function QuestionDetailAndAnswer() {
-  const { userData, setUserData } = useContext(UserContext); // Changed to object destructuring
-  const token = userData?.token; // Get token from UserContext
+  const { userData, setUserData, loadingAuth } = useContext(UserContext);
+  const token = userData?.token;
   const { question_id } = useParams();
 
   const navigate = useNavigate();
 
   const [answer, setAnswer] = useState({
-    user_id: userData?.userid, // Ensure this updates if userData changes
+    user_id: userData?.userid,
     question_id,
     answer: "",
   });
-
-  // Update answer.user_id if userData.userid changes after initial load
-  useEffect(() => {
-    if (userData?.userid) {
-      setAnswer((prev) => ({ ...prev, user_id: userData.userid }));
-    }
-  }, [userData?.userid]);
 
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
