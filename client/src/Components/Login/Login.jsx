@@ -31,7 +31,19 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(""); // Clear previous inline errors
+
+    // Basic validation
+    if (!formData.email) {
+      toast.warn("Please enter your email.");
+      setLoading(false);
+      return;
+    }
+    if (!formData.password) {
+      toast.warn("Please enter your password.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await api.post("/user/login", formData);
@@ -44,32 +56,19 @@ function Login() {
         firstname: response.data.first_name,
       });
 
-      // Navigate to home page on successful login
       navigate("/home");
-      toast.success("Logged in successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        style: {
-          marginTop: "70px",
-          padding: "7px 7px", // reduce padding
-          fontSize: "1.5rem", // smaller font
-          color: "#ff8107",
-          fontWeight: "bold",
-          borderRadius: "8px",
-          minHeight: "unset", // override default height
-        },
-        progressStyle: {
-          color: "#ff8107",
-        },
-      });
+      toast.success("Logged in successfully!");
     } catch (error) {
+      let errorMessage = "An error occurred. Please try again.";
       if (error.response?.status === 401) {
-        setError("Invalid email or password");
+        errorMessage = "Invalid email or password. Please try again.";
       } else if (error.response?.status === 404) {
-        setError("User not found. Please register first.");
-      } else {
-        setError("An error occurred. Please try again.");
+        errorMessage = "User not found. Please register first.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
       }
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
