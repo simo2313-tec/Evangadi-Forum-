@@ -8,7 +8,7 @@ async function register(req, res) {
     const { username, first_name, last_name, email, password } = req.body;
     if (!username || !first_name || !last_name || !email || !password) {
       return res
-        .status(StatusCodes.BAD_REQUEST)
+        .status(StatusCodes.BAD_REQUEST) // 400
         .json({
           error: "Bad Request",
           message: "Please provide all required fields",
@@ -18,7 +18,7 @@ async function register(req, res) {
 
     // Validate email format - additional
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({ // 400
         error: "Bad Request",
         message: "Invalid email format",
       });
@@ -28,7 +28,7 @@ async function register(req, res) {
     // Validate password strength (e.g., min 8 chars)
     if (password.length < 8) {
       return res
-        .status(StatusCodes.BAD_REQUEST)
+        .status(StatusCodes.BAD_REQUEST) // 400
         .json({
           error: "Bad Request",
           message: "Password must be at least 8 characters",
@@ -44,7 +44,7 @@ async function register(req, res) {
     // return res.json({username: username})
     if (existing.length > 0) {
       return res
-        .status(StatusCodes.CONFLICT)
+        .status(StatusCodes.CONFLICT) // 409
         .json({ error: "Conflict", message: "User already existed" });
     }
     // Hash password
@@ -81,7 +81,7 @@ async function register(req, res) {
   } catch (error) {
     console.error(error);
     res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR) // 500
       .json({
         error: "Internal Server Error",
         message: "An unexpected error occurred.",
@@ -94,3 +94,7 @@ async function register(req, res) {
 
 
 module.exports = { register };
+
+
+
+
