@@ -91,6 +91,13 @@
   font-size: 2rem;
 }
 
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh; /* Adjust as needed to lower the spinner */
+}
+
 /* For tablets and phones (max-width 768px) */
 @media (max-width: 768px) {
   .main_container {

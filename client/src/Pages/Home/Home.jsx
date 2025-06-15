@@ -1,16 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styles from "./home.module.css";
-import { useState, useEffect } from "react";
 import axios from "../../Utility/axios";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
+import { ClipLoader } from "react-spinners"; // Import ClipLoader
 
 function Home() {
   const [userData, setUserData] = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true); // Add loading state, default to true
   const navigate = useNavigate();
 
   // handler for Ask Question button
@@ -27,6 +28,7 @@ function Home() {
   };
 
   useEffect(() => {
+    setLoadingQuestions(true); // Set loading to true when fetching starts
     // Fetch questions from the API
     axios
       .get("/question")
@@ -39,8 +41,11 @@ function Home() {
         if (err.response?.status === 401) {
           navigate("/landing");
         }
+      })
+      .finally(() => {
+        setLoadingQuestions(false); // Set loading to false when fetching finishes (success or error)
       });
-  }, [navigate]); // Added navigate to dependency array
+  }, [navigate]);
 
   return (
     <LayOut>
@@ -64,8 +69,18 @@ function Home() {
             </div>
             <h1 className={styles.questions_list}>Questions</h1>
           </div>
-          {questions.length === 0 ? (
-            <p>No questions yet. Be the first to post a question!</p>
+          {loadingQuestions ? (
+            <div className={styles.spinner_container}>
+              <ClipLoader
+                color={"var(--primary)"}
+                loading={loadingQuestions}
+                size={50}
+              />
+            </div>
+          ) : questions.length === 0 ? (
+            <p className={styles.no_questions_message}>
+              No questions yet. Be the first to post a question!
+            </p>
           ) : (
             questions.map((q) => (
               // Added key prop to the Link component for proper React list rendering
