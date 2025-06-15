@@ -5,7 +5,7 @@ import { ClipLoader } from "react-spinners";
 import api from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../Context";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
 
 function SignUp() {
   const [userData, setUserData] = useContext(UserContext);
@@ -70,8 +70,6 @@ function SignUp() {
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      // No need to setErrors again, already done above.
-      // Displaying individual toasts for each validation error is handled above.
       return;
     }
 
@@ -95,7 +93,7 @@ function SignUp() {
         firstname: response.data.first_name,
       });
 
-      toast.success("Registration successful! Welcome!"); // Success toast
+      toast.success("Registration successful! Welcome!");
       navigate("/home");
 
       setFormData({
@@ -107,11 +105,13 @@ function SignUp() {
       });
       // console.log(response.data);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
       setErrors({
-        api: errorMessage, // Keep this if you still want to display an error message within the form
+        api: errorMessage,
       });
-      toast.error(errorMessage); // Error toast
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
