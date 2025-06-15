@@ -65,7 +65,7 @@ function SignUp() {
       navigate("/home");
       // TODO: Store token in local storage or context
       // On successful sign up
-      console.log(response)
+      console.log(response);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem(
         "user",
@@ -81,7 +81,7 @@ function SignUp() {
         username: response.data.username,
         email: response.data.email,
       });
-      
+
       // TODO: Clear form data
       setFormData({
         email: "",
@@ -179,7 +179,8 @@ function SignUp() {
             onChange={handleChange}
           />
 
-          <span
+          <button
+            type="button"
             className={styles.passwordToggle}
             onClick={togglePasswordVisibility}
           >
@@ -218,7 +219,6 @@ function SignUp() {
           .
         </p>
         <p className={styles.alreadyAccount}>
-          <a onClick={() => navigate("/login")} className={styles.link}>
           <a onClick={() => navigate("/login")} className={styles.link}>
             Already have an account?
           </a>
