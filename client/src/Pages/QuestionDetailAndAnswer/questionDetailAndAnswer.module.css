@@ -148,8 +148,14 @@ textarea {
   background-color: var(--accent);
 }
 
-
-
+.eachAnswer{
+  display: flex;
+  flex-direction: column;
+  gap: 5%;
+}
+.timestamp_title{
+  font-size: 1.2rem;
+}
 
 
 

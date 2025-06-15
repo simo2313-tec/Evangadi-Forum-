@@ -9,9 +9,9 @@ import { UserContext } from "../../Components/Context/userContext";
 function QuestionDetailAndAnswer() {
   const token = localStorage.getItem("token");
   const [userData, setUserData] = useContext(UserContext);
-  const { question_id} = useParams();
+  const { question_id } = useParams();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [answer, setAnswer] = useState({
     user_id: userData?.userid,
@@ -24,19 +24,18 @@ function QuestionDetailAndAnswer() {
   const [error, setError] = useState({
     getAnswerError: null,
     getQuestionDetailError: null,
-    postAnswerError: null
+    postAnswerError: null,
   });
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
-  const [questionDetail, setQuestionDetail] = useState(null); 
-
-
+  const [questionDetail, setQuestionDetail] = useState(null);
 
   const submitAnswer = (e) => {
     e.preventDefault();
     setLoading(true);
     setError({
-      ...error, postAnswerError: null,
+      ...error,
+      postAnswerError: null,
     });
 
     axios
@@ -46,11 +45,12 @@ function QuestionDetailAndAnswer() {
         },
       })
       .then((res) => {
-       console.log(res.data);
+        console.log(res.data);
         setResponse(res.data);
       })
       .catch((err) => {
-        const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+        const errorMessage =
+          err.response?.data?.message || err.message || "Something went wrong";
         setError((prev) => ({ ...prev, postAnswerError: errorMessage }));
       })
       .finally(() => {
@@ -69,7 +69,8 @@ function QuestionDetailAndAnswer() {
   const getAllAnswers = () => {
     setLoading(true);
     setError({
-      ...error, getAnswerError: null
+      ...error,
+      getAnswerError: null,
     });
     axios
       .get(`/answer/${question_id}`, {
@@ -81,7 +82,8 @@ function QuestionDetailAndAnswer() {
         setAllQuestionAnswers(res.data.answers);
       })
       .catch((err) => {
-        const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+        const errorMessage =
+          err.response?.data?.message || err.message || "Something went wrong";
         console.log(errorMessage);
         setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
       })
@@ -93,7 +95,8 @@ function QuestionDetailAndAnswer() {
   const getQuestionDetail = () => {
     setLoading(true);
     setError({
-      ...error, getQuestionDetailError: null,
+      ...error,
+      getQuestionDetailError: null,
     });
     axios
       .get(`/question/${question_id}`, {
@@ -103,10 +106,10 @@ function QuestionDetailAndAnswer() {
       })
       .then((res) => {
         setQuestionDetail(res.data.question);
-        
       })
       .catch((err) => {
-        const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+        const errorMessage =
+          err.response?.data?.message || err.message || "Something went wrong";
         console.log(errorMessage);
         setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
       })
@@ -121,7 +124,23 @@ function QuestionDetailAndAnswer() {
     getAllAnswers();
   }, [question_id]);
 
-  
+  // For Timestamp
+
+  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  function getTimeDifference(pastTime) {
+    const currentTime = new Date(); // current time
+    const diffMs = currentTime - new Date(pastTime); // in milliseconds
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSeconds < 60) return formatter.format(-diffSeconds, "second");
+    if (diffMinutes < 60) return formatter.format(-diffMinutes, "minute");
+    if (diffHours < 24) return formatter.format(-diffHours, "hour");
+    return formatter.format(-diffDays, "day");
+  }
+
   if (response) {
     return (
       <div className={styles.success__msg}>
@@ -139,7 +158,7 @@ function QuestionDetailAndAnswer() {
           <h3 className={styles.title}>Question</h3>
 
           {questionDetail ? (
-            <> 
+            <>
               <p className={styles.Qtitle}>{questionDetail.question_title}</p>
               <p>{questionDetail.question_description}</p>
             </>
@@ -154,7 +173,8 @@ function QuestionDetailAndAnswer() {
           <hr />
           <div className={styles.answers_container}>
             {error.getAnswerError ? (
-              <p>{error?.getAnswerError}</p>) : answersForQuestion.length === 0 ? (
+              <p>{error?.getAnswerError}</p>
+            ) : answersForQuestion.length === 0 ? (
               <p>No answers yet. Be the first to answer!</p>
             ) : (
               answersForQuestion.map((answerItem) => (
@@ -164,7 +184,12 @@ function QuestionDetailAndAnswer() {
                     <div>{answerItem.user_name}</div>
                   </div>
                   <div className={styles.theAnswer}>
-                    <p>{answerItem.answer}</p>
+                    <div className={styles.eachAnswer}>
+                      <p>{answerItem.answer}</p>
+                      <p className={styles.timestamp_title}>
+                        {getTimeDifference(answerItem.created_at)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))

@@ -59,10 +59,6 @@ function Home() {
     return formatter.format(-diffDays, "day");
   }
 
-  {
-    /* for timestamp */
-  }
-  // after question_title we will put it
   
 
   return (
