@@ -5,8 +5,8 @@ import axios from "../../Utility/axios";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
-import LayOut from "../../Components/Layout/Layout"
-import { UserContext } from "../../Components/Context/userContext";
+import LayOut from "../../Components/Layout/Layout";
+import { UserContext } from "../../Components/Context";
 
 function Home() {
   const [userData, setUserData] = useContext(UserContext);
@@ -52,8 +52,15 @@ function Home() {
               <button onClick={handleAskQuestion} className={styles.Askbtn}>
                 Ask Question
               </button>
-              {/* Display actual username from user state, fallback to "User" if not available */}
-              <p>Welcome: {userData?.username || "User"}</p>
+              {/* Display welcome message with firstname, then username, then email prefix, then fallback */}
+              <p>
+                Welcome,{" "}
+                {userData?.firstname ||
+                  userData?.username ||
+                  (userData?.email ? userData.email.split("@")[0] : null) ||
+                  "User"}
+                !
+              </p>
             </div>
             <h1 className={styles.questions_list}>Questions</h1>
           </div>
