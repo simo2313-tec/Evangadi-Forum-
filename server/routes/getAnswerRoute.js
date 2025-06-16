@@ -1,19 +1,9 @@
-// const express = require("express");
-// const { getAnswer } = require("../controller/getAnswerController");
-
-
-// const getAnswerRouter=express.Router()
-
-// getAnswerRouter.get("/answer/:question_id",getAnswer)
-
-// module.exports=getAnswerRouter
-
-
 const express = require("express");
-const { getAnswer } = require("../controller/getAnswerController");
+const { getAnswers } = require("../controller/getAnswerController");
 
-const getAnswerRouter = express.Router();
 
-getAnswerRouter.get("/questions/:question_id/answers", getAnswer);
+const getAnswerRouter=express.Router()
 
-module.exports = getAnswerRouter;
+getAnswerRouter.get("/answer/:question_id", getAnswers)
+
+module.exports=getAnswerRouter

@@ -19,6 +19,6 @@ const { postAnswer } = require("../controller/postAnswerController");
 
 const postAnswerRouter = express.Router();
 
-postAnswerRouter.post("/questions/:question_id/answers", postAnswer);
+postAnswerRouter.post("/answer", postAnswer);
 
 module.exports = postAnswerRouter;

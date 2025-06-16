@@ -55,12 +55,24 @@
 }
 .user_container .usericon {
   font-size: 3rem; 
-  color: #1e3a5f;
+  color: var(--primary-blue);
   transition: color 0.3s ease;
+  border-radius: 50%;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+  padding: 5px;
+  cursor: pointer;
+
 }
 
 .user_container:hover .usericon {
-  color: #3b82f6;
+  transform: scale(1.1);
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+    background: var(--primary-blue);
+    color: var(--white);
+  
 }
 .user_question {
   display: flex;
@@ -86,9 +98,24 @@
   text-decoration: none;
   color: unset;
 }
+.Qbox {
+  display: flex;
+  flex-direction: column;
+  gap: 5%;
+}
 .Qtitle {
   
   font-size: 2rem;
+}
+.timestamp_title{
+  font-size: 1.2rem;
+}
+
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh; /* Adjust as needed to lower the spinner */
 }
 
 /* For tablets and phones (max-width 768px) */

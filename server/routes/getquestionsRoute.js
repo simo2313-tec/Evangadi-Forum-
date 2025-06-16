@@ -20,8 +20,8 @@ const { getquestions, getSingleQuestion } = require("../controller/getquestionsC
 
 const getQuestionRouter = express.Router();
 
-getQuestionRouter.get("/questions", getquestions);
-getQuestionRouter.get("/questions/:id", getSingleQuestion);
+getQuestionRouter.get("/question", getquestions);
+getQuestionRouter.get("/question/:id", getSingleQuestion);
 
 module.exports = getQuestionRouter;
 

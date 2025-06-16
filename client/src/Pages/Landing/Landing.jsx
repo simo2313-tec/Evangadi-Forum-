@@ -76,19 +76,20 @@
 import React, { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Login from "../../Components/Login/Login";
-import SignUp from "../../Components/SignUp/SignUp"; // Fixed case
+import SignUp from "../../Components/SignUp/SignUp";
 import About from "../../Components/About/About";
 import LayOut from "../../Components/Layout/Layout";
 import styles from "./landing.module.css";
-import { UserContext } from "../../Components/Context/userContext";
+import { UserContext } from "../../Components/Context/UserContext";
 import { toast } from "react-toastify";
 
 function Landing() {
-  const [userData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const location = useLocation();
   const navigate = useNavigate();
   
   const message = location.state?.message;
+
   const isSignupPage = location.pathname === "/sign-up";
 
   useEffect(() => {
@@ -111,7 +112,7 @@ function Landing() {
       });
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [message, location.pathname, navigate]);
+  }, [message]);
 
   return (
     <LayOut>

@@ -8,6 +8,7 @@ import NotFound from "./Pages/NotFound";
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import ChatBot from "./Components/ChatBot";
 
 function App() {
   return (
@@ -26,7 +27,6 @@ function App() {
         <Route path="/login" element={<Landing />} />
         <Route path="/sign-up" element={<Landing />} />
       </Routes>
-
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -38,6 +38,7 @@ function App() {
         draggable
         pauseOnHover
       />
+      <ChatBot />
     </div>
   );
 }
