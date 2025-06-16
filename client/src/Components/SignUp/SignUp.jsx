@@ -81,10 +81,7 @@ function SignUp() {
         email: formData.email,
         password: formData.password,
       });
-      alert("Registration successful!");
-      navigate("/home");
-      
-
+      toast.success("Registration successful!");
       setUserData({
         userid: response.data.userid, // Fixed response structure
         username: response.data.username,
@@ -92,23 +89,12 @@ function SignUp() {
         token: response.data.token,
         firstname: response.data.first_name,
       });
-
-      // TODO: Clear form data
-
-      toast.success("Registration successful! Welcome!");
-      navigate("/home");
-
       setFormData({
         email: "",
         firstName: "",
         lastName: "",
         userName: "",
         password: "",
-      });
-
-      toast.success("Registration successful!", {
-        position: "top-right",
-        autoClose: 3000,
       });
       navigate("/home");
     } catch (error) {
