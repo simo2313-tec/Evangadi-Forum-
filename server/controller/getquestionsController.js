@@ -17,14 +17,20 @@ async function getquestions(req, res) {
     if (sort === "popular") {
       orderBy = "likes DESC, q.created_at DESC";
     }
+    // Search
+    const search = req.query.search ? req.query.search.trim() : null;
+    let whereClause = "";
+    let params = [userId || 0];
+    if (search) {
+      whereClause = `WHERE (q.tag LIKE ? OR q.question_title LIKE ? OR q.question_description LIKE ?)`;
+      const likeSearch = `%${search}%`;
+      params.push(likeSearch, likeSearch, likeSearch);
+    }
     // Get total count for pagination
-    const [[{ total }]] = await dbconnection.query(
-      `SELECT COUNT(*) as total FROM question`
-    );
-
+    const countQuery = `SELECT COUNT(*) as total FROM question q ${whereClause}`;
+    const [[{ total }]] = await dbconnection.query(countQuery, params.slice(1));
     // Fetch paginated questions
-    const [questions] = await dbconnection.query(
-      `
+    const questionsQuery = `
       SELECT
         q.*,
         r.user_name,
@@ -50,12 +56,13 @@ async function getquestions(req, res) {
           question_id
       ) AS ld ON q.question_id = ld.question_id
       LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = ?
+      ${whereClause}
       ORDER BY
         ${orderBy}
       LIMIT ? OFFSET ?;
-    `,
-      [userId || 0, pageSize, offset]
-    );
+    `;
+    params.push(pageSize, offset);
+    const [questions] = await dbconnection.query(questionsQuery, params);
     res.status(StatusCodes.OK).json({
       questions,
       pagination: {

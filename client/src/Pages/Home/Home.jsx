@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import styles from "./home.module.css";
 import axios from "../../Utility/axios";
 import { FaUserCircle, FaChevronRight } from "react-icons/fa";
+import { FaSearchengin } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
@@ -23,6 +24,7 @@ function Home() {
     totalPages: 1,
   });
   const [sort, setSort] = useState("recent");
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const token = userData?.token;
 
@@ -40,7 +42,11 @@ function Home() {
     setLoading(true);
     // Fetch questions from the API
     axios
-      .get(`/question?page=${page}&pageSize=${pageSize}&sort=${sort}`)
+      .get(
+        `/question?page=${page}&pageSize=${pageSize}&sort=${sort}&search=${encodeURIComponent(
+          search
+        )}`
+      )
       .then((res) => {
         if (Array.isArray(res.data.questions)) {
           setQuestions(res.data.questions);
@@ -68,7 +74,7 @@ function Home() {
       .finally(() => {
         setLoading(false);
       });
-  }, [page, pageSize, sort]);
+  }, [page, pageSize, sort, search]);
 
   //  Vote handle
   const handleVote = async (question_id, action) => {
@@ -124,7 +130,6 @@ function Home() {
                 !
               </p>
             </div>
-            {/* Questions title and sort filter in a flex row */}
             <div className={styles.questions_sort_row}>
               <h1 className={styles.questions_list}>Questions</h1>
               <div className={styles.sort_container}>
@@ -145,6 +150,35 @@ function Home() {
                 </select>
               </div>
             </div>
+            <form
+              className={styles.search_form}
+              onSubmit={(e) => {
+                e.preventDefault();
+                setPage(1);
+              }}
+              role="search"
+            >
+              <div className={styles.search_input_wrapper}>
+                <input
+                  type="text"
+                  className={styles.search_input}
+                  placeholder="Search by tag, title, or description..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  aria-label="Search questions"
+                />
+                <button
+                  type="submit"
+                  className={styles.search_icon_btn}
+                  aria-label="Search"
+                >
+                  <FaSearchengin size={25} className={styles.search_icon} />
+                </button>
+              </div>
+            </form>
           </div>
           {loadingQuestions ? (
             <div className={styles.spinner_container}>
