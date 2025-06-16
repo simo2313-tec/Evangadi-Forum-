@@ -7,9 +7,11 @@ const dotenv = require("dotenv");
 // configuring dotenv
 dotenv.config();
 
-// middlewares
+
 const app = express();
 
+
+// middlewares
 app.use(
   cors({
     origin: ["http://localhost:4321", "http://localhost:5173"],
@@ -18,9 +20,10 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
 
 // import auth middleware
 const authMiddleware = require("./middleware/authMiddleware");
@@ -48,6 +51,9 @@ app.use("/api", getAnswerRouter);
 app.use("/api", authMiddleware, postQuestionRoutes);
 app.use("/api", authMiddleware, answerRoutes);
 app.use("/api", authMiddleware, likeDislikeRouter);
+
+
+
 
 // Start server and test database connection
 async function startServer() {
