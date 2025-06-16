@@ -44,11 +44,11 @@
 
 /* Small devices (phones, 576px and below) */
 @media (max-width: 768px) {
-  /* .shrink,
+  .shrink,
   .shrinkAbout {
     transform: scale(0.9);
     margin: 0 2px;
-  } */
+  }
 }
 
 /* Small devices (phones, 576px and below) */
@@ -77,11 +77,11 @@
   .about {
     width: 100%;
   }
-  /* .shrink {
+  .shrink {
     transform: scale(1);
     transform-origin: center;
   }
   .shrinkAbout {
     transform-origin: top center;
-  } */
+  }
 }
