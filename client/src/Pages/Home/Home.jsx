@@ -148,6 +148,7 @@ function Home() {
                     <FaChevronRight size={30} className={styles.chevron} />
                   </div>
                 </Link>
+
                 <div className={styles.vote_section}>
                   {/* Vote Buttons  */}
                   <VoteButtons
