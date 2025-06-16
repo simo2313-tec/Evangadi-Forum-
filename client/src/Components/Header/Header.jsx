@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 
-import styles from "../../../src/Components/Header/header.module.css"; //
+import styles from "../../../src/Components/Header/header.module.css";
 
 import logo from "../../assets/imgs/logo.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,7 +30,9 @@ const Header = () => {
     <section className={styles.header_container}>
       <header className={styles.header}>
         <div className={styles.logo}>
-          <img src={logo} alt="EVANGADI Logo" />
+          <Link to={"/home"}>
+            <img src={logo} alt="EVANGADI Logo" />
+          </Link>
         </div>
         <div className={styles.navbar}>
           <nav
