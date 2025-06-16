@@ -1,52 +1,92 @@
 import React, { useContext, useState, useEffect } from "react";
 import styles from "./home.module.css";
 import axios from "../../Utility/axios";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaChevronRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { FaChevronRight } from "react-icons/fa";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
 import { ClipLoader } from "react-spinners";
 import getTimeDifference from "../../Utility/helpers";
+import VoteButtons from "../../Components/VoteButtons/VoteButtons";
+import { toast } from "react-toastify";
 
 function Home() {
   const { userData, setUserData } = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [loadingQuestions, setLoading] = useState(true);
   const navigate = useNavigate();
+  const token = userData?.token;
 
-  // handler for Ask Question button
   const handleAskQuestion = () => {
-    if (!userData?.userid) {
-      // redirect with message
+    if (!token || !userData?.userid) {
       navigate("/landing", {
-        state: { message: "Please login to ask question" },
+        state: { message: "Please login to ask a question" },
       });
     } else {
-      // user logged in, go to ask question page
       navigate("/ask-questions");
     }
   };
 
   useEffect(() => {
-    setLoadingQuestions(true); // Set loading to true when fetching starts
+    setLoading(true); // Set loading to true when fetching starts
     // Fetch questions from the API
     axios
       .get("/question")
       .then((res) => {
-        setQuestions(res.data.question);
+        if (Array.isArray(res.data.questions)) {
+          setQuestions(res.data.questions);
+        } else {
+          console.error("Unexpected data format:", res.data);
+          setQuestions([]);
+        }
       })
       .catch((err) => {
         console.error("Failed to fetch questions:", err);
-        // If unauthorized (401), redirect to login
-        if (err.response?.status === 401) {
-          navigate("/landing");
-        }
+        toast.error("Failed to load questions. Please try again.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        setQuestions([]);
       })
       .finally(() => {
-        setLoadingQuestions(false); // Set loading to false when fetching finishes (success or error)
+        setLoading(false);
       });
-  }, [navigate]);
+  }, []);
+
+  //  Vote handle
+  const handleVote = async (question_id, action) => {
+    if (!token) {
+      toast.error("Please log in to vote.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    try {
+      const res = await axios.post(`/questions/${question_id}/${action}`);
+      const { likes, dislikes } = res.data;
+
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.question_id === question_id ? { ...q, likes, dislikes } : q
+        )
+      );
+    } catch (err) {
+      console.error("Vote failed:", err);
+      if (err.response?.status === 401) {
+        toast.error("Session expired. Please log in again.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/landing");
+      } else {
+        toast.error("Could not cast vote. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    }
+  };
 
   return (
     <LayOut>
@@ -54,7 +94,6 @@ function Home() {
         <div className={styles.homepage_container}>
           <div className={styles.upper_section}>
             <div className={styles.title}>
-              {/* Changed route from "/" to "/ask-questions" to fix navigation */}
               <button onClick={handleAskQuestion} className={styles.Askbtn}>
                 Ask Question
               </button>
@@ -84,13 +123,11 @@ function Home() {
             </p>
           ) : (
             questions.map((q) => (
-              // Added key prop to the Link component for proper React list rendering
-              <Link
-                key={q.question_id}
-                to={`/question-detail/${q.question_id}`}
-                className={styles.link_container}
-              >
-                <div>
+              <div key={q.question_id} className={styles.question_item_wrapper}>
+                <Link
+                  to={`/question-detail/${q.question_id}`}
+                  className={styles.link_container}
+                >
                   <div className={styles.user_container}>
                     <div className={styles.user_question}>
                       <div className={styles.usericon_and_username}>
@@ -108,10 +145,18 @@ function Home() {
                         </div>
                       </div>
                     </div>
-                    <FaChevronRight size={20} className={styles.chevron} />
+                    <FaChevronRight size={30} className={styles.chevron} />
                   </div>
+                </Link>
+                <div className={styles.vote_section}>
+                  {/* Vote Buttons  */}
+                  <VoteButtons
+                    likes={q.likes ?? 0}
+                    dislikes={q.dislikes ?? 0}
+                    onVote={(action) => handleVote(q.question_id, action)}
+                  />
                 </div>
-              </Link>
+              </div>
             ))
           )}
         </div>

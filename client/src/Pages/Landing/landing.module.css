@@ -5,6 +5,9 @@
   min-height: 100vh;
   background-color: var(--landing-bg);
   overflow: hidden;
+  background-image: url(../../assets/imgs/bg-svg-f.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .login {

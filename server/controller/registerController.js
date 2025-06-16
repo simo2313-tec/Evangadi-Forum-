@@ -15,7 +15,7 @@ async function register(req, res) {
 
     // Validate email format - additional
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({ // 400
         error: "Bad Request",
         message: "Invalid email format",
       });
@@ -37,7 +37,7 @@ async function register(req, res) {
     // return res.json({username: username})
     if (existing.length > 0) {
       return res
-        .status(StatusCodes.CONFLICT)
+        .status(StatusCodes.CONFLICT) // 409
         .json({ error: "Conflict", message: "User already existed" });
     }
     // Hash password
@@ -60,7 +60,7 @@ async function register(req, res) {
     const token = jwt.sign(
       { userid: result.insertId, username },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "30d" }
     );
     res.status(StatusCodes.CREATED).json({
       message: "User registered successfully",

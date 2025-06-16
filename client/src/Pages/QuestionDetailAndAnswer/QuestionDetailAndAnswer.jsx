@@ -1,21 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import styles from "./questionDetailAndAnswer.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
 import getTimeDifference from "../../Utility/helpers";
+import VoteButtons from "../../Components/VoteButtons/VoteButtons";
+import { toast } from "react-toastify";
 
 function QuestionDetailAndAnswer() {
   const { userData, setUserData } = useContext(UserContext);
   const token = userData?.token;
   const { question_id } = useParams();
-
   const navigate = useNavigate();
 
   const [answer, setAnswer] = useState({
     user_id: userData?.userid,
+
     question_id,
     answer: "",
   });
@@ -30,15 +32,24 @@ function QuestionDetailAndAnswer() {
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
   const [questionDetail, setQuestionDetail] = useState(null);
+  const [successAnswer, setSuccessAnswer] = useState(false)
 
   const submitAnswer = (e) => {
+    console.log(answer);
     e.preventDefault();
-    setLoading(true);
+     setLoading(true);
     setError({
       ...error,
       postAnswerError: null,
     });
+   
+    if(!token){
+      setLoading(false)
+      toast.error("Login to post answer");
+      return;
+    }
 
+   
     axios
       .post("/answer", answer, {
         headers: {
@@ -46,8 +57,10 @@ function QuestionDetailAndAnswer() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setResponse(res.data);
+        getAllAnswers();
+        setSuccessAnswer(true)
+        toast.success("Answer Posted Successfully")
       })
       .catch((err) => {
         const errorMessage =
@@ -59,7 +72,39 @@ function QuestionDetailAndAnswer() {
       });
   };
 
+ 
+  // Vote handler
+  const handleVote = async (type, id, action) => {
+    if (!token) {
+      toast.error("Please log in to vote.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    try {
+      const res = await axios.post(`/${type}s/${id}/${action}`);
+      const { likes, dislikes } = res.data;
+
+      if (type === "question") {
+        setQuestionDetail((prev) => ({ ...prev, likes, dislikes }));
+      } else if (type === "answer") {
+        setAllQuestionAnswers((prevAnswers) =>
+          prevAnswers.map((ans) =>
+            ans.answer_id === id ? { ...ans, likes, dislikes } : ans
+          )
+        );
+      }
+    } catch (err) {
+      console.error(`Failed to ${action} ${type}`, err);
+      toast.error(`Failed to ${action} ${type}.`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
   const handleChange = (e) => {
+    setSuccessAnswer(false)
     const { name, value } = e.target;
     setAnswer((prev) => ({
       ...prev,
@@ -80,7 +125,7 @@ function QuestionDetailAndAnswer() {
         },
       })
       .then((res) => {
-        setAllQuestionAnswers(res.data.answers);
+        setAllQuestionAnswers(res.data);
       })
       .catch((err) => {
         const errorMessage =
@@ -123,31 +168,27 @@ function QuestionDetailAndAnswer() {
   useEffect(() => {
     getQuestionDetail();
     getAllAnswers();
-  }, [question_id]);
-
-  if (response) {
-    return (
-      <div className={styles.success__msg}>
-        <h1 className={styles.thanks_note}>{response.message}</h1>
-        <Link className={styles.nav_to} to={"/home"}>
-          Go to home
-        </Link>
-      </div>
-    );
-  }
+  }, [question_id, successAnswer]);
   return (
     <LayOut>
       <div className={styles.outer__container}>
         <div className={styles.theQuestion}>
           <h3 className={styles.title}>Question</h3>
-
           {questionDetail ? (
             <>
               <p className={styles.Qtitle}>{questionDetail.question_title}</p>
               <p>{questionDetail.question_description}</p>
+              {/* voteButtons  */}
+              <VoteButtons
+                likes={questionDetail.likes}
+                dislikes={questionDetail.dislikes}
+                onVote={(action) =>
+                  handleVote("question", questionDetail.question_id, action)
+                }
+              />
             </>
           ) : (
-            <p>{error?.getQuestionDetailError}</p>
+            <p>Question not found.</p>
           )}
         </div>
 
@@ -174,6 +215,14 @@ function QuestionDetailAndAnswer() {
                         {getTimeDifference(answerItem.created_at)}
                       </p>
                     </div>
+                    {/* VoteButtons */}
+                    <VoteButtons
+                      likes={answerItem.likes}
+                      dislikes={answerItem.dislikes}
+                      onVote={(action) =>
+                        handleVote("answer", answerItem.answer_id, action)
+                      }
+                    />
                   </div>
                 </div>
               ))
@@ -190,21 +239,18 @@ function QuestionDetailAndAnswer() {
               id="answer"
               placeholder="Your answer here"
               onChange={handleChange}
-              value={answer.answer}
+              value={successAnswer ? "" : answer.answer}
               required
             ></textarea>
-
             {error?.postAnswerError && (
               <p className={styles.error}>{error.postAnswerError}</p>
             )}
-
             <button
               type="submit"
               className={styles.answerBtn}
-              variant="success"
-              disabled={loading}
+              disabled={!userData || !token}
             >
-              {loading ? "Submitting..." : "Post your Answer"}
+              Post your Answer
             </button>
           </form>
         </div>
