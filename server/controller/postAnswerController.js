@@ -3,7 +3,6 @@ const dbconnection = require("../db/db.Config");
 const { sendAnswerNotification } = require("../services/mailer");
 const xss = require("xss");
 
-
 async function postAnswer(req, res) {
   const { answer, user_id, question_id } = req.body;
 
@@ -66,7 +65,11 @@ async function postAnswer(req, res) {
       INSERT INTO answer (answer, user_id, question_id, created_at)
       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
     `;
-    const [result] = await dbconnection.query(insertQuery, [sanitizedAnswer, userIdNum, questionIdNum]);
+    const [result] = await dbconnection.query(insertQuery, [
+      sanitizedAnswer,
+      userIdNum,
+      questionIdNum,
+    ]);
 
     // Fetch email of the user who asked the question
     const [questionRows] = await dbconnection.query(

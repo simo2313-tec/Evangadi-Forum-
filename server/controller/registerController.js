@@ -16,7 +16,8 @@ async function register(req, res) {
 
     // Validate email format - additional
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ // 400
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        // 400
         error: "Bad Request",
         message: "Invalid email format",
       });

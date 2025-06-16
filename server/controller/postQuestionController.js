@@ -13,7 +13,7 @@
 //       });
 //     }
 
-//     // Generate a unique post_id 
+//     // Generate a unique post_id
 //     const postId = Math.floor(Math.random() * 2147483647) + 1;
 
 //     // Insert question into database
@@ -40,11 +40,7 @@
 //   }
 // }
 
-
-
-
 // module.exports = { postQuestion };
- 
 
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
