@@ -57,23 +57,28 @@ Evangadi-Forum/
 ## 🚦 Major User Flows
 
 ### 1. Authentication
+
 - **Sign Up**: `/sign-up` — Register with email, username, and password. All input is sanitized.
 - **Login**: `/login` — Secure login with JWT. Friendly error messages and loading spinners.
 
 ### 2. Home & Questions
+
 - **Home**: `/home` — See all questions, search, sort, and paginate. Responsive, glassmorphic UI.
 - **Ask Question**: `/ask-questions` — Authenticated users can post new questions.
 - **Question Detail**: `/question-detail/:id` — View question, answers, vote, and add your answer.
 
 ### 3. Voting
+
 - Upvote/downvote on both questions and answers. Votes update instantly and are visually highlighted.
 
 ### 4. Chatbot
+
 - Animated chatbot for onboarding and help, with smooth open/close transitions.
 
 ---
 
 ## 🔒 Security & Best Practices
+
 - **XSS Protection**: All user input is sanitized on the backend using the `xss` npm package.
 - **JWT Auth**: Secure authentication and protected routes.
 - **Error Handling**: All API and UI errors are handled gracefully with toasts and spinners.
@@ -82,6 +87,7 @@ Evangadi-Forum/
 ---
 
 ## 📱 Responsive & Modern UI
+
 - Fully responsive layouts for mobile, tablet, and desktop.
 - Glassmorphic cards, pill-shaped search bar, and modern icons.
 - Smooth animations for chatbot, loading, and transitions.
@@ -91,12 +97,14 @@ Evangadi-Forum/
 ## 🚀 Getting Started
 
 ### 1. Clone the repo
+
 ```bash
 git clone https://github.com/mihret7/Evangadi-Forum.git
 cd Evangadi-Forum
 ```
 
 ### 2. Setup the Backend
+
 ```bash
 cd server
 npm install
@@ -105,6 +113,7 @@ npm start
 ```
 
 ### 3. Setup the Frontend
+
 ```bash
 cd client
 npm install
@@ -112,11 +121,13 @@ npm run dev
 ```
 
 ### 4. Open in Browser
+
 Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
 
 ---
 
 ## 🧩 Notable Files & Folders
+
 - `client/src/Pages/Home/Home.jsx` — Home page logic, search, sort, pagination, and question listing.
 - `client/src/Components/VoteButtons/VoteButtons.jsx` — Unified voting UI for questions and answers.
 - `server/controller/` — All backend controllers, including XSS sanitization and pagination.
@@ -125,6 +136,7 @@ Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your 
 ---
 
 ## 📝 Credits & Links
+
 - Original repo: [mihret7/Evangadi-Forum](https://github.com/mihret7/Evangadi-Forum)
 - UI/UX inspiration: [Evangadi Networks](https://www.evangadi.com/)
 - Icons: [React Icons](https://react-icons.github.io/react-icons/)
@@ -133,11 +145,13 @@ Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your 
 ---
 
 ## 🤝 Contributing
+
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
 ## 📄 License
+
 This project is licensed under the MIT License.
 
 ---
