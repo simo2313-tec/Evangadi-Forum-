@@ -14,6 +14,14 @@ function Home() {
   const { userData, setUserData } = useContext(UserContext);
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(5); // You can make this user-configurable if desired
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    pageSize: 5,
+    totalPages: 1,
+  });
   const navigate = useNavigate();
   const token = userData?.token;
 
@@ -28,30 +36,38 @@ function Home() {
   };
 
   useEffect(() => {
-    setLoading(true); // Set loading to true when fetching starts
+    setLoading(true);
     // Fetch questions from the API
     axios
-      .get("/question")
+      .get(`/question?page=${page}&pageSize=${pageSize}`)
       .then((res) => {
         if (Array.isArray(res.data.questions)) {
           setQuestions(res.data.questions);
+          setPagination(
+            res.data.pagination || {
+              total: 0,
+              page: 1,
+              pageSize: 5,
+              totalPages: 1,
+            }
+          );
         } else {
-          console.error("Unexpected data format:", res.data);
           setQuestions([]);
+          setPagination({ total: 0, page: 1, pageSize: 5, totalPages: 1 });
         }
       })
       .catch((err) => {
-        console.error("Failed to fetch questions:", err);
+        setQuestions([]);
+        setPagination({ total: 0, page: 1, pageSize: 5, totalPages: 1 });
         toast.error("Failed to load questions. Please try again.", {
           position: "top-right",
           autoClose: 3000,
         });
-        setQuestions([]);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [page, pageSize]);
 
   //  Vote handle
   const handleVote = async (question_id, action) => {
@@ -122,43 +138,73 @@ function Home() {
               No questions yet. Be the first to post a question!
             </p>
           ) : (
-            questions.map((q) => (
-              <div key={q.question_id} className={styles.question_item_wrapper}>
-                <Link
-                  to={`/question-detail/${q.question_id}`}
-                  className={styles.link_container}
+            <>
+              {questions.map((q) => (
+                <div
+                  key={q.question_id}
+                  className={styles.question_item_wrapper}
                 >
-                  <div className={styles.user_container}>
-                    <div className={styles.user_question}>
-                      <div className={styles.usericon_and_username}>
-                        <div className={styles.inner_center}>
-                          <FaUserCircle size={80} className={styles.usericon} />
-                          <span>{q.user_name}</span>
+                  <Link
+                    to={`/question-detail/${q.question_id}`}
+                    className={styles.link_container}
+                  >
+                    <div className={styles.user_container}>
+                      <div className={styles.user_question}>
+                        <div className={styles.usericon_and_username}>
+                          <div className={styles.inner_center}>
+                            <FaUserCircle
+                              size={80}
+                              className={styles.usericon}
+                            />
+                            <span>{q.user_name}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className={styles.Qbox}>
+                            <p className={styles.Qtitle}>{q.question_title}</p>
+                            <p className={styles.timestamp_title}>
+                              {getTimeDifference(q.created_at)}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className={styles.Qbox}>
-                          <p className={styles.Qtitle}>{q.question_title}</p>
-                          <p className={styles.timestamp_title}>
-                            {getTimeDifference(q.created_at)}
-                          </p>
-                        </div>
-                      </div>
+                      <FaChevronRight size={20} className={styles.chevron} />
                     </div>
-                    <FaChevronRight size={20} className={styles.chevron} />
-                  </div>
-                </Link>
+                  </Link>
 
-                <div className={styles.vote_section}>
-                  <VoteButtons
-                    likes={q.likes ?? 0}
-                    dislikes={q.dislikes ?? 0}
-                    userVote={q.user_vote_type}
-                    onVote={(action) => handleVote(q.question_id, action)}
-                  />
+                  <div className={styles.vote_section}>
+                    <VoteButtons
+                      likes={q.likes ?? 0}
+                      dislikes={q.dislikes ?? 0}
+                      userVote={q.user_vote_type}
+                      onVote={(action) => handleVote(q.question_id, action)}
+                    />
+                  </div>
                 </div>
+              ))}
+              {/* Pagination Controls */}
+              <div className={styles.pagination_container}>
+                <button
+                  className={styles.pagination_btn}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Previous
+                </button>
+                <span className={styles.pagination_info}>
+                  Page {pagination.page} of {pagination.totalPages}
+                </span>
+                <button
+                  className={styles.pagination_btn}
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.totalPages, p + 1))
+                  }
+                  disabled={page === pagination.totalPages}
+                >
+                  Next
+                </button>
               </div>
-            ))
+            </>
           )}
         </div>
       </section>
