@@ -14,7 +14,7 @@
 //   }
 // }
 
-// //! getSigleQuestion 
+// //! getSigleQuestion
 // async function getSingleQuestion(req, res) {
 //   try {
 
@@ -39,16 +39,12 @@
 //   } catch (error) {
 //     res
 //       .status(StatusCodes.INTERNAL_SERVER_ERROR) //!(500,Internal Server Error)
-      
+
 //       .json({ message: "Error retrieving question", error: error.message });
 //   }
 // }
 
-
 // module.exports = {getquestions,  getSingleQuestion};
-
-
-
 
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
@@ -58,14 +54,19 @@ const dbconnection = require("../db/db.Config");
  */
 async function getquestions(req, res) {
   try {
-    // This SQL query is now more powerful.
-    // It joins questions, registrations, and a subquery that calculates votes.
-    const [questions] = await dbconnection.query(`
+    const userId = req.user?.userid;
+    const [questions] = await dbconnection.query(
+      `
       SELECT
         q.*,
         r.user_name,
         COALESCE(ld.likes, 0) AS likes,
-        COALESCE(ld.dislikes, 0) AS dislikes
+        COALESCE(ld.dislikes, 0) AS dislikes,
+        CASE
+          WHEN ul.is_like = 1 THEN 'up'
+          WHEN ul.is_like = 0 THEN 'down'
+          ELSE NULL
+        END AS user_vote_type
       FROM
         question q
       JOIN
@@ -80,10 +81,12 @@ async function getquestions(req, res) {
         GROUP BY
           question_id
       ) AS ld ON q.question_id = ld.question_id
+      LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = ?
       ORDER BY
         q.created_at DESC;
-    `);
-
+    `,
+      [userId || 0]
+    );
     res.status(StatusCodes.OK).json({ questions });
   } catch (error) {
     console.error("Error retrieving questions:", error.message);
@@ -99,15 +102,19 @@ async function getquestions(req, res) {
 async function getSingleQuestion(req, res) {
   try {
     const { id } = req.params;
-
-    // The same powerful query, but with a WHERE clause to filter by a single question ID.
+    const userId = req.user?.userid;
     const [questions] = await dbconnection.query(
       `
       SELECT
         q.*,
         r.user_name,
         COALESCE(ld.likes, 0) AS likes,
-        COALESCE(ld.dislikes, 0) AS dislikes
+        COALESCE(ld.dislikes, 0) AS dislikes,
+        CASE
+          WHEN ul.is_like = 1 THEN 'up'
+          WHEN ul.is_like = 0 THEN 'down'
+          ELSE NULL
+        END AS user_vote_type
       FROM
         question q
       JOIN
@@ -122,20 +129,22 @@ async function getSingleQuestion(req, res) {
         GROUP BY
           question_id
       ) AS ld ON q.question_id = ld.question_id
+      LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = ?
       WHERE q.question_id = ?
     `,
-      [id]
+      [userId || 0, id]
     );
-
     if (questions.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ message: "Question not found" });
     }
-
     res.status(StatusCodes.OK).json({ question: questions[0] });
   } catch (error) {
-    console.error(`Error retrieving question with id ${req.params.id}:`, error.message);
+    console.error(
+      `Error retrieving question with id ${req.params.id}:`,
+      error.message
+    );
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Error retrieving question" });
@@ -143,6 +152,3 @@ async function getSingleQuestion(req, res) {
 }
 
 module.exports = { getquestions, getSingleQuestion };
-
-
-
