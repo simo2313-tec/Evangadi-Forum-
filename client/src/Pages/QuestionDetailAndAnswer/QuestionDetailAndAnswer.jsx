@@ -31,6 +31,14 @@ function QuestionDetailAndAnswer() {
   });
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
+  const [answerPage, setAnswerPage] = useState(1);
+  const [answerPageSize] = useState(10);
+  const [answerPagination, setAnswerPagination] = useState({
+    total: 0,
+    page: 1,
+    pageSize: 5,
+    totalPages: 1,
+  });
   const [questionDetail, setQuestionDetail] = useState(null);
   const [successAnswer, setSuccessAnswer] = useState(false);
 
@@ -117,19 +125,41 @@ function QuestionDetailAndAnswer() {
       getAnswerError: null,
     });
     axios
-      .get(`/answer/${question_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get(
+        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((res) => {
-        setAllQuestionAnswers(res.data);
+        if (Array.isArray(res.data.answers)) {
+          setAllQuestionAnswers(res.data.answers);
+          setAnswerPagination(
+            res.data.pagination || {
+              total: 0,
+              page: 1,
+              pageSize: 5,
+              totalPages: 1,
+            }
+          );
+        } else {
+          setAllQuestionAnswers([]);
+          setAnswerPagination({
+            total: 0,
+            page: 1,
+            pageSize: 5,
+            totalPages: 1,
+          });
+        }
       })
       .catch((err) => {
         const errorMessage =
           err.response?.data?.message || err.message || "Something went wrong";
-        console.log(errorMessage);
         setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
+        setAllQuestionAnswers([]);
+        setAnswerPagination({ total: 0, page: 1, pageSize: 5, totalPages: 1 });
       })
       .finally(() => {
         setLoading(false);
@@ -166,7 +196,7 @@ function QuestionDetailAndAnswer() {
   useEffect(() => {
     getQuestionDetail();
     getAllAnswers();
-  }, [question_id, successAnswer]);
+  }, [question_id, successAnswer, answerPage, answerPageSize]);
   return (
     <LayOut>
       <div className={styles.outer__container}>
@@ -201,50 +231,77 @@ function QuestionDetailAndAnswer() {
             ) : answersForQuestion.length === 0 ? (
               <p>No answers yet. Be the first to answer!</p>
             ) : (
-              answersForQuestion.map((answerItem) => (
-                <div
-                  key={answerItem.answer_id}
-                  className={styles.question_item_wrapper}
-                >
-                  <div className={styles.user_container}>
-                    <div className={styles.user_question}>
-                      <div className={styles.usericon_and_username}>
-                        <div className={styles.inner_center}>
-                          <FaUserCircle
-                            size={80}
-                            className={styles.usericon}
-                            style={{
-                              background: "var(--white)",
-                              color: "#1e3a5f",
-                              borderRadius: "50%",
-                              padding: "5px",
-                            }}
-                          />
-                          <span>{answerItem.user_name}</span>
+              <>
+                {answersForQuestion.map((answerItem) => (
+                  <div
+                    key={answerItem.answer_id}
+                    className={styles.question_item_wrapper}
+                  >
+                    <div className={styles.user_container}>
+                      <div className={styles.user_question}>
+                        <div className={styles.usericon_and_username}>
+                          <div className={styles.inner_center}>
+                            <FaUserCircle
+                              size={80}
+                              className={styles.usericon}
+                              style={{
+                                background: "var(--white)",
+                                color: "#1e3a5f",
+                                borderRadius: "50%",
+                                padding: "5px",
+                              }}
+                            />
+                            <span>{answerItem.user_name}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className={styles.Qbox}>
+                            <p className={styles.Qtitle}>{answerItem.answer}</p>
+                            <p className={styles.timestamp_title}>
+                              {getTimeDifference(answerItem.created_at)}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className={styles.Qbox}>
-                          <p className={styles.Qtitle}>{answerItem.answer}</p>
-                          <p className={styles.timestamp_title}>
-                            {getTimeDifference(answerItem.created_at)}
-                          </p>
-                        </div>
+                      <div className={styles.vote_section}>
+                        <VoteButtons
+                          likes={answerItem.likes}
+                          dislikes={answerItem.dislikes}
+                          userVote={answerItem.user_vote_type}
+                          onVote={(action) =>
+                            handleVote("answer", answerItem.answer_id, action)
+                          }
+                        />
                       </div>
-                    </div>
-                    <div className={styles.vote_section}>
-                      <VoteButtons
-                        likes={answerItem.likes}
-                        dislikes={answerItem.dislikes}
-                        userVote={answerItem.user_vote_type}
-                        onVote={(action) =>
-                          handleVote("answer", answerItem.answer_id, action)
-                        }
-                      />
                     </div>
                   </div>
+                ))}
+                {/* Pagination Controls for Answers */}
+                <div className={styles.pagination_container}>
+                  <button
+                    className={styles.pagination_btn}
+                    onClick={() => setAnswerPage((p) => Math.max(1, p - 1))}
+                    disabled={answerPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <span className={styles.pagination_info}>
+                    Page {answerPagination.page} of{" "}
+                    {answerPagination.totalPages}
+                  </span>
+                  <button
+                    className={styles.pagination_btn}
+                    onClick={() =>
+                      setAnswerPage((p) =>
+                        Math.min(answerPagination.totalPages, p + 1)
+                      )
+                    }
+                    disabled={answerPage === answerPagination.totalPages}
+                  >
+                    Next
+                  </button>
                 </div>
-              ))
+              </>
             )}
           </div>
         </div>

@@ -15,7 +15,7 @@ function Home() {
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(5); // You can make this user-configurable if desired
+  const [pageSize] = useState(10);
   const [pagination, setPagination] = useState({
     total: 0,
     page: 1,

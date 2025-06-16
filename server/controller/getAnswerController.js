@@ -4,7 +4,17 @@ const { StatusCodes } = require("http-status-codes");
 async function getAnswers(req, res) {
   const { question_id } = req.params;
   const userId = req.user?.userid;
+  // Pagination params
+  const page = parseInt(req.query.page, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize, 10) || 10;
+  const offset = (page - 1) * pageSize;
   try {
+    // Get total count for pagination
+    const [[{ total }]] = await dbconnection.query(
+      `SELECT COUNT(*) as total FROM answer WHERE question_id = ?`,
+      [question_id]
+    );
+
     const [results] = await dbconnection.query(
       `
       SELECT 
@@ -37,26 +47,39 @@ async function getAnswers(req, res) {
       ) AS ld ON a.answer_id = ld.answer_id
       LEFT JOIN likes_dislikes ul ON ul.answer_id = a.answer_id AND ul.user_id = ?
       WHERE q.question_id = ?
-      ORDER BY a.created_at DESC;
+      ORDER BY a.created_at DESC
+      LIMIT ? OFFSET ?;
     `,
-      [userId || 0, question_id]
+      [userId || 0, question_id, pageSize, offset]
     );
 
-    // Case 1: The question itself does not exist. The query will return zero rows.
-    if (results.length === 0) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: "Question not found." });
+    if (total === 0) {
+      return res.status(StatusCodes.OK).json({
+        answers: [],
+        pagination: { total: 0, page, pageSize, totalPages: 1 },
+      });
     }
-
-    // Case 2: The question exists, but has no answers.
-    // The query returns one row where answer_id is null.
-    if (results[0].answer_id === null) {
-      return res.status(StatusCodes.OK).json([]);
+    // If the question exists but has no answers
+    if (results.length === 0 || results[0].answer_id === null) {
+      return res.status(StatusCodes.OK).json({
+        answers: [],
+        pagination: {
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        },
+      });
     }
-
-    // Case 3: The question and answers exist. The data is already in the perfect format.
-    res.status(StatusCodes.OK).json(results);
+    res.status(StatusCodes.OK).json({
+      answers: results,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    });
   } catch (err) {
     console.error(
       `Error fetching answers for question_id ${question_id}:`,
