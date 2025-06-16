@@ -207,7 +207,17 @@ function SignUp() {
         )}
         <button type="submit" className={styles.submitBtn} disabled={loading}>
           {loading ? (
-            <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                justifyContent: "center",
+              }}
+            >
+              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+              Signing up...
+            </span>
           ) : (
             "Agree and Join"
           )}

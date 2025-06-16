@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../Utility/axios";
 import { UserContext } from "../Context";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 function Login() {
   const location = useLocation();
@@ -128,7 +129,21 @@ function Login() {
           className={styles.submitButton}
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Submit"}
+          {loading ? (
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                justifyContent: "center",
+              }}
+            >
+              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+              Logging in...
+            </span>
+          ) : (
+            "Submit"
+          )}
         </button>
         <a
           onClick={() => navigate("/sign-up")}
