@@ -121,12 +121,14 @@ function Home() {
                 Ask Question
               </button>
               {/* Display welcome message with firstname, then username, then email prefix, then fallback */}
-              <p>
+              <p className={styles.username}>
                 Welcome,{" "}
-                {userData?.firstname ||
-                  userData?.username ||
-                  (userData?.email ? userData.email.split("@")[0] : null) ||
-                  "User"}
+                <span className="styles.username_span">
+                  {userData?.firstname ||
+                    userData?.username ||
+                    (userData?.email ? userData.email.split("@")[0] : null) ||
+                    "User"}
+                </span>
                 !
               </p>
             </div>
