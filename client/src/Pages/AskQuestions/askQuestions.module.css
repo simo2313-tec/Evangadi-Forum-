@@ -1,4 +1,4 @@
-.outer__container{
+.outer__container {
   padding: 5px;
 }
 .steps__container {
@@ -32,9 +32,9 @@
 }
 a {
   text-decoration: none;
-  color:rgb(156, 156, 156);
+  color: rgb(156, 156, 156);
 }
-.askform{
+.askform {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -51,7 +51,7 @@ textarea {
   font-size: 18px;
 }
 
-textarea {  
+textarea {
   height: 200px;
   border-radius: 10px;
 }
@@ -62,42 +62,40 @@ input {
   margin: 5px 0;
 }
 
-
 .askBtn {
   border: none;
   background-color: var(--primary-blue);
   color: var(--white);
   height: 4rem;
-  width: 15rem;
   border-radius: 5px;
   margin: 2% 0;
+  padding: 0px 20px;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 .askBtn:hover {
   background-color: var(--accent);
 }
 
-
-
 .success__msg {
   max-width: 600px;
   margin: 40px auto;
   padding: 30px;
-  background-color: #e6ffed; 
-  border: 2px solid var(--success); 
+  background-color: #e6ffed;
+  border: 2px solid var(--success);
   border-radius: 20px;
   text-align: center;
-  color: var(--success); 
+  color: var(--success);
   font-weight: 600;
   font-size: 1.2rem;
   box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
 }
 
-
 .thanks_note {
   margin-bottom: 15px;
   font-size: 1.5rem;
 }
-
 
 .nav_to {
   display: inline-block;
@@ -115,23 +113,20 @@ input {
   background-color: var(--accent);
 }
 
-
-
 /* For tablets and phones (max-width 768px) */
 @media (max-width: 768px) {
-  .question__container{
-    width: 80%
+  .question__container {
+    width: 80%;
   }
   .steps__container {
     font-size: 2rem;
   }
- 
 }
 
 /* For phones (max-width 576px) */
 @media (max-width: 576px) {
-  .question__container{
-    width: 100%
+  .question__container {
+    width: 100%;
   }
   .steps__container {
     font-size: 1.5rem;

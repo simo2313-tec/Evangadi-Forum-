@@ -30,7 +30,7 @@
 .navbar {
   display: flex;
   align-items: center;
-  gap: 1rem;  /* Space between nav links, button, and menu icon */
+  gap: 1rem; /* Space between nav links, button, and menu icon */
 }
 
 .nav {
@@ -52,12 +52,13 @@
 }
 
 .sign_in_btn {
-  padding: 0.5rem 4.5rem;
+  padding: 0.7rem 4.5rem;
   background: var(--primary-blue);
   color: white;
   border: none;
   border-radius: 6px;
   font-weight: 300;
+  font-size: 1.6rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -88,9 +89,9 @@
     border-radius: 0;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     position: absolute;
-    top: 100%;  /* directly below the header */
+    top: 100%; /* directly below the header */
     left: 0;
-    width: 100%;  /* FULL width */
+    width: 100%; /* FULL width */
     transition: max-height 0.3s ease, padding 0.3s ease;
     z-index: 50;
   }
