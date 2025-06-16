@@ -1,31 +1,67 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
-import { UserContext } from "../../Components/Context/userContext";
+import { UserContext } from "../../Components/Context";
+import { toast } from "react-toastify";
 
 function AskQuestions() {
-  const token = localStorage.getItem("token");
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData, loadingAuth } = useContext(UserContext);
+  const token = userData?.token;
   const navigate = useNavigate();
+  const [initialAuthCheckComplete, setInitialAuthCheckComplete] =
+    useState(false);
 
   const [question, setQuestion] = useState({
     title: "",
     description: "",
+    tag: "",
     userId: userData?.userid || null,
   });
 
-  const [response, setResponse] = useState(null);
+  // Update question.userId if userData.userid changes after initial load
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+
+  // Update question.userId if userData.userid changes after initial load
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+ const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in
-    if (!token || !userData?.userid) {
-      navigate("/landing");
+    if (loadingAuth) {
+      return; // Wait for auth to load
     }
-  }, [token, userData?.userid, navigate]);
+
+    if (!initialAuthCheckComplete) {
+      if (!token || !userData?.userid) {
+        navigate("/landing", {
+          state: { message: "Please login to ask a question." }, // Message for Landing page
+        });
+      }
+      setInitialAuthCheckComplete(true);
+    } else {
+      if (!token || !userData?.userid) {
+        navigate("/landing");
+      }
+    }
+  }, [
+    token,
+    userData?.userid,
+    navigate,
+    loadingAuth,
+    initialAuthCheckComplete,
+  ]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,49 +71,47 @@ function AskQuestions() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     if (!token || !userData?.userid) {
-      setError("Please login to ask a question");
+      toast.error("Authentication required. Redirecting to login.");
+      navigate("/landing", {
+        state: { message: "Please login to ask a question." },
+      });
       setLoading(false);
       return;
     }
 
-    axios
-      .post("/question", question, {
+    try {
+      await axios.post("/questions", question, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((res) => {
-        setResponse(res.data);
-      })
-      .catch((error) => {
-        if (error.response?.status === 401) {
-          setError("Please login to ask a question");
-          navigate("/landing");
-        } else {
-          setError("Failed to submit question. Please try again.");
-        }
-      })
-      .finally(() => {
-        setLoading(false);
+    });
+      setQuestion({ title: "", description: "", tag: "", userId: userData.userid });
+      toast.success("Question posted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
       });
+      navigate("/home");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setError("Please login to ask a question");
+        navigate("/landing");
+      } else {
+        setError("Failed to submit question. Please try again.");
+        toast.error("Failed to submit question.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-
-  if (response) {
-    return (
-      <div className={styles.success__msg}>
-        <h1 className={styles.thanks_note}>{response.message}</h1>
-        <Link className={styles.nav_to} to={"/home"}>
-          {"Go to home"}
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <LayOut>
@@ -108,7 +142,6 @@ function AskQuestions() {
               value={question.title}
               required
             />
-
             <textarea
               placeholder="Question Description ..."
               name="description"
@@ -117,13 +150,17 @@ function AskQuestions() {
               value={question.description}
               required
             ></textarea>
-
+            <input
+              type="text"
+              placeholder="Tag (optional)"
+              name="tag"
+              onChange={handleChange}
+              value={question.tag}
+            />
             {error && <p className={styles.error}>{error}</p>}
-
             <button
               type="submit"
               className={styles.askBtn}
-              variant="success"
               disabled={loading}
             >
               {loading ? "Posting..." : "Post Your Question"}

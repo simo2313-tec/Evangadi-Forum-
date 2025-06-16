@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./login.module.css";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../Utility/axios";
-import { UserContext } from "../Context/userContext";
+import { UserContext } from "../Context";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 function Login() {
   const location = useLocation();
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,61 +25,50 @@ function Login() {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(""); // Clear previous inline errors
+
+    // Basic validation
+    if (!formData.email) {
+      toast.warn("Please enter your email.");
+      setLoading(false);
+      return;
+    }
+    if (!formData.password) {
+      toast.warn("Please enter your password.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await api.post("/user/login", formData);
 
-      // On successful login
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          userid: response.data.userid,
-          username: response.data.username,
-          email: response.data.email,
-        })
-      );
-
       setUserData({
-        userid: response.data.userid,
+        userid: response.data.userid, // Fixed response structure
         username: response.data.username,
         email: response.data.email,
+        token: response.data.token,
+        firstname: response.data.first_name,
       });
 
-      // Navigate to home page on successful login
       navigate("/home");
-      toast.success("Logged in successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        style: {
-          marginTop: "70px",
-          padding: "7px 7px", // reduce padding
-          fontSize: "1.5rem", // smaller font
-          color: "#ff8107",
-          fontWeight: "bold",
-          borderRadius: "8px",
-          minHeight: "unset", // override default height
-        },
-        progressStyle: {
-          color: "#ff8107",
-        },
-      });
+      toast.success("Logged in successfully!");
     } catch (error) {
+      let errorMessage = "An error occurred. Please try again.";
       if (error.response?.status === 401) {
-        setError("Invalid email or password");
+        errorMessage = "Invalid email or password. Please try again.";
       } else if (error.response?.status === 404) {
-        setError("User not found. Please register first.");
-      } else {
-        setError("An error occurred. Please try again.");
+        errorMessage = "User not found. Please register first.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
       }
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -130,7 +120,7 @@ function Login() {
               className={styles.passwordToggle}
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </span>
           </div>
         </div>
@@ -139,14 +129,28 @@ function Login() {
           className={styles.submitButton}
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Submit"}
+          {loading ? (
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                justifyContent: "center",
+              }}
+            >
+              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+              Logging in...
+            </span>
+          ) : (
+            "Submit"
+          )}
         </button>
-        <Link
+        <a
           onClick={() => navigate("/sign-up")}
           className={styles.createAccountLinkBottom}
         >
           Create an account?
-        </Link>
+        </a>
       </form>
     </div>
   );

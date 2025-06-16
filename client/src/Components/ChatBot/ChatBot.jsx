@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "./chatBot.module.css";
 import { FaTimes, FaPaperPlane } from "react-icons/fa";
 import { LuBotMessageSquare } from "react-icons/lu";
+import { LuMaximize2, LuMinimize2 } from "react-icons/lu";
 import ReactMarkdown from "react-markdown";
 
 // Retrieve API URL, Key and System Instruction from environment variables
@@ -11,6 +12,7 @@ const systemInstructionText = import.meta.env.VITE_SYSTEM_INSTRUCTION;
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [mini, setMini] = useState(true);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +35,7 @@ const ChatBot = () => {
   }, [messages]);
 
   const toggleOpen = () => setIsOpen((open) => !open);
+  const minMax = () => setMini((prev) => !prev);
 
   const handleInputChange = (e) => setInputValue(e.target.value);
 
@@ -98,7 +101,7 @@ const ChatBot = () => {
   return (
     <>
       {isOpen && (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${mini ? "" : styles.max}`}>
           <div className={styles.header}>
             <div className={styles.titleContainer}>
               <span className={styles.mainTitle}>
@@ -107,13 +110,16 @@ const ChatBot = () => {
               </span>
               <span className={styles.subTitle}>powered by Gemini</span>
             </div>
-            <button
-              className={styles.closeBtn}
-              onClick={toggleOpen}
-              aria-label="Close chat"
-            >
-              <FaTimes />
-            </button>
+
+            {mini ? (
+              <button className={styles.minMaxBtn} onClick={minMax}>
+                <LuMaximize2 size={20} />
+              </button>
+            ) : (
+              <button className={styles.minMaxBtn} onClick={minMax}>
+                <LuMinimize2 size={20} />
+              </button>
+            )}
           </div>
           <div className={styles.messages}>
             {messages.map((msg) => (
@@ -164,7 +170,7 @@ const ChatBot = () => {
         onClick={toggleOpen}
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
-        {isOpen ? <FaTimes /> : <LuBotMessageSquare />}
+        {isOpen ? <FaTimes /> : <LuBotMessageSquare size={30} />}
       </button>
     </>
   );
