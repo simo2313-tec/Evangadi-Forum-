@@ -48,6 +48,7 @@
 
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
+const xss = require("xss");
 
 async function postQuestion(req, res) {
   try {
@@ -67,10 +68,18 @@ async function postQuestion(req, res) {
       });
     }
 
-    // Insert question into database (omit post_id, let question_id be used)
+    // Sanitize inputs to prevent XSS
+    const sanitizedTitle = xss(title);
+    const sanitizedDescription = xss(description);
+    const sanitizedTag = tag ? xss(tag) : null;
+
+    // Generate a unique post_id before insert
+    const postId = Math.floor(Math.random() * 2147483647) + 1;
+
+    // Insert question into database
     const [result] = await dbconnection.query(
       "INSERT INTO question (question_title, question_description, tag, user_id, post_id) VALUES (?, ?, ?, ?, ?)",
-      [title, description, tag || null, userId, result.insertId || Math.floor(Math.random() * 2147483647) + 1]
+      [sanitizedTitle, sanitizedDescription, sanitizedTag, userId, postId]
     );
 
     res.status(StatusCodes.CREATED).json({

@@ -1,8 +1,7 @@
-
-
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
 const { sendAnswerNotification } = require("../services/mailer");
+const xss = require("xss");
 
 
 async function postAnswer(req, res) {
@@ -15,6 +14,9 @@ async function postAnswer(req, res) {
       message: "Answer, user_id, and question_id are required.",
     });
   }
+
+  // Sanitize answer to prevent XSS
+  const sanitizedAnswer = xss(answer);
 
   // Validate types
   const questionIdNum = parseInt(question_id);
@@ -64,7 +66,7 @@ async function postAnswer(req, res) {
       INSERT INTO answer (answer, user_id, question_id, created_at)
       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
     `;
-    const [result] = await dbconnection.query(insertQuery, [answer, userIdNum, questionIdNum]);
+    const [result] = await dbconnection.query(insertQuery, [sanitizedAnswer, userIdNum, questionIdNum]);
 
     // Fetch email of the user who asked the question
     const [questionRows] = await dbconnection.query(
