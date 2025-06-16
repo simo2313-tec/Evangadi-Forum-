@@ -42,42 +42,27 @@
   height: 135px;
   border-bottom: 2px solid var(--border);
   padding-bottom: 15px;
-  transition: all 2s;
+  transition: all 0.3s ease-in-out;
 }
 
 .user_container:hover .chevron {
   transform: translateX(10px);
+  transition: transform 0.3s ease-in-out;
 }
 .user_container:hover .transform {
   transform: translateX(10px);
-  fill: var(--text-dark);
+  fill: #1e3a5f;
   color: var(--white);
-}
-.user_container .usericon {
-  font-size: 3rem;
-  color: var(--primary-blue);
-  transition: color 0.3s ease;
-  border-radius: 50%;
-  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
-    transform 0.3s ease-in-out;
-  padding: 5px;
-  cursor: pointer;
+  transition: transform 0.3s, fill 0.3s, color 0.3s;
 }
 
-.user_container:hover .usericon {
-  transform: scale(1.1);
-  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
-    transform 0.3s ease-in-out;
-  background: var(--primary-blue);
-  color: var(--white);
-}
 .user_question {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 100%;
-  gap: 40px;
+  gap: 30px;
+  transition: gap 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .usericon_and_username {
   display: flex;
@@ -85,7 +70,6 @@
   align-items: center;
   height: 100%;
 }
-
 .inner_center {
   display: flex;
   flex-direction: column;
@@ -95,6 +79,25 @@
 .link_container {
   text-decoration: none;
   color: unset;
+}
+
+/* User icon animation */
+.usericon {
+  background: var(--white);
+  color: #1e3a5f;
+  border-radius: 50%;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+  padding: 5px;
+  cursor: pointer;
+}
+.user_container:hover .usericon {
+  transform: scale(1.1);
+  background: #1e3a5f;
+  color: var(--white);
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 .Qbox {
   display: flex;
@@ -112,7 +115,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50vh; /* Adjust as needed to lower the spinner */
+  height: 50vh;
 }
 
 .vote_section {

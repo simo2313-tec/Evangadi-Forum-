@@ -145,15 +145,15 @@ function Home() {
                         </div>
                       </div>
                     </div>
-                    <FaChevronRight size={30} className={styles.chevron} />
+                    <FaChevronRight size={20} className={styles.chevron} />
                   </div>
                 </Link>
 
                 <div className={styles.vote_section}>
-                  {/* Vote Buttons  */}
                   <VoteButtons
                     likes={q.likes ?? 0}
                     dislikes={q.dislikes ?? 0}
+                    userVote={q.user_vote_type}
                     onVote={(action) => handleVote(q.question_id, action)}
                   />
                 </div>

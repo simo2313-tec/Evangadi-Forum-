@@ -32,24 +32,23 @@ function QuestionDetailAndAnswer() {
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
   const [questionDetail, setQuestionDetail] = useState(null);
-  const [successAnswer, setSuccessAnswer] = useState(false)
+  const [successAnswer, setSuccessAnswer] = useState(false);
 
   const submitAnswer = (e) => {
     console.log(answer);
     e.preventDefault();
-     setLoading(true);
+    setLoading(true);
     setError({
       ...error,
       postAnswerError: null,
     });
-   
-    if(!token){
-      setLoading(false)
+
+    if (!token) {
+      setLoading(false);
       toast.error("Login to post answer");
       return;
     }
 
-   
     axios
       .post("/answer", answer, {
         headers: {
@@ -59,8 +58,8 @@ function QuestionDetailAndAnswer() {
       .then((res) => {
         setResponse(res.data);
         getAllAnswers();
-        setSuccessAnswer(true)
-        toast.success("Answer Posted Successfully")
+        setSuccessAnswer(true);
+        toast.success("Answer Posted Successfully");
       })
       .catch((err) => {
         const errorMessage =
@@ -72,7 +71,6 @@ function QuestionDetailAndAnswer() {
       });
   };
 
- 
   // Vote handler
   const handleVote = async (type, id, action) => {
     if (!token) {
@@ -104,7 +102,7 @@ function QuestionDetailAndAnswer() {
     }
   };
   const handleChange = (e) => {
-    setSuccessAnswer(false)
+    setSuccessAnswer(false);
     const { name, value } = e.target;
     setAnswer((prev) => ({
       ...prev,
@@ -182,6 +180,7 @@ function QuestionDetailAndAnswer() {
               <VoteButtons
                 likes={questionDetail.likes}
                 dislikes={questionDetail.dislikes}
+                userVote={questionDetail.user_vote_type}
                 onVote={(action) =>
                   handleVote("question", questionDetail.question_id, action)
                 }
@@ -203,26 +202,46 @@ function QuestionDetailAndAnswer() {
               <p>No answers yet. Be the first to answer!</p>
             ) : (
               answersForQuestion.map((answerItem) => (
-                <div key={answerItem.answer_id} className={styles.singleAnswer}>
-                  <div className={styles.user}>
-                    <FaUserCircle size={50} className={styles.usericon} />
-                    <div>{answerItem.user_name}</div>
-                  </div>
-                  <div className={styles.theAnswer}>
-                    <div className={styles.eachAnswer}>
-                      <p>{answerItem.answer}</p>
-                      <p className={styles.timestamp_title}>
-                        {getTimeDifference(answerItem.created_at)}
-                      </p>
+                <div
+                  key={answerItem.answer_id}
+                  className={styles.question_item_wrapper}
+                >
+                  <div className={styles.user_container}>
+                    <div className={styles.user_question}>
+                      <div className={styles.usericon_and_username}>
+                        <div className={styles.inner_center}>
+                          <FaUserCircle
+                            size={80}
+                            className={styles.usericon}
+                            style={{
+                              background: "var(--white)",
+                              color: "#1e3a5f",
+                              borderRadius: "50%",
+                              padding: "5px",
+                            }}
+                          />
+                          <span>{answerItem.user_name}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className={styles.Qbox}>
+                          <p className={styles.Qtitle}>{answerItem.answer}</p>
+                          <p className={styles.timestamp_title}>
+                            {getTimeDifference(answerItem.created_at)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    {/* VoteButtons */}
-                    <VoteButtons
-                      likes={answerItem.likes}
-                      dislikes={answerItem.dislikes}
-                      onVote={(action) =>
-                        handleVote("answer", answerItem.answer_id, action)
-                      }
-                    />
+                    <div className={styles.vote_section}>
+                      <VoteButtons
+                        likes={answerItem.likes}
+                        dislikes={answerItem.dislikes}
+                        userVote={answerItem.user_vote_type}
+                        onVote={(action) =>
+                          handleVote("answer", answerItem.answer_id, action)
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               ))

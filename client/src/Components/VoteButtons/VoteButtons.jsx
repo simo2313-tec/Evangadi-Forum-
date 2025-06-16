@@ -17,11 +17,13 @@ const formatVotes = (num) => {
 function VoteButtons({ likes = 0, dislikes = 0, userVote, onVote }) {
   const netVotes = likes - dislikes;
 
-  const handleUpvoteClick = () => {
+  const handleUpvoteClick = (e) => {
+    e.stopPropagation();
     onVote("like");
   };
 
-  const handleDownvoteClick = () => {
+  const handleDownvoteClick = (e) => {
+    e.stopPropagation();
     onVote("dislike");
   };
 
