@@ -22,6 +22,7 @@ function Home() {
     pageSize: 5,
     totalPages: 1,
   });
+  const [sort, setSort] = useState("recent");
   const navigate = useNavigate();
   const token = userData?.token;
 
@@ -39,7 +40,7 @@ function Home() {
     setLoading(true);
     // Fetch questions from the API
     axios
-      .get(`/question?page=${page}&pageSize=${pageSize}`)
+      .get(`/question?page=${page}&pageSize=${pageSize}&sort=${sort}`)
       .then((res) => {
         if (Array.isArray(res.data.questions)) {
           setQuestions(res.data.questions);
@@ -67,7 +68,7 @@ function Home() {
       .finally(() => {
         setLoading(false);
       });
-  }, [page, pageSize]);
+  }, [page, pageSize, sort]);
 
   //  Vote handle
   const handleVote = async (question_id, action) => {
@@ -123,7 +124,27 @@ function Home() {
                 !
               </p>
             </div>
-            <h1 className={styles.questions_list}>Questions</h1>
+            {/* Questions title and sort filter in a flex row */}
+            <div className={styles.questions_sort_row}>
+              <h1 className={styles.questions_list}>Questions</h1>
+              <div className={styles.sort_container}>
+                <label htmlFor="sort-select" className={styles.sort_label}>
+                  Sort by:
+                </label>
+                <select
+                  id="sort-select"
+                  className={styles.sort_select}
+                  value={sort}
+                  onChange={(e) => {
+                    setSort(e.target.value);
+                    setPage(1);
+                  }}
+                >
+                  <option value="recent">Most Recent</option>
+                  <option value="popular">Most Popular</option>
+                </select>
+              </div>
+            </div>
           </div>
           {loadingQuestions ? (
             <div className={styles.spinner_container}>

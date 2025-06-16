@@ -41,6 +41,7 @@ function QuestionDetailAndAnswer() {
   });
   const [questionDetail, setQuestionDetail] = useState(null);
   const [successAnswer, setSuccessAnswer] = useState(false);
+  const [answerSort, setAnswerSort] = useState("recent");
 
   const submitAnswer = (e) => {
     console.log(answer);
@@ -126,7 +127,7 @@ function QuestionDetailAndAnswer() {
     });
     axios
       .get(
-        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}`,
+        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -196,7 +197,7 @@ function QuestionDetailAndAnswer() {
   useEffect(() => {
     getQuestionDetail();
     getAllAnswers();
-  }, [question_id, successAnswer, answerPage, answerPageSize]);
+  }, [question_id, successAnswer, answerPage, answerPageSize, answerSort]);
   return (
     <LayOut>
       <div className={styles.outer__container}>
@@ -223,7 +224,27 @@ function QuestionDetailAndAnswer() {
 
         <div className={styles.community_answer}>
           <hr />
-          <h2 className={styles.title}>Answers From the Community</h2>
+          {/* Answers title and sort filter in a flex row */}
+          <div className={styles.questions_sort_row}>
+            <h2 className={styles.title}>Answers From the Community</h2>
+            <div className={styles.sort_container}>
+              <label htmlFor="answer-sort-select" className={styles.sort_label}>
+                Sort by:
+              </label>
+              <select
+                id="answer-sort-select"
+                className={styles.sort_select}
+                value={answerSort}
+                onChange={(e) => {
+                  setAnswerSort(e.target.value);
+                  setAnswerPage(1);
+                }}
+              >
+                <option value="recent">Most Recent</option>
+                <option value="popular">Most Popular</option>
+              </select>
+            </div>
+          </div>
           <hr />
           <div className={styles.answers_container}>
             {error.getAnswerError ? (

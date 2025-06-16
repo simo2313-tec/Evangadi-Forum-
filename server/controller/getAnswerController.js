@@ -8,6 +8,12 @@ async function getAnswers(req, res) {
   const page = parseInt(req.query.page, 10) || 1;
   const pageSize = parseInt(req.query.pageSize, 10) || 10;
   const offset = (page - 1) * pageSize;
+  // Sorting
+  const sort = req.query.sort === "popular" ? "popular" : "recent";
+  let orderBy = "a.created_at DESC";
+  if (sort === "popular") {
+    orderBy = "likes DESC, a.created_at DESC";
+  }
   try {
     // Get total count for pagination
     const [[{ total }]] = await dbconnection.query(
@@ -47,7 +53,7 @@ async function getAnswers(req, res) {
       ) AS ld ON a.answer_id = ld.answer_id
       LEFT JOIN likes_dislikes ul ON ul.answer_id = a.answer_id AND ul.user_id = ?
       WHERE q.question_id = ?
-      ORDER BY a.created_at DESC
+      ORDER BY ${orderBy}
       LIMIT ? OFFSET ?;
     `,
       [userId || 0, question_id, pageSize, offset]
