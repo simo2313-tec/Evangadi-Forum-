@@ -1,6 +1,6 @@
 .footer {
   background-color: var(--dark-bg);
-  color: white;
+  color: var(--white);
   padding: 40px 20px;
   display: flex;
   justify-content: space-between;
@@ -25,13 +25,13 @@
 }
 
 .icon {
-  color: white;
+  color: var(--white);
   font-size: 24px;
   transition: 0.3s;
 }
 
 .icon:hover {
-  color: #f4a261;
+  color: var(--accent);
 }
 
 .linksSection,
@@ -55,13 +55,13 @@ ul li {
 }
 
 ul li a {
-  color: #5f7888;
+  color: var(text-gray);
   text-decoration: none;
   transition: 0.3s;
 }
 
 ul li a:hover {
-  color: #f4a261;
+  color: var(--accent);
 }
 
 /* ✅ Responsive Design */
