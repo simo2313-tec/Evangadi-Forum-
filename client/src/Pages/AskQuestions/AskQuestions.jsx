@@ -28,21 +28,17 @@ function AskQuestions() {
     }
   }, [userData?.userid]);
 
-  // Update question.userId if userData.userid changes after initial load
-  useEffect(() => {
-    if (userData?.userid) {
-      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
-    }
-  }, [userData?.userid]);
- const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Authentication check
   useEffect(() => {
+    // Wait for loadingAuth to finish.
     if (loadingAuth) {
-      return; // Wait for auth to load
+      return;
     }
 
+    // Redirect if no token/userId.
     if (!initialAuthCheckComplete) {
       if (!token || !userData?.userid) {
         navigate("/landing", {
@@ -63,6 +59,8 @@ function AskQuestions() {
     initialAuthCheckComplete,
   ]);
 
+  
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setQuestion((prev) => ({
@@ -90,8 +88,13 @@ function AskQuestions() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-    });
-      setQuestion({ title: "", description: "", tag: "", userId: userData.userid });
+      });
+      setQuestion({
+        title: "",
+        description: "",
+        tag: "",
+        userId: userData.userid,
+      });
       toast.success("Question posted successfully!", {
         position: "top-right",
         autoClose: 3000,
@@ -158,11 +161,7 @@ function AskQuestions() {
               value={question.tag}
             />
             {error && <p className={styles.error}>{error}</p>}
-            <button
-              type="submit"
-              className={styles.askBtn}
-              disabled={loading}
-            >
+            <button type="submit" className={styles.askBtn} disabled={loading}>
               {loading ? "Posting..." : "Post Your Question"}
             </button>
           </form>

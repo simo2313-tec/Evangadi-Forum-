@@ -13,11 +13,9 @@ function QuestionDetailAndAnswer() {
   const { userData, setUserData } = useContext(UserContext);
   const token = userData?.token;
   const { question_id } = useParams();
-  const navigate = useNavigate();
 
   const [answer, setAnswer] = useState({
     user_id: userData?.userid,
-
     question_id,
     answer: "",
   });
@@ -43,6 +41,9 @@ function QuestionDetailAndAnswer() {
   const [successAnswer, setSuccessAnswer] = useState(false);
   const [answerSort, setAnswerSort] = useState("recent");
 
+
+
+  // post the question 
   const submitAnswer = (e) => {
     console.log(answer);
     e.preventDefault();
@@ -80,6 +81,8 @@ function QuestionDetailAndAnswer() {
       });
   };
 
+
+
   // Vote handler
   const handleVote = async (type, id, action) => {
     if (!token) {
@@ -110,6 +113,9 @@ function QuestionDetailAndAnswer() {
       });
     }
   };
+
+  
+  // handle input changes
   const handleChange = (e) => {
     setSuccessAnswer(false);
     const { name, value } = e.target;
@@ -119,6 +125,9 @@ function QuestionDetailAndAnswer() {
     }));
   };
 
+
+
+  // fetch all answers for that specific question
   const getAllAnswers = () => {
     setLoading(true);
     setError({
@@ -167,6 +176,9 @@ function QuestionDetailAndAnswer() {
       });
   };
 
+
+
+  // fetch the detail of that specific question
   const getQuestionDetail = () => {
     setLoading(true);
     setError({
@@ -193,11 +205,18 @@ function QuestionDetailAndAnswer() {
       });
   };
 
+
+
   // Load question detail and answers when component mounts
   useEffect(() => {
     getQuestionDetail();
     getAllAnswers();
   }, [question_id, successAnswer, answerPage, answerPageSize, answerSort]);
+
+
+
+
+
   return (
     <LayOut>
       <div className={styles.outer__container}>

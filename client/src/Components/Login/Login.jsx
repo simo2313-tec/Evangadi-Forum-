@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
 function Login() {
-  const location = useLocation();
   const { userData, setUserData } = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
