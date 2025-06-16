@@ -4,11 +4,21 @@
 
 // to Add route in Express (routes/answer.js)
 
+// const express = require("express");
+// const {  postAnswer} = require("../controller/postAnswerController");
+// const postAnswerRouter = express.Router();
+
+// // POST /api/answer
+// postAnswerRouter.post("/answer", postAnswer);
+
+// module.exports = postAnswerRouter;
+
+
 const express = require("express");
-const {  postAnswer} = require("../controller/postAnswerController");
+const { postAnswer } = require("../controller/postAnswerController");
+
 const postAnswerRouter = express.Router();
 
-// POST /api/answer
 postAnswerRouter.post("/answer", postAnswer);
 
 module.exports = postAnswerRouter;

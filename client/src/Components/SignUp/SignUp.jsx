@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { FiEyeOff, FiEye } from "react-icons/fi";
 import styles from "./signup.module.css";
 import { ClipLoader } from "react-spinners";
-import api from "../../Utility/axios";
+import axios from "../../Utility/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../Context";
 import { toast } from "react-toastify";
@@ -28,8 +28,6 @@ function SignUp() {
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // console.log(e.target);
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -44,7 +42,6 @@ function SignUp() {
     });
   };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -77,41 +74,21 @@ function SignUp() {
     setErrors({}); // Clear previous form errors displayed below inputs
 
     try {
-      const response = await api.post("/user/register", {
+      const response = await axios.post("/user/register", {
         username: formData.userName,
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
         password: formData.password,
       });
-      alert("Registration successful!");
-      navigate("/home");
-      // TODO: Store token in local storage or context
-      // On successful sign up
-      console.log(response);
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          userid: response.data.userid,
-          username: response.data.username,
-          email: response.data.email,
-        })
-      );
-
+      toast.success("Registration successful!");
       setUserData({
-        userid: response.data.userid,
+        userid: response.data.userid, // Fixed response structure
         username: response.data.username,
         email: response.data.email,
         token: response.data.token,
         firstname: response.data.first_name,
       });
-
-      // TODO: Clear form data
-
-      toast.success("Registration successful! Welcome!");
-      navigate("/home");
-
       setFormData({
         email: "",
         firstName: "",
@@ -119,7 +96,7 @@ function SignUp() {
         userName: "",
         password: "",
       });
-      // console.log(response.data);
+      navigate("/home");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -137,7 +114,6 @@ function SignUp() {
     <div className={styles.signupContainer}>
       <form className={styles.signupForm} onSubmit={handleSubmit}>
         <h2 className={styles.title}>Join the network</h2>
-
         <p className={styles.subtitle}>
           Already have an account?{" "}
           <a onClick={() => navigate("/login")} className={styles.signInLink}>
@@ -231,12 +207,21 @@ function SignUp() {
         )}
         <button type="submit" className={styles.submitBtn} disabled={loading}>
           {loading ? (
-            <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                justifyContent: "center",
+              }}
+            >
+              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+              Signing up...
+            </span>
           ) : (
             "Agree and Join"
           )}
         </button>
-
         {errors.api && (
           <div
             className={styles.errorMessage}
@@ -245,7 +230,6 @@ function SignUp() {
             {errors.api}
           </div>
         )}
-
         <p className={styles.agreeText}>
           I agree to the{" "}
           <a href="#" className={styles.link}>

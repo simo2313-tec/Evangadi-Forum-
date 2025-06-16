@@ -35,7 +35,7 @@ const ChatBot = () => {
   }, [messages]);
 
   const toggleOpen = () => setIsOpen((open) => !open);
-  const minMax = () =>setMini((prev)=> !prev)
+  const minMax = () => setMini((prev) => !prev);
 
   const handleInputChange = (e) => setInputValue(e.target.value);
 
@@ -170,7 +170,7 @@ const ChatBot = () => {
         onClick={toggleOpen}
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
-        {isOpen ? <FaTimes /> : <LuBotMessageSquare />}
+        {isOpen ? <FaTimes /> : <LuBotMessageSquare size={30} />}
       </button>
     </>
   );

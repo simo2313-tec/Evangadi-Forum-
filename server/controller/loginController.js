@@ -2,10 +2,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
 const dbConnection = require("../db/db.Config");
+const xss = require("xss");
 
 //login route implementation FOR already registered users
 async function login(req, res) {
-  const { email, password } = req.body;
+  // Sanitize email and password
+  const email = xss(req.body.email);
+  const password = xss(req.body.password);
 
   if (!email || !password) {
     return res.status(StatusCodes.BAD_REQUEST).json({

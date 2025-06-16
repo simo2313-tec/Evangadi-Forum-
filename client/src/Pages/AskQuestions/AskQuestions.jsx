@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
@@ -16,6 +17,7 @@ function AskQuestions() {
   const [question, setQuestion] = useState({
     title: "",
     description: "",
+    tag: "",
     userId: userData?.userid || null,
   });
 
@@ -26,7 +28,13 @@ function AskQuestions() {
     }
   }, [userData?.userid]);
 
-  const [response, setResponse] = useState(null);
+  // Update question.userId if userData.userid changes after initial load
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+ const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -63,7 +71,7 @@ function AskQuestions() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -77,40 +85,33 @@ function AskQuestions() {
       return;
     }
 
-    axios
-      .post("/question", question, {
+    try {
+      await axios.post("/questions", question, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((res) => {
-        setResponse(res.data);
-      })
-      .catch((error) => {
-        if (error.response?.status === 401) {
-          toast.error("Authentication failed. Please log in again.");
-          navigate("/landing", {
-            state: { message: "Session expired. Please log in again." },
-          });
-        } else {
-          setError("Failed to submit question. Please try again.");
-        }
-      })
-      .finally(() => {
-        setLoading(false);
+    });
+      setQuestion({ title: "", description: "", tag: "", userId: userData.userid });
+      toast.success("Question posted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
       });
+      navigate("/home");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setError("Please login to ask a question");
+        navigate("/landing");
+      } else {
+        setError("Failed to submit question. Please try again.");
+        toast.error("Failed to submit question.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-
-  if (response) {
-    return (
-      <div className={styles.success__msg}>
-        <h1 className={styles.thanks_note}>{response.message}</h1>
-        <Link className={styles.nav_to} to={"/home"}>
-          {"Go to home"}
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <LayOut>
@@ -141,7 +142,6 @@ function AskQuestions() {
               value={question.title}
               required
             />
-
             <textarea
               placeholder="Question Description ..."
               name="description"
@@ -150,13 +150,17 @@ function AskQuestions() {
               value={question.description}
               required
             ></textarea>
-
+            <input
+              type="text"
+              placeholder="Tag (optional)"
+              name="tag"
+              onChange={handleChange}
+              value={question.tag}
+            />
             {error && <p className={styles.error}>{error}</p>}
-
             <button
               type="submit"
               className={styles.askBtn}
-              variant="success"
               disabled={loading}
             >
               {loading ? "Posting..." : "Post Your Question"}

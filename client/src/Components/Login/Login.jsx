@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../Utility/axios";
 import { UserContext } from "../Context";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 function Login() {
   const location = useLocation();
@@ -24,7 +25,6 @@ function Login() {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (error) setError("");
   };
 
@@ -49,7 +49,7 @@ function Login() {
       const response = await api.post("/user/login", formData);
 
       setUserData({
-        userid: response.data.userid,
+        userid: response.data.userid, // Fixed response structure
         username: response.data.username,
         email: response.data.email,
         token: response.data.token,
@@ -120,7 +120,7 @@ function Login() {
               className={styles.passwordToggle}
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
+              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </span>
           </div>
         </div>
@@ -129,7 +129,21 @@ function Login() {
           className={styles.submitButton}
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Submit"}
+          {loading ? (
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                justifyContent: "center",
+              }}
+            >
+              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
+              Logging in...
+            </span>
+          ) : (
+            "Submit"
+          )}
         </button>
         <a
           onClick={() => navigate("/sign-up")}
