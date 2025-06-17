@@ -6,8 +6,15 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: var(--white);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-bottom: 0.5px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 4px 24px 0 rgba(30, 58, 95, 0.07);
+  transition: background 0.3s, box-shadow 0.3s;
 }
 .header {
   width: 80%;
@@ -17,7 +24,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 2rem;
-  background-color: var(--white);
+  background: transparent;
 
   position: relative;
   z-index: 100;
@@ -78,6 +85,7 @@
   .header {
     width: 100%;
     padding: 1rem;
+    background: transparent;
   }
 
   .nav {
