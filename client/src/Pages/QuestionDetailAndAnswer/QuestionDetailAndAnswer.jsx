@@ -20,7 +20,6 @@ function QuestionDetailAndAnswer() {
     answer: "",
   });
 
-  const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({
     getAnswerError: null,
@@ -139,10 +138,10 @@ function QuestionDetailAndAnswer() {
         },
       })
       .then((res) => {
-        setResponse(res.data);
         getAllAnswers();
         setSuccessAnswer(true);
         toast.success("Answer Posted Successfully");
+        setLoading(false);
       })
       .catch((err) => {
         const errorMessage =
