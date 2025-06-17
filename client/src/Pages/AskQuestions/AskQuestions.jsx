@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
 import { toast } from "react-toastify";
-import { ClipLoader } from "react-spinners"; // Import ClipLoader
+import { ClipLoader } from "react-spinners";
 
 function AskQuestions() {
   const { userData, setUserData, loadingAuth } = useContext(UserContext);
@@ -40,13 +40,13 @@ function AskQuestions() {
 
   useEffect(() => {
     if (loadingAuth) {
-      return; // Wait for auth to load
+      return;
     }
 
     if (!initialAuthCheckComplete) {
       if (!token || !userData?.userid) {
         navigate("/landing", {
-          state: { message: "Please login to ask a question." }, // Message for Landing page
+          state: { message: "Please login to ask a question." },
         });
       }
       setInitialAuthCheckComplete(true);
