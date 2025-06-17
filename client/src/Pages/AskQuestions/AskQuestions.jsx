@@ -15,22 +15,11 @@ function AskQuestions() {
     tag: "",
     userId: userData?.userid || null,
   });
+
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (userData?.userid) {
-      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
-    }
-  }, [userData?.userid]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setQuestion((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,6 +53,26 @@ function AskQuestions() {
       setLoading(false);
     }
   };
+
+
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+
+
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setQuestion((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+
+ 
 
   return (
     <LayOut>

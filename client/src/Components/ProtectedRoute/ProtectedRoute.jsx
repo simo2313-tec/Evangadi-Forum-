@@ -6,6 +6,7 @@ import styles from "./protected.module.css"
 
 export function ProtectedRoute({ children }) {
   const { userData, loadingAuth } = useContext(UserContext);
+  
   if (loadingAuth) {
     return (
       <div className={styles.spinner_container}>
@@ -13,6 +14,8 @@ export function ProtectedRoute({ children }) {
       </div>
     );
   }
+
+
   if (!userData?.token || !userData?.userid) {
     return <Navigate to="/landing" replace />;
   }
