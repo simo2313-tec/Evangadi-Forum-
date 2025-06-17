@@ -9,6 +9,7 @@ import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ChatBot from "./Components/ChatBot";
+import { ProtectedRoute } from "./Components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -17,7 +18,14 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/landing" element={<Landing />} />
-        <Route path="/ask-questions" element={<AskQuestions />} />
+        <Route
+          path="/ask-questions"
+          element={
+            <ProtectedRoute>
+              <AskQuestions />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/question-detail/:question_id"
           element={<QuestionDetail />}

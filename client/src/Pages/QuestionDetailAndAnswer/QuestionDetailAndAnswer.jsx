@@ -8,6 +8,7 @@ import { UserContext } from "../../Components/Context";
 import getTimeDifference from "../../Utility/helpers";
 import VoteButtons from "../../Components/VoteButtons/VoteButtons";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 function QuestionDetailAndAnswer() {
   const { userData, setUserData } = useContext(UserContext);
@@ -20,11 +21,14 @@ function QuestionDetailAndAnswer() {
     answer: "",
   });
 
+  const [QDetailLoading, setDDetailLoading] = useState(false);
+  const [answerLoading, setAnswerLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+
+
   const [error, setError] = useState({
     getAnswerError: null,
     getQuestionDetailError: null,
-    postAnswerError: null,
   });
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
@@ -38,92 +42,77 @@ function QuestionDetailAndAnswer() {
   });
   const [questionDetail, setQuestionDetail] = useState(null);
   const [successAnswer, setSuccessAnswer] = useState(false);
+  
   const [answerSort, setAnswerSort] = useState("recent");
 
+
   // fetch the detail of that specific question
-  const getQuestionDetail = () => {
-    setLoading(true);
-    setError({
-      ...error,
-      getQuestionDetailError: null,
-    });
-    axios
-      .get(`/question/${question_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setQuestionDetail(res.data.question);
-      })
-      .catch((err) => {
-        const errorMessage =
-          err.response?.data?.message || err.message || "Something went wrong";
-        console.log(errorMessage);
-        setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const getQuestionDetail = async () => {
+    setDDetailLoading(true);
+    setError({ ...error, getQuestionDetailError: null });
+
+    try {
+      const res = await axios.get(`/question/${question_id}`);
+      setQuestionDetail(res.data.question);
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || err.message || "Something went wrong";
+      setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
+    } finally {
+      setDDetailLoading(false);
+    }
   };
 
+
   // fetch all answers for that specific question
-  const getAllAnswers = () => {
-    setLoading(true);
-    setError({
-      ...error,
-      getAnswerError: null,
-    });
-    axios
-      .get(
-        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        if (Array.isArray(res.data.answers)) {
-          setAllQuestionAnswers(res.data.answers);
-          setAnswerPagination(
-            res.data.pagination || {
-              total: 0,
-              page: 1,
-              pageSize: 5,
-              totalPages: 1,
-            }
-          );
-        } else {
-          setAllQuestionAnswers([]);
-          setAnswerPagination({
+  const getAllAnswers = async () => {
+    setAnswerLoading(true);
+    setError({ ...error, getAnswerError: null });
+
+    try {
+      const res = await axios.get(
+        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`
+      );
+      if (Array.isArray(res.data.answers)) {
+        setAllQuestionAnswers(res.data.answers);
+        setAnswerPagination(
+          res.data.pagination || {
             total: 0,
             page: 1,
             pageSize: 5,
             totalPages: 1,
-          });
-        }
-      })
-      .catch((err) => {
-        const errorMessage =
-          err.response?.data?.message || err.message || "Something went wrong";
-        setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
+          }
+        );
+      } else {
         setAllQuestionAnswers([]);
-        setAnswerPagination({ total: 0, page: 1, pageSize: 5, totalPages: 1 });
-      })
-      .finally(() => {
-        setLoading(false);
+        setAnswerPagination({
+          total: 0,
+          page: 1,
+          pageSize: 5,
+          totalPages: 1,
+        });
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || err.message || "Something went wrong";
+      setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
+      setAllQuestionAnswers([]);
+      setAnswerPagination({
+        total: 0,
+        page: 1,
+        pageSize: 5,
+        totalPages: 1,
       });
+    } finally {
+      setAnswerLoading(false);
+    }
   };
 
+
   // post the question
-  const submitAnswer = (e) => {
+  const submitAnswer = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError({
-      ...error,
-      postAnswerError: null,
-    });
 
     if (!token) {
       setLoading(false);
@@ -131,27 +120,17 @@ function QuestionDetailAndAnswer() {
       return;
     }
 
-    axios
-      .post("/answer", answer, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        getAllAnswers();
-        setSuccessAnswer(true);
-        toast.success("Answer Posted Successfully");
-        setLoading(false);
-      })
-      .catch((err) => {
-        const errorMessage =
-          err.response?.data?.message || err.message || "Something went wrong";
-          console.log(errorMessage)
-        setError((prev) => ({ ...prev, postAnswerError: errorMessage }));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const res = await axios.post("/answer", answer);
+      getAllAnswers();
+      setSuccessAnswer(true);
+      toast.success("Answer Posted Successfully");
+    } catch (err) {
+      const errorMessage = "Something went wrong";
+      toast.error(errorMessage)
+    } finally {
+      setLoading(false);
+    }
   };
 
   // handle input changes
@@ -212,7 +191,11 @@ function QuestionDetailAndAnswer() {
       <div className={styles.outer__container}>
         <div className={styles.theQuestion}>
           <h3 className={styles.title}>Question</h3>
-          {questionDetail ? (
+          {QDetailLoading ? (
+            <div className={styles.spinner_container}>
+              <ClipLoader color={"var(--primary)"} size={30} />
+            </div>
+          ) : questionDetail ? (
             <>
               <p className={styles.Qtitle}>{questionDetail.question_title}</p>
               <p>{questionDetail.question_description}</p>
@@ -256,7 +239,11 @@ function QuestionDetailAndAnswer() {
           </div>
           <hr />
           <div className={styles.answers_container}>
-            {error.getAnswerError ? (
+            {answerLoading ? (
+              <div className={styles.spinner_container}>
+                <ClipLoader color={"var(--primary)"} size={30} />
+              </div>
+            ) : error.getAnswerError ? (
               <p>{error?.getAnswerError}</p>
             ) : answersForQuestion.length === 0 ? (
               <p>No answers yet. Be the first to answer!</p>
@@ -352,11 +339,8 @@ function QuestionDetailAndAnswer() {
             {error?.postAnswerError && (
               <p className={styles.error}>{error?.postAnswerError}</p>
             )}
-            <button
-              type="submit"
-              className={styles.answerBtn}              
-            >
-              Post your Answer
+            <button type="submit" className={styles.answerBtn}>
+              {loading ? "Posting..." : "Post Answer Question"}
             </button>
           </form>
         </div>

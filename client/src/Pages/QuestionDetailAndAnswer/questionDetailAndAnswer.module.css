@@ -285,7 +285,12 @@ textarea {
   padding: 10px;
   border-radius: 5px;
 }
-
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh;
+}
 @media (max-width: 768px) {
   .questions_sort_row {
     flex-direction: column;
