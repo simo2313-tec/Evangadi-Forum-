@@ -32,6 +32,7 @@ function QuestionDetailAndAnswer() {
   });
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
+  
   const [answerPage, setAnswerPage] = useState(1);
   const [answerPageSize] = useState(10);
   const [answerPagination, setAnswerPagination] = useState({
@@ -42,7 +43,7 @@ function QuestionDetailAndAnswer() {
   });
   const [questionDetail, setQuestionDetail] = useState(null);
   const [successAnswer, setSuccessAnswer] = useState(false);
-  
+
   const [answerSort, setAnswerSort] = useState("recent");
 
 
