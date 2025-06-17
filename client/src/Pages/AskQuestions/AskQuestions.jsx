@@ -131,7 +131,7 @@ function AskQuestions() {
           </div>
         </div>
 
-        <div className={`container mt-5 ${styles.question__container}`}>
+        <div className={styles.question__container}>
           <h3 className={styles.title}>Ask a Public Question</h3>
           <Link to="/home">Go to Question page</Link>
 

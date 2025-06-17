@@ -316,6 +316,7 @@ function QuestionDetailAndAnswer() {
                     </div>
                   </div>
                 ))}
+                
                 {/* Pagination Controls for Answers */}
                 <div className={styles.pagination_container}>
                   <button
