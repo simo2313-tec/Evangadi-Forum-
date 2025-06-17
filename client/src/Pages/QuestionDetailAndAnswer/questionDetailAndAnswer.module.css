@@ -274,6 +274,18 @@ textarea {
   border: 1.5px solid var(--primary);
 }
 
+.error {
+  color: red;
+  background-color: rgb(255, 235, 238);
+  font-size: 14px;
+  margin: 10px;
+  border: 1px solid var(--error);
+  box-shadow: 0 0 5px rgba(247, 111, 134, 0.5);
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
 @media (max-width: 768px) {
   .questions_sort_row {
     flex-direction: column;

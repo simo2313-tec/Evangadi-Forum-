@@ -41,91 +41,32 @@ function QuestionDetailAndAnswer() {
   const [successAnswer, setSuccessAnswer] = useState(false);
   const [answerSort, setAnswerSort] = useState("recent");
 
-
-
-  // post the question 
-  const submitAnswer = (e) => {
-    console.log(answer);
-    e.preventDefault();
+  // fetch the detail of that specific question
+  const getQuestionDetail = () => {
     setLoading(true);
     setError({
       ...error,
-      postAnswerError: null,
+      getQuestionDetailError: null,
     });
-
-    if (!token) {
-      setLoading(false);
-      toast.error("Login to post answer");
-      return;
-    }
-
     axios
-      .post("/answer", answer, {
+      .get(`/question/${question_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
-        setResponse(res.data);
-        getAllAnswers();
-        setSuccessAnswer(true);
-        toast.success("Answer Posted Successfully");
+        setQuestionDetail(res.data.question);
       })
       .catch((err) => {
         const errorMessage =
           err.response?.data?.message || err.message || "Something went wrong";
-        setError((prev) => ({ ...prev, postAnswerError: errorMessage }));
+        console.log(errorMessage);
+        setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
       })
       .finally(() => {
         setLoading(false);
       });
   };
-
-
-
-  // Vote handler
-  const handleVote = async (type, id, action) => {
-    if (!token) {
-      toast.error("Please log in to vote.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return;
-    }
-    try {
-      const res = await axios.post(`/${type}s/${id}/${action}`);
-      const { likes, dislikes } = res.data;
-
-      if (type === "question") {
-        setQuestionDetail((prev) => ({ ...prev, likes, dislikes }));
-      } else if (type === "answer") {
-        setAllQuestionAnswers((prevAnswers) =>
-          prevAnswers.map((ans) =>
-            ans.answer_id === id ? { ...ans, likes, dislikes } : ans
-          )
-        );
-      }
-    } catch (err) {
-      console.error(`Failed to ${action} ${type}`, err);
-      toast.error(`Failed to ${action} ${type}.`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    }
-  };
-
-  
-  // handle input changes
-  const handleChange = (e) => {
-    setSuccessAnswer(false);
-    const { name, value } = e.target;
-    setAnswer((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-
 
   // fetch all answers for that specific question
   const getAllAnswers = () => {
@@ -176,36 +117,53 @@ function QuestionDetailAndAnswer() {
       });
   };
 
-
-
-  // fetch the detail of that specific question
-  const getQuestionDetail = () => {
+  // post the question
+  const submitAnswer = (e) => {
+    e.preventDefault();
     setLoading(true);
     setError({
       ...error,
-      getQuestionDetailError: null,
+      postAnswerError: null,
     });
+
+    if (!token) {
+      setLoading(false);
+      toast.error("Login to post answer");
+      return;
+    }
+
     axios
-      .get(`/question/${question_id}`, {
+      .post("/answer", answer, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
-        setQuestionDetail(res.data.question);
+        setResponse(res.data);
+        getAllAnswers();
+        setSuccessAnswer(true);
+        toast.success("Answer Posted Successfully");
       })
       .catch((err) => {
         const errorMessage =
           err.response?.data?.message || err.message || "Something went wrong";
-        console.log(errorMessage);
-        setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
+          console.log(errorMessage)
+        setError((prev) => ({ ...prev, postAnswerError: errorMessage }));
       })
       .finally(() => {
         setLoading(false);
       });
   };
 
-
+  // handle input changes
+  const handleChange = (e) => {
+    setSuccessAnswer(false);
+    const { name, value } = e.target;
+    setAnswer((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   // Load question detail and answers when component mounts
   useEffect(() => {
@@ -213,6 +171,39 @@ function QuestionDetailAndAnswer() {
     getAllAnswers();
   }, [question_id, successAnswer, answerPage, answerPageSize, answerSort]);
 
+
+
+
+  // Vote handler
+  const handleVote = async (type, id, action) => {
+    if (!token) {
+      toast.error("Please log in to vote.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    try {
+      const res = await axios.post(`/${type}s/${id}/${action}`);
+      const { likes, dislikes } = res.data;
+
+      if (type === "question") {
+        setQuestionDetail((prev) => ({ ...prev, likes, dislikes }));
+      } else if (type === "answer") {
+        setAllQuestionAnswers((prevAnswers) =>
+          prevAnswers.map((ans) =>
+            ans.answer_id === id ? { ...ans, likes, dislikes } : ans
+          )
+        );
+      }
+    } catch (err) {
+      console.error(`Failed to ${action} ${type}`, err);
+      toast.error(`Failed to ${action} ${type}.`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
 
 
 
@@ -237,7 +228,7 @@ function QuestionDetailAndAnswer() {
               />
             </>
           ) : (
-            <p>Question not found.</p>
+            <p>{error?.getQuestionDetailError}</p>
           )}
         </div>
 
@@ -316,7 +307,7 @@ function QuestionDetailAndAnswer() {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* Pagination Controls for Answers */}
                 <div className={styles.pagination_container}>
                   <button
@@ -360,12 +351,11 @@ function QuestionDetailAndAnswer() {
               required
             ></textarea>
             {error?.postAnswerError && (
-              <p className={styles.error}>{error.postAnswerError}</p>
+              <p className={styles.error}>{error?.postAnswerError}</p>
             )}
             <button
               type="submit"
-              className={styles.answerBtn}
-              disabled={!userData || !token}
+              className={styles.answerBtn}              
             >
               Post your Answer
             </button>
