@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import styles from "./questionDetailAndAnswer.module.css";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import axios from "../../Utility/axios";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
@@ -9,11 +10,13 @@ import getTimeDifference from "../../Utility/helpers";
 import VoteButtons from "../../Components/VoteButtons/VoteButtons";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import Swal from "sweetalert2";
 
 function QuestionDetailAndAnswer() {
   const { userData, setUserData } = useContext(UserContext);
   const token = userData?.token;
   const { question_id } = useParams();
+  const navigate = useNavigate();
 
   const [answer, setAnswer] = useState({
     user_id: userData?.userid,
@@ -24,7 +27,11 @@ function QuestionDetailAndAnswer() {
   const [QDetailLoading, setDDetailLoading] = useState(false);
   const [answerLoading, setAnswerLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [editQuestionMode, setEditQuestionMode] = useState(false);
+  const [editAnswerMode, setEditAnswerMode] = useState(null); // answer_id of the answer being edited
+  const [editedQuestion, setEditedQuestion] = useState(null);
+  const [editedAnswer, setEditedAnswer] = useState("");
+  const [filterYourAnswers, setFilterYourAnswers] = useState(false); // State for filtering user's answers
 
   const [error, setError] = useState({
     getAnswerError: null,
@@ -32,7 +39,6 @@ function QuestionDetailAndAnswer() {
   });
 
   const [answersForQuestion, setAllQuestionAnswers] = useState([]);
-  
   const [answerPage, setAnswerPage] = useState(1);
   const [answerPageSize] = useState(10);
   const [answerPagination, setAnswerPagination] = useState({
@@ -43,18 +49,25 @@ function QuestionDetailAndAnswer() {
   });
   const [questionDetail, setQuestionDetail] = useState(null);
   const [successAnswer, setSuccessAnswer] = useState(false);
-
   const [answerSort, setAnswerSort] = useState("recent");
 
+  // Check if the user has any answers to this question
+  const hasUserAnswers = answersForQuestion.some(
+    (ans) => ans.user_id === userData?.userid
+  );
 
-  // fetch the detail of that specific question
+  // Fetch question details
   const getQuestionDetail = async () => {
     setDDetailLoading(true);
     setError({ ...error, getQuestionDetailError: null });
-
     try {
       const res = await axios.get(`/question/${question_id}`);
       setQuestionDetail(res.data.question);
+      setEditedQuestion({
+        title: res.data.question.question_title,
+        description: res.data.question.question_description || "",
+        tag: res.data.question.tag || "",
+      });
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || err.message || "Something went wrong";
@@ -64,12 +77,10 @@ function QuestionDetailAndAnswer() {
     }
   };
 
-
-  // fetch all answers for that specific question
+  // Fetch answers
   const getAllAnswers = async () => {
     setAnswerLoading(true);
     setError({ ...error, getAnswerError: null });
-
     try {
       const res = await axios.get(
         `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`
@@ -109,32 +120,146 @@ function QuestionDetailAndAnswer() {
     }
   };
 
-
-  // post the question
+  // Post answer
   const submitAnswer = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     if (!token) {
       setLoading(false);
       toast.error("Login to post answer");
       return;
     }
-
     try {
-      const res = await axios.post("/answer", answer);
+      await axios.post("/answer", answer);
       getAllAnswers();
       setSuccessAnswer(true);
+      setAnswer({ ...answer, answer: "" });
       toast.success("Answer Posted Successfully");
     } catch (err) {
-      const errorMessage = "Something went wrong";
-      toast.error(errorMessage)
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  // handle input changes
+  // Edit question
+  const handleEditQuestion = async () => {
+    if (!token) {
+      toast.error("Please log in to edit the question.");
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Save changes?",
+      text: "Are you sure you want to update this question?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.put(`/question/${question_id}`, editedQuestion);
+      setQuestionDetail((prev) => ({ ...prev, ...editedQuestion }));
+      setEditQuestionMode(false);
+      toast.success("Question updated successfully.");
+    } catch (err) {
+      console.error("Failed to edit question", err);
+      toast.error(err.response?.data?.error || "Failed to edit question.");
+    }
+  };
+
+  // Delete question
+  const handleDeleteQuestion = async () => {
+    if (!token) {
+      toast.error("Please log in to delete the question.");
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(`/question/${question_id}`);
+      toast.success("Question deleted successfully.");
+      navigate("/home");
+    } catch (err) {
+      console.error("Failed to delete question", err);
+      toast.error(err.response?.data?.error || "Failed to delete question.");
+    }
+  };
+
+  // Edit answer
+  const handleEditAnswer = async (answerId) => {
+    if (!token) {
+      toast.error("Please log in to edit the answer.");
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Save changes?",
+      text: "Are you sure you want to update this answer?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, save it!",
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.put(`/answer/${answerId}`, { answer: editedAnswer });
+      setAllQuestionAnswers((prev) =>
+        prev.map((ans) =>
+          ans.answer_id === answerId ? { ...ans, answer: editedAnswer } : ans
+        )
+      );
+      setEditAnswerMode(null);
+      setEditedAnswer("");
+      toast.success("Answer updated successfully.");
+    } catch (err) {
+      console.error("Failed to edit answer", err);
+      toast.error(err.response?.data?.error || "Failed to edit answer.");
+    }
+  };
+
+  // Delete answer
+  const handleDeleteAnswer = async (answerId) => {
+    if (!token) {
+      toast.error("Please log in to delete the answer.");
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(`/answer/${answerId}`);
+      setAllQuestionAnswers((prev) =>
+        prev.filter((ans) => ans.answer_id !== answerId)
+      );
+      toast.success("Answer deleted successfully.");
+    } catch (err) {
+      console.error("Failed to delete answer", err);
+      toast.error(err.response?.data?.error || "Failed to delete answer.");
+    }
+  };
+
+  // Handle input changes for new answer
   const handleChange = (e) => {
     setSuccessAnswer(false);
     const { name, value } = e.target;
@@ -144,28 +269,44 @@ function QuestionDetailAndAnswer() {
     }));
   };
 
+  // Handle input changes for editing question
+  const handleQuestionChange = (e) => {
+    const { name, value } = e.target;
+    setEditedQuestion((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Toggle filter for user's answers
+  const handleFilterYourAnswers = () => {
+    setFilterYourAnswers((prev) => !prev);
+    setAnswerPage(1); // Reset to first page when filter changes
+  };
+
   // Load question detail and answers when component mounts
   useEffect(() => {
     getQuestionDetail();
     getAllAnswers();
   }, [question_id, successAnswer, answerPage, answerPageSize, answerSort]);
 
-
-
+  // Update answer state when userData changes
+  useEffect(() => {
+    setAnswer((prev) => ({
+      ...prev,
+      user_id: userData?.userid,
+    }));
+  }, [userData?.userid]);
 
   // Vote handler
   const handleVote = async (type, id, action) => {
     if (!token) {
-      toast.error("Please log in to vote.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error("Please log in to vote.");
       return;
     }
     try {
       const res = await axios.post(`/${type}s/${id}/${action}`);
       const { likes, dislikes } = res.data;
-
       if (type === "question") {
         setQuestionDetail((prev) => ({ ...prev, likes, dislikes }));
       } else if (type === "answer") {
@@ -177,15 +318,14 @@ function QuestionDetailAndAnswer() {
       }
     } catch (err) {
       console.error(`Failed to ${action} ${type}`, err);
-      toast.error(`Failed to ${action} ${type}.`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error(`Failed to ${action} ${type}.`);
     }
   };
 
-
-
+  // Filter answers based on filterYourAnswers state
+  const displayedAnswers = filterYourAnswers
+    ? answersForQuestion.filter((ans) => ans.user_id === userData?.userid)
+    : answersForQuestion;
 
   return (
     <LayOut>
@@ -198,17 +338,86 @@ function QuestionDetailAndAnswer() {
             </div>
           ) : questionDetail ? (
             <>
-              <p className={styles.Qtitle}>{questionDetail.question_title}</p>
-              <p>{questionDetail.question_description}</p>
-              {/* voteButtons  */}
-              <VoteButtons
-                likes={questionDetail.likes}
-                dislikes={questionDetail.dislikes}
-                userVote={questionDetail.user_vote_type}
-                onVote={(action) =>
-                  handleVote("question", questionDetail.question_id, action)
-                }
-              />
+              {editQuestionMode ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleEditQuestion();
+                  }}
+                  className={styles.editQuestionForm}
+                >
+                  <input
+                    type="text"
+                    name="title"
+                    value={editedQuestion.title}
+                    onChange={handleQuestionChange}
+                    placeholder="Question title"
+                    required
+                  />
+                  <textarea
+                    name="description"
+                    value={editedQuestion.description}
+                    onChange={handleQuestionChange}
+                    placeholder="Question description"
+                  />
+                  <input
+                    type="text"
+                    name="tag"
+                    value={editedQuestion.tag}
+                    onChange={handleQuestionChange}
+                    placeholder="Tag"
+                  />
+                  <div>
+                    <button className={styles.saveBtn} type="submit">
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.cancelBtn}
+                      onClick={() => setEditQuestionMode(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <p className={styles.Qtitle}>
+                    {questionDetail.question_title}
+                  </p>
+                  <p>{questionDetail.question_description}</p>
+                  <p>
+                    Asked by{" "}
+                    {questionDetail.user_id === userData?.userid
+                      ? "you"
+                      : "@" + questionDetail.user_name}
+                  </p>
+                  {questionDetail.user_id === userData?.userid && (
+                    <div className={styles.edit_delete_buttons}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => setEditQuestionMode(true)}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={handleDeleteQuestion}
+                      >
+                        <MdDelete />
+                      </button>
+                    </div>
+                  )}
+                  <VoteButtons
+                    likes={questionDetail.likes}
+                    dislikes={questionDetail.dislikes}
+                    userVote={questionDetail.user_vote_type}
+                    onVote={(action) =>
+                      handleVote("question", questionDetail.question_id, action)
+                    }
+                  />
+                </>
+              )}
             </>
           ) : (
             <p>{error?.getQuestionDetailError}</p>
@@ -217,7 +426,6 @@ function QuestionDetailAndAnswer() {
 
         <div className={styles.community_answer}>
           <hr />
-          {/* Answers title and sort filter in a flex row */}
           <div className={styles.questions_sort_row}>
             <h2 className={styles.title}>Answers From the Community</h2>
             <div className={styles.sort_container}>
@@ -239,6 +447,17 @@ function QuestionDetailAndAnswer() {
             </div>
           </div>
           <hr />
+          <div>
+            {hasUserAnswers && (
+              <button
+                className={styles.filter_btn}
+                onClick={handleFilterYourAnswers}
+                disabled={!token} // Disable if not logged in
+              >
+                {filterYourAnswers ? "Show All Answers" : "Your Answers"}
+              </button>
+            )}
+          </div>
           <div className={styles.answers_container}>
             {answerLoading ? (
               <div className={styles.spinner_container}>
@@ -246,11 +465,15 @@ function QuestionDetailAndAnswer() {
               </div>
             ) : error.getAnswerError ? (
               <p>{error?.getAnswerError}</p>
-            ) : answersForQuestion.length === 0 ? (
-              <p>No answers yet. Be the first to answer!</p>
+            ) : displayedAnswers.length === 0 ? (
+              <p>
+                {questionDetail?.user_id === userData?.userid
+                  ? "Your question has no answers yet."
+                  : "This question has no answers yet."}
+              </p>
             ) : (
               <>
-                {answersForQuestion.map((answerItem) => (
+                {displayedAnswers.map((answerItem) => (
                   <div
                     key={answerItem.answer_id}
                     className={styles.question_item_wrapper}
@@ -269,17 +492,69 @@ function QuestionDetailAndAnswer() {
                                 padding: "5px",
                               }}
                             />
-                            <span>{answerItem.user_name}</span>
+                            <span>{answerItem.user_id === userData?.userid
+                      ? "You" : "@" + answerItem.user_name}</span>
                           </div>
                         </div>
-                        <div>
+
+                        {editAnswerMode === answerItem.answer_id ? (
+                          <form
+                            className={styles.editAnswerForm}
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              handleEditAnswer(answerItem.answer_id);
+                            }}
+                          >
+                            <textarea
+                              value={editedAnswer}
+                              onChange={(e) => setEditedAnswer(e.target.value)}
+                              required
+                            />
+                            <div>
+                              <button className={styles.saveBtn} type="submit">
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.cancelBtn}
+                                onClick={() => {
+                                  setEditAnswerMode(null);
+                                  setEditedAnswer("");
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        ) : (
                           <div className={styles.Qbox}>
                             <p className={styles.Qtitle}>{answerItem.answer}</p>
                             <p className={styles.timestamp_title}>
                               {getTimeDifference(answerItem.created_at)}
                             </p>
+                            {answerItem.user_id === userData?.userid && (
+                              <div className={styles.edit_delete_buttons}>
+                                <button
+                                  className={styles.editBtn}
+                                  onClick={() => {
+                                    setEditAnswerMode(answerItem.answer_id);
+                                    setEditedAnswer(answerItem.answer);
+                                  }}
+                                >
+                                  <FaEdit />
+                                </button>
+                                <button
+                                  className={styles.deleteBtn}
+                                  onClick={() =>
+                                    handleDeleteAnswer(answerItem.answer_id)
+                                  }
+                                >
+                                  <MdDelete />
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        </div>
+                        )}
                       </div>
                       <div className={styles.vote_section}>
                         <VoteButtons
@@ -294,8 +569,6 @@ function QuestionDetailAndAnswer() {
                     </div>
                   </div>
                 ))}
-
-                {/* Pagination Controls for Answers */}
                 <div className={styles.pagination_container}>
                   <button
                     className={styles.pagination_btn}
@@ -341,7 +614,7 @@ function QuestionDetailAndAnswer() {
               <p className={styles.error}>{error?.postAnswerError}</p>
             )}
             <button type="submit" className={styles.answerBtn}>
-              {loading ? "Posting..." : "Post Answer Question"}
+              {loading ? "Posting..." : "Post Answer"}
             </button>
           </form>
         </div>

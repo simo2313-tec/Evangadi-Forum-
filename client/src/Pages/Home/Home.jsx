@@ -28,6 +28,9 @@ function Home() {
   const navigate = useNavigate();
   const token = userData?.token;
 
+
+
+
   const handleAskQuestion = () => {
     if (!token || !userData?.userid) {
       navigate("/landing", {
@@ -37,6 +40,9 @@ function Home() {
       navigate("/ask-questions");
     }
   };
+
+
+
 
   useEffect(() => {
     setLoading(true);
@@ -76,6 +82,11 @@ function Home() {
       });
   }, [page, pageSize, sort, search]);
 
+
+
+
+
+  
   //  Vote handle
   const handleVote = async (question_id, action) => {
     if (!token) {
@@ -213,7 +224,9 @@ function Home() {
                               size={80}
                               className={styles.usericon}
                             />
-                            <span>{q.user_name}</span>
+                            <span>
+                              {q.user_id === userData?.userid ? "You" : "@" + q.user_name}
+                            </span>
                           </div>
                         </div>
                         <div>

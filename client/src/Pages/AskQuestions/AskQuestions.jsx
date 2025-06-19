@@ -12,8 +12,7 @@ function AskQuestions() {
   const [question, setQuestion] = useState({
     title: "",
     description: "",
-    tag: "",
-    userId: userData?.userid || null,
+    tag: ""
   });
 
   const [loading, setLoading] = useState(false);

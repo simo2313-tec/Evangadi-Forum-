@@ -39,6 +39,8 @@ const getquestions = require("./routes/getquestionsRoute");
 const postQuestionRoutes = require("./routes/postQuestionsRoute");
 const getAnswerRouter = require("./routes/getAnswerRoute");
 const likeDislikeRouter = require("./routes/likeDislikeRoute");
+const updateQuestionRouter = require("./routes/updateQuestionRouter")
+const updateAnswerRouter = require("./routes/updateAnswerRoute")
 
 // admin routes middleware
 app.use("/api/admin", initDB_Router);
@@ -51,6 +53,8 @@ app.use("/api", getAnswerRouter);
 app.use("/api", authMiddleware, postQuestionRoutes);
 app.use("/api", authMiddleware, answerRoutes);
 app.use("/api", authMiddleware, likeDislikeRouter);
+app.use("/api", authMiddleware, updateQuestionRouter);
+app.use("/api", authMiddleware, updateAnswerRouter)
 
 
 
