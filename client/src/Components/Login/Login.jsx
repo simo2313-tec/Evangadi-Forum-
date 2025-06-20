@@ -145,6 +145,10 @@ function Login() {
             "Submit"
           )}
         </button>
+
+        <div className={styles.forgotPasswordLink}>
+          <a onClick={() => navigate("/forgot-password")}>Forgot Password?</a>
+        </div>
         <a
           onClick={() => navigate("/sign-up")}
           className={styles.createAccountLinkBottom}

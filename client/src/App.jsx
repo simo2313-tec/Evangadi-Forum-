@@ -10,6 +10,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ChatBot from "./Components/ChatBot";
 
+import ForgotPassword from "./Pages/forgotpassword/ForgotPassword";
+import ResetPassword from "./Pages/forgotpassword/ResetPassword";
+
 function App() {
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
@@ -26,6 +29,9 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/login" element={<Landing />} />
         <Route path="/sign-up" element={<Landing />} />
+
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
       <ToastContainer
         position="top-right"
