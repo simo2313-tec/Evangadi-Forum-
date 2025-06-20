@@ -36,6 +36,10 @@ const getquestions = require("./routes/getquestionsRoute");
 const postQuestionRoutes = require("./routes/postQuestionsRoute");
 const getAnswerRouter = require("./routes/getAnswerRoute");
 const likeDislikeRouter = require("./routes/likeDislikeRoute");
+const passwordResetRouter = require("./routes/passwordResetRoute");
+
+
+app.use("/api/user",   passwordResetRouter);
 
 // admin routes middleware
 app.use("/api/admin", initDB_Router);
