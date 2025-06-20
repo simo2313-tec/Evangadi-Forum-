@@ -58,3 +58,13 @@ CREATE TABLE IF NOT EXISTS likes_dislikes (
         (question_id IS NULL AND answer_id IS NOT NULL)
       )
 );
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (Add commentMore actions
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      token VARCHAR(255) NOT NULL,
+      expires_at DATETIME NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
+      INDEX (token)
+    )

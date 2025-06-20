@@ -78,14 +78,6 @@ function QuestionDetailAndAnswer() {
       });
     }
   };
-  const handleChange = (e) => {
-    setSuccessAnswer(false);
-    const { name, value } = e.target;
-    setAnswer((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const getAllAnswers = () => {
     setLoadingAnswers(true);

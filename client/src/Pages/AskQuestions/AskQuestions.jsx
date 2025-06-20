@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
-import { Link } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
 import { toast } from "react-toastify";
@@ -9,6 +9,8 @@ import { ClipLoader } from "react-spinners";
 
 function AskQuestions() {
   const { userData } = useContext(UserContext);
+  const token = userData?.token;
+  const navigate = useNavigate(); // Initialize navigation
   const [question, setQuestion] = useState({
     title: "",
     description: "",
@@ -16,12 +18,9 @@ function AskQuestions() {
     userId: userData?.userid || null,
   });
 
-  // Update question.userId if userData.userid changes after initial load
-  useEffect(() => {
-    if (userData?.userid) {
-      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
-    }
-  }, [userData?.userid]);
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Update question.userId if userData.userid changes after initial load
   useEffect(() => {
@@ -29,14 +28,13 @@ function AskQuestions() {
       setQuestion((prev) => ({ ...prev, userId: userData.userid }));
     }
   }, [userData?.userid]);
-  const [response, setResponse] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    // Ensure user is authenticated before posting
     if (!token || !userData?.userid) {
       toast.error("Authentication required. Redirecting to login.");
       navigate("/landing", {
@@ -47,17 +45,17 @@ function AskQuestions() {
     }
 
     try {
-      await axios.post("/questions", question, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // Post the question
+      await axios.post("/questions", question, {});
+
+      // Reset question state after successful submission
       setQuestion({
         title: "",
         description: "",
         tag: "",
         userId: userData.userid,
       });
+
       toast.success("Question posted successfully!", {
         position: "top-right",
         autoClose: 3000,
@@ -73,11 +71,7 @@ function AskQuestions() {
           "Tag is too long. Please use a tag with 20 characters or less."
         );
         toast.error(
-          "Tag is too long. Please use a tag with 20 characters or less.",
-          {
-            position: "top-right",
-            autoClose: 3000,
-          }
+          "Tag is too long. Please use a tag with 20 characters or less."
         );
       } else {
         toast.error("Server error. Please try again.", {
@@ -89,12 +83,6 @@ function AskQuestions() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (userData?.userid) {
-      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
-    }
-  }, [userData?.userid]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
