@@ -60,6 +60,8 @@ async function postAnswer(req, res) {
       });
     }
 
+
+
     // Insert answer
     const insertQuery = `
       INSERT INTO answer (answer, user_id, question_id, created_at)
@@ -71,6 +73,7 @@ async function postAnswer(req, res) {
       questionIdNum,
     ]);
 
+    
     // Fetch email of the user who asked the question
     const [questionRows] = await dbconnection.query(
       `SELECT r.user_email 

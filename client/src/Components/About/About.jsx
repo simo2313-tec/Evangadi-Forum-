@@ -3,6 +3,8 @@ import React from "react";
 import styles from "./About.module.css";
 
 function About() {
+
+  
   // This toggles the visibility of the "How It Works" section
   const handleHowItWorks = (e) => {
     const section = document.querySelector(`.${styles.how_it_works_section}`);
