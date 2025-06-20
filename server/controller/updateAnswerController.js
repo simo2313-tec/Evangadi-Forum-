@@ -47,7 +47,7 @@ async function editAnswer(req, res) {
 // Delete Answer Endpoint
 async function deleteAnswer(req, res) {
   const { answer_id } = req.params;
-  const user_id = req.user.user_id;
+  const user_id = req.user.userid;
 
   try {
 
