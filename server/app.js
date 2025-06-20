@@ -41,6 +41,10 @@ const getAnswerRouter = require("./routes/getAnswerRoute");
 const likeDislikeRouter = require("./routes/likeDislikeRoute");
 const updateQuestionRouter = require("./routes/updateQuestionRouter")
 const updateAnswerRouter = require("./routes/updateAnswerRoute")
+const passwordResetRouter = require("./routes/passwordResetRoute");
+
+
+app.use("/api/user",   passwordResetRouter);
 
 // admin routes middleware
 app.use("/api/admin", initDB_Router);
