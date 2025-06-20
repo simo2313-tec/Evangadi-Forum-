@@ -1,4 +1,3 @@
-
 // const create_registration = `
 //     CREATE TABLE IF NOT EXISTS registration (
 //       user_id int NOT NULL AUTO_INCREMENT,
@@ -48,14 +47,12 @@
 //       FOREIGN KEY (question_id) REFERENCES question(question_id)
 //     )`;
 
-
 // module.exports = {
 //   create_registration,
 //   create_profile,
 //   create_question,
 //   create_answer,
 // };
-
 
 // db/tables.js
 const create_registration = `
