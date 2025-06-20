@@ -63,6 +63,10 @@ app.use("/api", authMiddleware, updateAnswerRouter)
 
 
 
+// profile routes
+const profileRoutes = require("./routes/profileRoutes");
+app.use("/api/profile", authMiddleware, profileRoutes);
+
 // Start server and test database connection
 async function startServer() {
   try {

@@ -1,4 +1,3 @@
-
 // const create_registration = `
 //     CREATE TABLE IF NOT EXISTS registration (
 //       user_id int NOT NULL AUTO_INCREMENT,
@@ -48,14 +47,12 @@
 //       FOREIGN KEY (question_id) REFERENCES question(question_id)
 //     )`;
 
-
 // module.exports = {
 //   create_registration,
 //   create_profile,
 //   create_question,
 //   create_answer,
 // };
-
 
 // db/tables.js
 const create_registration = `
@@ -125,7 +122,7 @@ const create_likes_dislikes = `
       )
     )`;
 
-    const create_password_reset_tokens = `
+const create_password_reset_tokens = `
     CREATE TABLE IF NOT EXISTS password_reset_tokens (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
@@ -142,6 +139,4 @@ module.exports = {
   create_question,
   create_answer,
   create_likes_dislikes,
-
 };
-

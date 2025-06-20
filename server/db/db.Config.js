@@ -1,6 +1,6 @@
 require("dotenv").config(); // Load environment variables from .env
 
-const mysql2 = require("mysql2/promise"); // Import mysql2 for promise-based queries, but for callbacks we use mysql2/callback or mysql2 only
+const mysql2 = require("mysql2/promise");
 
 
 //! using .env for sensitive credentials

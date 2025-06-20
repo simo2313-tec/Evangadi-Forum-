@@ -33,6 +33,8 @@ function QuestionDetailAndAnswer() {
   const [editedAnswer, setEditedAnswer] = useState("");
   const [filterYourAnswers, setFilterYourAnswers] = useState(false); // State for filtering user's answers
 
+  const [loadingAnswers, setLoadingAnswers] = useState(false);
+  const [loadingQuestionDetail, setLoadingQuestionDetail] = useState(false);
   const [error, setError] = useState({
     getAnswerError: null,
     getQuestionDetailError: null,
@@ -69,55 +71,60 @@ function QuestionDetailAndAnswer() {
         tag: res.data.question.tag || "",
       });
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || err.message || "Something went wrong";
-      setError((prev) => ({ ...prev, getQuestionDetailError: errorMessage }));
-    } finally {
-      setDDetailLoading(false);
+      console.error(`Failed to ${action} ${type}`, err);
+      toast.error(`Failed to ${action} ${type}.`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
-  // Fetch answers
-  const getAllAnswers = async () => {
-    setAnswerLoading(true);
-    setError({ ...error, getAnswerError: null });
-    try {
-      const res = await axios.get(
-        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`
-      );
-      if (Array.isArray(res.data.answers)) {
-        setAllQuestionAnswers(res.data.answers);
-        setAnswerPagination(
-          res.data.pagination || {
+  const getAllAnswers = () => {
+    setLoadingAnswers(true);
+    setError({
+      ...error,
+      getAnswerError: null,
+    });
+    axios
+      .get(
+        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (Array.isArray(res.data.answers)) {
+          setAllQuestionAnswers(res.data.answers);
+          setAnswerPagination(
+            res.data.pagination || {
+              total: 0,
+              page: 1,
+              pageSize: 5,
+              totalPages: 1,
+            }
+          );
+        } else {
+          setAllQuestionAnswers([]);
+          setAnswerPagination({
             total: 0,
             page: 1,
             pageSize: 5,
             totalPages: 1,
-          }
-        );
-      } else {
+          });
+        }
+      })
+      .catch((err) => {
+        const errorMessage =
+          err.response?.data?.message || err.message || "Something went wrong";
+        setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
         setAllQuestionAnswers([]);
-        setAnswerPagination({
-          total: 0,
-          page: 1,
-          pageSize: 5,
-          totalPages: 1,
-        });
-      }
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || err.message || "Something went wrong";
-      setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
-      setAllQuestionAnswers([]);
-      setAnswerPagination({
-        total: 0,
-        page: 1,
-        pageSize: 5,
-        totalPages: 1,
+        setAnswerPagination({ total: 0, page: 1, pageSize: 5, totalPages: 1 });
+      })
+      .finally(() => {
+        setLoadingAnswers(false);
       });
-    } finally {
-      setAnswerLoading(false);
-    }
   };
 
   // Post answer
@@ -332,9 +339,13 @@ function QuestionDetailAndAnswer() {
       <div className={styles.outer__container}>
         <div className={styles.theQuestion}>
           <h3 className={styles.title}>Question</h3>
-          {QDetailLoading ? (
-            <div className={styles.spinner_container}>
-              <ClipLoader color={"var(--primary)"} size={30} />
+          {loadingQuestionDetail ? (
+            <div className={styles.loading_container}>
+              <ClipLoader
+                color={"var(--primary)"}
+                loading={loadingQuestionDetail}
+                size={50}
+              />
             </div>
           ) : questionDetail ? (
             <>
@@ -459,9 +470,13 @@ function QuestionDetailAndAnswer() {
             )}
           </div>
           <div className={styles.answers_container}>
-            {answerLoading ? (
-              <div className={styles.spinner_container}>
-                <ClipLoader color={"var(--primary)"} size={30} />
+            {loadingAnswers ? (
+              <div className={styles.loading_container}>
+                <ClipLoader
+                  color={"var(--primary)"}
+                  loading={loadingAnswers}
+                  size={50}
+                />
               </div>
             ) : error.getAnswerError ? (
               <p>{error?.getAnswerError}</p>
@@ -492,8 +507,11 @@ function QuestionDetailAndAnswer() {
                                 padding: "5px",
                               }}
                             />
-                            <span>{answerItem.user_id === userData?.userid
-                      ? "You" : "@" + answerItem.user_name}</span>
+                            <span>
+                              {answerItem.user_id === userData?.userid
+                                ? "You"
+                                : "@" + answerItem.user_name}
+                            </span>
                           </div>
                         </div>
 
@@ -599,24 +617,38 @@ function QuestionDetailAndAnswer() {
         </div>
 
         <div className={styles.answer__box}>
-          <h3 className={styles.title}>Answer the Top Question</h3>
-          <Link to="/home">Go to Question page</Link>
-          <form onSubmit={submitAnswer} className={styles.answerform}>
-            <textarea
-              name="answer"
-              id="answer"
-              placeholder="Your answer here"
-              onChange={handleChange}
-              value={successAnswer ? "" : answer.answer}
-              required
-            ></textarea>
-            {error?.postAnswerError && (
-              <p className={styles.error}>{error?.postAnswerError}</p>
-            )}
-            <button type="submit" className={styles.answerBtn}>
-              {loading ? "Posting..." : "Post Answer"}
-            </button>
-          </form>
+          <div className={styles.answer_form_container}>
+            <h3 className={styles.title}>Answer the Question</h3>
+            <form onSubmit={submitAnswer} className={styles.answer_form}>
+              <textarea
+                name="answer"
+                id="answer"
+                cols="30"
+                rows="5"
+                placeholder="Write your answer here..."
+                onChange={handleChange}
+                value={answer.answer}
+                required
+              ></textarea>
+              {error.postAnswerError && (
+                <p className={styles.error}>{error.postAnswerError}</p>
+              )}
+              <button
+                type="submit"
+                className={styles.answerBtn}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <ClipLoader color={"#fff"} loading={loading} size={20} />
+                    <span style={{ marginLeft: "10px" }}>Posting . . .</span>
+                  </>
+                ) : (
+                  "Post Your Answer"
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </LayOut>

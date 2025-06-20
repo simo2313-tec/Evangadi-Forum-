@@ -83,6 +83,7 @@
   flex-direction: column;
   align-items: center;
   padding-top: 15px;
+  width: 110px;
 }
 .link_container {
   text-decoration: none;
@@ -127,7 +128,7 @@
 }
 
 .vote_section {
-  margin-left: 100px;
+  margin-left: 135px;
   margin-top: -60px;
 }
 
