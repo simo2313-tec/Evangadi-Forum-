@@ -203,3 +203,31 @@
   justify-content: center;
   gap: 1.5rem;
 }
+
+@media screen and (max-width: 768px) {
+  .userIcon {
+    font-size: 8rem;
+  }
+
+  .userName {
+    font-size: 2.8rem;
+  }
+
+  .fullName {
+    font-size: 1.4rem;
+  }
+
+  .email {
+    font-size: 1.2rem;
+  }
+
+  .editButton,
+  .deleteButton,
+  .saveButton,
+  .cancelButton,
+  .confirmDeleteButton {
+    font-size: 1.2rem;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
