@@ -1,38 +1,31 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Utility/axios";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import Layout from "../../Components/Layout/Layout";
 import styles from "./ForgotPassword.module.css";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     if (!email) {
-      toast.warn("Please enter your registered email address");
-      setLoading(false);
-      return;
+      return toast.warn("Please enter your email address.");
     }
-
+    setLoading(true);
     try {
-      const response = await api.post("/user/forgot-password", { email });
-
-      if (response.data.success) {
-        toast.success(response.data.message);
-        navigate("/login");
-      } else {
-        toast.info(response.data.message);
-      }
+      await api.post("/user/forgot-password", { email });
+      toast.success("Password reset link sent! Please check your email.");
+      setIsSubmitted(true);
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "An error occurred. Please try again.";
+        error.response?.data?.message ||
+        "Failed to send reset link. Please try again.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -40,50 +33,59 @@ function ForgotPassword() {
   };
 
   return (
-    <div className={styles.forgotPasswordContainer}>
-      <form onSubmit={handleSubmit} className={styles.forgotPasswordForm}>
-        <h2 className={styles.title}>Reset Password</h2>
-        <p className={styles.subtitle}>
-          Enter your <strong>registered email address</strong> to receive a
-          password reset link
-        </p>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="email">Registered Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your registered email"
-            required
-            disabled={loading}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={loading}
-        >
-          {loading ? (
-            <span
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            >
-              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
-              Processing...
-            </span>
+    <Layout>
+      <div className={styles.container}>
+        <div className={styles.formWrapper}>
+          {isSubmitted ? (
+            <>
+              <h2 className={styles.title}>Request Sent</h2>
+              <p className={styles.subtitle}>
+                If an account with that email exists, a password reset link has
+                been sent. Please check your inbox.
+              </p>
+              <button
+                onClick={() => navigate("/login")}
+                className={styles.submitButton}
+              >
+                Back to Login
+              </button>
+            </>
           ) : (
-            "Send Reset Link"
+            <form onSubmit={handleSubmit}>
+              <h2 className={styles.title}>Forgot Password</h2>
+              <p className={styles.subtitle}>
+                Enter your email and we'll send you a reset link.
+              </p>
+              <div className={styles.inputGroup}>
+                <label htmlFor="email" className={styles.label}>
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={styles.input}
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ClipLoader color="#fff" size={20} />
+                ) : (
+                  "Send Reset Link"
+                )}
+              </button>
+            </form>
           )}
-        </button>
-
-        <div className={styles.backToLogin}>
-          Remembered your password?{" "}
-          <a onClick={() => navigate("/login")}>Login here</a>
         </div>
-      </form>
-    </div>
+      </div>
+    </Layout>
   );
 }
 

@@ -4,131 +4,128 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../Utility/axios";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import Layout from "../../Components/Layout/Layout";
 import styles from "./ResetPassword.module.css";
 
 function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [tokenValid, setTokenValid] = useState(false);
-  const [email, setEmail] = useState("");
   const { token } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await api.get(`/user/verify-reset-token/${token}`);
-        if (response.data.valid) {
-          setTokenValid(true);
-          setEmail(response.data.email);
-        } else {
-          toast.error("Invalid or expired reset link");
-          navigate("/forgot-password");
-        }
+        await api.get(`/user/verify-reset-token/${token}`);
+        setTokenValid(true);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Invalid reset link");
+        toast.error(
+          error.response?.data?.message || "Invalid or expired reset link."
+        );
         navigate("/forgot-password");
+      } finally {
+        setLoading(false);
       }
     };
-
     verifyToken();
   }, [token, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
-      setLoading(false);
-      return;
-    }
-
     if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      setLoading(false);
-      return;
+      return toast.warn("Password must be at least 8 characters long.");
     }
-
+    if (password !== confirmPassword) {
+      return toast.error("Passwords do not match.");
+    }
+    setLoading(true);
     try {
       const response = await api.post(`/user/reset-password/${token}`, {
         password,
       });
-      if (response.data.success) {
-        toast.success(response.data.message);
-        navigate("/login");
-      }
+      toast.success(response.data.message);
+      navigate("/login");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error resetting password");
+      const errorMessage =
+        error.response?.data?.message || "Failed to reset password.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!tokenValid) {
+  if (loading && !tokenValid) {
     return (
-      <div className={styles.resetPasswordContainer}>
-        <div className={styles.loadingContainer}>
-          <ClipLoader color={"var(--primary)"} size={50} />
-          <p>Verifying reset link...</p>
+      <Layout>
+        <div className={styles.container}>
+          <ClipLoader color="var(--primary)" size={50} />
         </div>
-      </div>
+      </Layout>
     );
   }
 
+  if (!tokenValid) {
+    return null;
+  }
+
   return (
-    <div className={styles.resetPasswordContainer}>
-      <form onSubmit={handleSubmit} className={styles.resetPasswordForm}>
-        <h2 className={styles.title}>Reset Your Password</h2>
-        <p className={styles.emailNote}>For: {email}</p>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="password">New Password (min 8 characters)</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter new password"
-            required
-            minLength="8"
-            disabled={loading}
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="confirmPassword">Confirm New Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm new password"
-            required
-            minLength="8"
-            disabled={loading}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={loading}
-        >
-          {loading ? (
-            <span
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+    <Layout>
+      <div className={styles.container}>
+        <div className={styles.formWrapper}>
+          <form onSubmit={handleSubmit}>
+            <h2 className={styles.title}>Reset Your Password</h2>
+            <p className={styles.subtitle}>
+              Choose a new, strong password for your account.
+            </p>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>New Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={styles.input}
+                  placeholder="Enter new password"
+                  required
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={styles.passwordToggle}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </span>
+              </div>
+            </div>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Confirm New Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={styles.input}
+                placeholder="Confirm new password"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
             >
-              <ClipLoader color={"var(--white)"} loading={loading} size={20} />
-              Updating...
-            </span>
-          ) : (
-            "Update Password"
-          )}
-        </button>
-      </form>
-    </div>
+              {loading ? (
+                <ClipLoader color="#fff" size={20} />
+              ) : (
+                "Update Password"
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    </Layout>
   );
 }
 
