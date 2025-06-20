@@ -282,6 +282,92 @@ textarea {
   border: 1.5px solid var(--primary);
 }
 
+.error {
+  color: red;
+  background-color: rgb(255, 235, 238);
+  font-size: 14px;
+  margin: 10px;
+  border: 1px solid var(--error);
+  box-shadow: 0 0 5px rgba(247, 111, 134, 0.5);
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh;
+}
+.editAnswerForm {
+  width: 100%;
+}
+
+.editAnswerForm textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter_btn {
+  padding: 8px 16px;
+  margin-top: 1%;
+  margin-right: 10px;
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.filter_btn:hover {
+  background-color: var(--accent);
+}
+
+.filter_btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.saveBtn, .cancelBtn {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: var(--primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+} 
+.saveBtn:hover, .cancelBtn:hover {
+  background-color: #e0e0e0;
+}
+
+.edit_delete_buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.edit_delete_buttons button {
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.edit_delete_buttons .editBtn:hover {
+  background-color: var(--primary-blue); 
+}
+.edit_delete_buttons .deleteBtn:hover {
+  background-color: red;
+}
+
+.edit_delete_buttons button svg {
+  font-size: 16px;
+}
 @media (max-width: 768px) {
   .questions_sort_row {
     flex-direction: column;

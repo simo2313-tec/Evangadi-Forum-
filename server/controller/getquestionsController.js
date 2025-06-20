@@ -1,6 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
 
+
+// this module contains both endpoints related with fetching questions
+
+
 /**
  * Fetches all questions, joining with user_name and like/dislike counts.
  */

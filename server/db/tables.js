@@ -56,14 +56,16 @@
 
 // db/tables.js
 const create_registration = `
-    CREATE TABLE IF NOT EXISTS registration (
-      user_id int NOT NULL AUTO_INCREMENT,
-      user_name varchar(50) NOT NULL,
-      user_email varchar(254) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      password varchar(100) NOT NULL,
-      PRIMARY KEY (user_id)
-    )`;
+  CREATE TABLE IF NOT EXISTS registration (
+    user_id int NOT NULL AUTO_INCREMENT,
+    user_name varchar(50) NOT NULL,
+    user_email varchar(254) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    password varchar(100) NOT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (user_id),
+    UNIQUE KEY (user_email)
+  )`;
 
 const create_profile = `
     CREATE TABLE IF NOT EXISTS profile (
@@ -120,8 +122,19 @@ const create_likes_dislikes = `
       )
     )`;
 
+const create_password_reset_tokens = `
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      token VARCHAR(255) NOT NULL,
+      expires_at DATETIME NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
+      INDEX (token)
+    )`;
 module.exports = {
   create_registration,
+  create_password_reset_tokens,
   create_profile,
   create_question,
   create_answer,

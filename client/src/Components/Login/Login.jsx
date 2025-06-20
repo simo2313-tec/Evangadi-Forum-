@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
 function Login() {
-  const location = useLocation();
   const { userData, setUserData } = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
@@ -145,6 +144,10 @@ function Login() {
             "Submit"
           )}
         </button>
+
+        <div className={styles.forgotPasswordLink}>
+          <a onClick={() => navigate("/forgot-password")}>Forgot Password?</a>
+        </div>
         <a
           onClick={() => navigate("/sign-up")}
           className={styles.createAccountLinkBottom}

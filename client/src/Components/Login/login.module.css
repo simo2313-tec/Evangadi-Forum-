@@ -152,3 +152,20 @@
     font-size: 2.2rem;
   }
 }
+
+/*style  for forgot password  */
+
+.forgotPasswordLink {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.forgotPasswordLink a {
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.forgotPasswordLink a:hover {
+  color: var(--primary);
+}

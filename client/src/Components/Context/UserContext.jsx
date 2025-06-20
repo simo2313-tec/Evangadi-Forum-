@@ -1,9 +1,12 @@
 import React, { createContext, useState, useEffect } from "react";
+
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userData, setUserDataState] = useState(null); // set to null object initially to use only the wanted properties using object destructuring / previously it was used by array destructuring
+  const [userData, setUserDataState] = useState(null); 
   const [loadingAuth, setLoadingAuth] = useState(true);
+
+  
 
   useEffect(() => {
     setLoadingAuth(true);
@@ -23,6 +26,8 @@ export const UserProvider = ({ children }) => {
     setLoadingAuth(false);
   }, []);
 
+  
+
   const setUserData = (data) => {
     if (data) {
       localStorage.setItem("user", JSON.stringify(data));
@@ -32,6 +37,7 @@ export const UserProvider = ({ children }) => {
     setUserDataState(data);
   };
 
+  
   return (
     <UserContext.Provider value={{ userData, setUserData, loadingAuth }}>
       {children}

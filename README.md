@@ -109,7 +109,7 @@ cd Evangadi-Forum
 cd server
 npm install
 # Configure your .env and MySQL connection in db.Config.js
-npm start
+node app.js
 ```
 
 ### 3. Setup the Frontend
@@ -122,7 +122,7 @@ npm run dev
 
 ### 4. Open in Browser
 
-Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
+Visit [http://localhost:4321](http://localhost:5173) (or the port shown in your terminal).
 
 ---
 

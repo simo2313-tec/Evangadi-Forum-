@@ -27,6 +27,7 @@ async function getAnswers(req, res) {
         a.answer_id,
         a.answer,
         a.created_at,
+        a.user_id, 
         r.user_name,
         p.first_name,
         p.last_name,

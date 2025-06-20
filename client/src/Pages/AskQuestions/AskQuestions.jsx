@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./askQuestions.module.css";
 import axios from "../../Utility/axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LayOut from "../../Components/Layout/Layout";
 import { UserContext } from "../../Components/Context";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
 function AskQuestions() {
-  const { userData, setUserData, loadingAuth } = useContext(UserContext);
-  const token = userData?.token;
-  const navigate = useNavigate();
-  const [initialAuthCheckComplete, setInitialAuthCheckComplete] =
-    useState(false);
-
+  const { userData } = useContext(UserContext);
   const [question, setQuestion] = useState({
     title: "",
     description: "",
@@ -36,40 +31,6 @@ function AskQuestions() {
   }, [userData?.userid]);
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (loadingAuth) {
-      return;
-    }
-
-    if (!initialAuthCheckComplete) {
-      if (!token || !userData?.userid) {
-        navigate("/landing", {
-          state: { message: "Please login to ask a question." },
-        });
-      }
-      setInitialAuthCheckComplete(true);
-    } else {
-      if (!token || !userData?.userid) {
-        navigate("/landing");
-      }
-    }
-  }, [
-    token,
-    userData?.userid,
-    navigate,
-    loadingAuth,
-    initialAuthCheckComplete,
-  ]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setQuestion((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,9 +45,6 @@ function AskQuestions() {
       setLoading(false);
       return;
     }
-
-    // Log the question data before sending
-    console.log("Submitting question:", question);
 
     try {
       await axios.post("/questions", question, {
@@ -104,10 +62,8 @@ function AskQuestions() {
         position: "top-right",
         autoClose: 3000,
       });
-      navigate("/home");
     } catch (error) {
       if (error.response?.status === 401) {
-        setError("Please login to ask a question");
         navigate("/landing");
       } else if (
         error.response?.status === 400 &&
@@ -124,8 +80,7 @@ function AskQuestions() {
           }
         );
       } else {
-        setError("Failed to submit question. Please try again.");
-        toast.error("Failed to submit question.", {
+        toast.error("Server error. Please try again.", {
           position: "top-right",
           autoClose: 3000,
         });
@@ -135,25 +90,35 @@ function AskQuestions() {
     }
   };
 
+  useEffect(() => {
+    if (userData?.userid) {
+      setQuestion((prev) => ({ ...prev, userId: userData.userid }));
+    }
+  }, [userData?.userid]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setQuestion((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <LayOut>
       <div className={styles.outer__container}>
         <div className={styles.steps__container}>
           <h2>Steps to write a good question.</h2>
-          <div className={styles.lists}>
-            <ul>
-              <li>Summarize your problem in one-line title.</li>
-              <li>Describe your problem in more detail.</li>
-              <li>Describe what you tried and what you expected to happen.</li>
-              <li>Review your question and post it to the site.</li>
-            </ul>
-          </div>
+          <ul>
+            <li>Summarize your problem in one-line title.</li>
+            <li>Describe your problem in more detail.</li>
+            <li>Describe what you tried and what you expected to happen.</li>
+            <li>Review your question and post it to the site.</li>
+          </ul>
         </div>
-
-        <div className={`container mt-5 ${styles.question__container}`}>
+        <div className={styles.question__container}>
           <h3 className={styles.title}>Ask a Public Question</h3>
           <Link to="/home">Go to Question page</Link>
-
           <form onSubmit={handleSubmit} className={styles.askform}>
             <input
               type="text"
@@ -171,7 +136,7 @@ function AskQuestions() {
               onChange={handleChange}
               value={question.description}
               required
-            ></textarea>
+            />
             <input
               type="text"
               placeholder="Tag (optional)"
@@ -181,14 +146,7 @@ function AskQuestions() {
             />
             {error && <p className={styles.error}>{error}</p>}
             <button type="submit" className={styles.askBtn} disabled={loading}>
-              {loading ? (
-                <>
-                  <ClipLoader color={"#fff"} loading={loading} size={20} />
-                  <span style={{ marginLeft: "10px" }}>Posting . . .</span>
-                </>
-              ) : (
-                "Post Your Question"
-              )}
+              {loading ? "Posting..." : "Post Your Question"}
             </button>
           </form>
         </div>
