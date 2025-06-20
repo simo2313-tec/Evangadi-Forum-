@@ -19,7 +19,7 @@ function App() {
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/landing" element={<Landing />} />
         <Route
@@ -41,7 +41,15 @@ function App() {
 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/profile/:user_id" element={<Profile />} />
+
+        <Route
+          path="/profile/:user_id"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <ToastContainer
         position="top-right"
