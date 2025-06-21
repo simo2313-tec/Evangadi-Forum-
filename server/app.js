@@ -7,9 +7,7 @@ const dotenv = require("dotenv");
 // configuring dotenv
 dotenv.config();
 
-
 const app = express();
-
 
 // middlewares
 app.use(
@@ -23,8 +21,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-
 // import auth middleware
 const authMiddleware = require("./middleware/authMiddleware");
 
@@ -34,34 +30,35 @@ const createTableRouter = require("./routes/createTablesRoute");
 // import user routes
 const registerRouter = require("./routes/registerRoute");
 const loginRouter = require("./routes/loginRoute");
-const answerRoutes = require("./routes/postAnswerRoute");
+const passwordResetRouter = require("./routes/passwordResetRoute");
+
+// import question and answer routes
 const getquestions = require("./routes/getquestionsRoute");
 const postQuestionRoutes = require("./routes/postQuestionsRoute");
 const getAnswerRouter = require("./routes/getAnswerRoute");
+const postAnswerRoutes = require("./routes/postAnswerRoute");
 const likeDislikeRouter = require("./routes/likeDislikeRoute");
-const updateQuestionRouter = require("./routes/updateQuestionRouter")
-const updateAnswerRouter = require("./routes/updateAnswerRoute")
-const passwordResetRouter = require("./routes/passwordResetRoute");
+const updateQuestionRouter = require("./routes/updateQuestionRouter");
+const updateAnswerRouter = require("./routes/updateAnswerRoute");
 
-
-app.use("/api/user",   passwordResetRouter);
-
+// --- All Routes ---
 // admin routes middleware
 app.use("/api/admin", initDB_Router);
 app.use("/api/admin", createTableRouter);
+
 // user routes middleware
 app.use("/api/user", registerRouter);
 app.use("/api/user", loginRouter);
+app.use("/api/user", passwordResetRouter);
+
+// question and answer routes middleware
 app.use("/api", getquestions);
 app.use("/api", getAnswerRouter);
 app.use("/api", authMiddleware, postQuestionRoutes);
-app.use("/api", authMiddleware, answerRoutes);
+app.use("/api", authMiddleware, postAnswerRoutes);
 app.use("/api", authMiddleware, likeDislikeRouter);
 app.use("/api", authMiddleware, updateQuestionRouter);
-app.use("/api", authMiddleware, updateAnswerRouter)
-
-
-
+app.use("/api", authMiddleware, updateAnswerRouter);
 
 // profile routes
 const profileRoutes = require("./routes/profileRoutes");

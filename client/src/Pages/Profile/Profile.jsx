@@ -6,7 +6,7 @@ import { ClipLoader } from "react-spinners";
 
 import api from "../../Utility/axios";
 import { UserContext } from "../../Components/Context/UserContext";
-import Layout from "../../Components/Layout/Layout"; // Import Layout
+import Layout from "../../Components/Layout/Layout";
 import styles from "./profile.module.css";
 
 const ProfilePage = () => {
