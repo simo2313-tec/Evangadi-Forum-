@@ -178,11 +178,12 @@ textarea {
 }
 .user_question {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
   height: 100%;
   gap: 30px;
   transition: gap 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 .usericon_and_username {
   display: flex;
@@ -304,8 +305,9 @@ textarea {
 }
 
 .editAnswerForm textarea {
+  margin-top: 1%;
   width: 100%;
-  box-sizing: border-box;
+  height: auto;
 }
 
 .filter_btn {

@@ -24,8 +24,6 @@ function QuestionDetailAndAnswer() {
     answer: "",
   });
 
-  const [QDetailLoading, setDDetailLoading] = useState(false);
-  const [answerLoading, setAnswerLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editQuestionMode, setEditQuestionMode] = useState(false);
   const [editAnswerMode, setEditAnswerMode] = useState(null); // answer_id of the answer being edited
@@ -60,7 +58,7 @@ function QuestionDetailAndAnswer() {
 
   // Fetch question details
   const getQuestionDetail = async () => {
-    setDDetailLoading(true);
+    setLoadingQuestionDetail(true);
     setError({ ...error, getQuestionDetailError: null });
     try {
       const res = await axios.get(`/question/${question_id}`);
@@ -76,55 +74,52 @@ function QuestionDetailAndAnswer() {
         position: "top-right",
         autoClose: 3000,
       });
+    } finally {
+      setLoadingQuestionDetail(false);
     }
   };
 
-  const getAllAnswers = () => {
+  // Fetch answers
+  const getAllAnswers = async () => {
     setLoadingAnswers(true);
-    setError({
-      ...error,
-      getAnswerError: null,
-    });
-    axios
-      .get(
-        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        if (Array.isArray(res.data.answers)) {
-          setAllQuestionAnswers(res.data.answers);
-          setAnswerPagination(
-            res.data.pagination || {
-              total: 0,
-              page: 1,
-              pageSize: 5,
-              totalPages: 1,
-            }
-          );
-        } else {
-          setAllQuestionAnswers([]);
-          setAnswerPagination({
+    setError({ ...error, getAnswerError: null });
+    try {
+      const res = await axios.get(
+        `/answer/${question_id}?page=${answerPage}&pageSize=${answerPageSize}&sort=${answerSort}`
+      );
+      if (Array.isArray(res.data.answers)) {
+        setAllQuestionAnswers(res.data.answers);
+        setAnswerPagination(
+          res.data.pagination || {
             total: 0,
             page: 1,
             pageSize: 5,
             totalPages: 1,
-          });
-        }
-      })
-      .catch((err) => {
-        const errorMessage =
-          err.response?.data?.message || err.message || "Something went wrong";
-        setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
+          }
+        );
+      } else {
         setAllQuestionAnswers([]);
-        setAnswerPagination({ total: 0, page: 1, pageSize: 5, totalPages: 1 });
-      })
-      .finally(() => {
-        setLoadingAnswers(false);
+        setAnswerPagination({
+          total: 0,
+          page: 1,
+          pageSize: 5,
+          totalPages: 1,
+        });
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || err.message || "Something went wrong";
+      setError((prev) => ({ ...prev, getAnswerError: errorMessage }));
+      setAllQuestionAnswers([]);
+      setAnswerPagination({
+        total: 0,
+        page: 1,
+        pageSize: 5,
+        totalPages: 1,
       });
+    } finally {
+      setLoadingAnswers(false);
+    }
   };
 
   // Post answer
@@ -295,7 +290,14 @@ function QuestionDetailAndAnswer() {
   useEffect(() => {
     getQuestionDetail();
     getAllAnswers();
-  }, [question_id, successAnswer, answerPage, answerPageSize, answerSort]);
+  }, [
+    question_id,
+    successAnswer,
+    answerPage,
+    answerPageSize,
+    answerSort,
+    editQuestionMode,
+  ]);
 
   // Update answer state when userData changes
   useEffect(() => {
@@ -630,9 +632,6 @@ function QuestionDetailAndAnswer() {
                 value={answer.answer}
                 required
               ></textarea>
-              {error.postAnswerError && (
-                <p className={styles.error}>{error.postAnswerError}</p>
-              )}
               <button
                 type="submit"
                 className={styles.answerBtn}
