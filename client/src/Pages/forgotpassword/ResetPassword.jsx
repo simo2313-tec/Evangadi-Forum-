@@ -1,5 +1,5 @@
 // src/Pages/ResetPassword.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../Utility/axios";
 import { toast } from "react-toastify";
@@ -12,27 +12,9 @@ function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [tokenValid, setTokenValid] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { token } = useParams();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        await api.get(`/user/verify-reset-token/${token}`);
-        setTokenValid(true);
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Invalid or expired reset link."
-        );
-        navigate("/forgot-password");
-      } finally {
-        setLoading(false);
-      }
-    };
-    verifyToken();
-  }, [token, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,20 +39,6 @@ function ResetPassword() {
       setLoading(false);
     }
   };
-
-  if (loading && !tokenValid) {
-    return (
-      <Layout>
-        <div className={styles.container}>
-          <ClipLoader color="var(--primary)" size={50} />
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!tokenValid) {
-    return null;
-  }
 
   return (
     <Layout>

@@ -18,29 +18,57 @@ transporter.verify((error) => {
   }
 });
 
+/**
+ * Creates a standardized HTML email template.
+ * @param {object} options - The options for the email content.
+ * @param {string} options.title - The main headline of the email.
+ * @param {string} options.body - The main paragraph content (can include HTML).
+ * @param {string} options.buttonText - The text for the call-to-action button.
+ * @param {string} options.buttonLink - The URL for the call-to-action button.
+ * @returns {string} The complete HTML for the email.
+ */
+function createEmailTemplate({ title, body, buttonText, buttonLink }) {
+  const bannerUrl =
+    "https://media.licdn.com/dms/image/v2/C4D1BAQHjcAywjO5oog/company-background_10000/company-background_10000/0/1617365551032/evangadi_cover?e=2147483647&v=beta&t=H9otC1uxv80rgxHUXj0odSMh4I_raLIqjSXZgmmgI88";
+
+  return `
+    <div style="background-color: #f4f7f6; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <img src="${bannerUrl}" alt="Evangadi Banner" style="width: 100%; height: auto; display: block;"/>
+        <div style="padding: 30px; color: #1e3a5f;">
+          <h2 style="margin-top: 0; font-weight: 700; font-size: 24px;">${title}</h2>
+          <p style="font-size: 16px; line-height: 1.6;">${body}</p>
+          <div style="margin: 30px 0; text-align: center;">
+            <a href="${buttonLink}" style="display: inline-block; padding: 14px 30px; background: linear-gradient(90deg, #1e3a5f 60%, #007bff 100%); color: #ffffff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 2px 8px rgba(30,58,95,0.15); transition: transform 0.2s;">
+              ${buttonText}
+            </a>
+          </div>
+          <p style="font-size: 14px; color: #555;">If you have any questions, just reply to this email—we're always happy to help out.</p>
+        </div>
+        <div style="background-color: #eef2f5; padding: 20px; text-align: center; font-size: 12px; color: #888;">
+          &copy; ${new Date().getFullYear()} Evangadi Forum. All rights reserved.<br/>
+          Evangadi Community, Addis Ababa, Ethiopia
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // Password reset email function
 async function sendPasswordResetEmail(email, username, resetLink) {
   try {
+    const emailHtml = createEmailTemplate({
+      title: "Password Reset Request",
+      body: `Hello ${username},<br/><br/>We received a request to reset your password. Click the button below to proceed. This link will expire in 1 hour. If you didn't request this, please ignore this email.`,
+      buttonText: "Reset Password",
+      buttonLink: resetLink,
+    });
+
     await transporter.sendMail({
-      from: `"${process.env.EMAIL_SENDER_NAME}" <${process.env.EMAIL_USER}>`,
+      from: `"Evangadi Forum" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset Request",
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2 style="color: #2c3e50;">Password Reset Request</h2>
-          <p>Hello ${username},</p>
-          <p>We received a request to reset your password. Click the button below to proceed:</p>
-          <p style="margin: 25px 0;">
-            <a href="${resetLink}" 
-               style="background-color: #3498db; color: white; padding: 10px 20px; 
-                      text-decoration: none; border-radius: 5px; display: inline-block;">
-              Reset Password
-            </a>
-          </p>
-          <p>This link will expire in 1 hour. If you didn't request this, please ignore this email.</p>
-          <p>Thank you,<br>The ${process.env.APP_NAME} Team</p>
-        </div>
-      `,
+      html: emailHtml,
     });
     return true;
   } catch (error) {
@@ -49,36 +77,32 @@ async function sendPasswordResetEmail(email, username, resetLink) {
   }
 }
 
-const FRONTEND_URL = process.env.FRONTEND_URL;
-
+// Answer notification email function
 async function sendAnswerNotification(
   email,
   questionId,
   questionTitle = "your question"
 ) {
-  const questionLink = `${FRONTEND_URL}/question-detail/${questionId}`;
-  const mailOptions = {
-    from: "Evangadi Q&A Forum <no-reply@qaapp.com>",
-    to: email,
-    subject: "Your question has been answered!",
-    text: `Your question has been answered! Visit: ${questionLink}`,
-    html: `
-      <div style="background: rgba(255,255,255,0.7); backdrop-filter: blur(8px) saturate(180%); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); padding: 32px 24px; max-width: 480px; margin: 32px auto; font-family: 'Segoe UI', Arial, sans-serif; color: #1e3a5f;">
-        <div style="text-align:center; margin-bottom: 18px;">
-          <img src="https://evangadi-forum-beta7.vercel.app/src/assets/imgs/logo.png" alt="Evangadi Logo" style="height:48px; margin-bottom: 8px;"/>
-          <h2 style="margin:0; font-weight:700; letter-spacing:1px;">Evangadi Forum</h2>
-        </div>
-        <h3 style="margin-top:0;">Your question has a new answer!</h3>
-        <p style="font-size:1.1rem;">Someone just answered <b>"${questionTitle}"</b> on Evangadi Forum.</p>
-        <a href="${questionLink}" style="display:inline-block; margin: 24px 0 8px 0; padding: 12px 28px; background: linear-gradient(90deg, #1e3a5f 60%, #007bff 100%); color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(30,58,95,0.10); transition: background 0.2s;">View Your Question</a>
-        <p style="font-size:0.95rem; color:#555; margin-top:24px;">Thank you for being part of the Evangadi community!<br/>If you have any questions, just reply to this email.</p>
-        <hr style="margin:24px 0; border:none; border-top:1px solid #eee;"/>
-        <div style="font-size:0.85rem; color:#888; text-align:center;">&copy; 2025 Evangadi Forum. All rights reserved.</div>
-      </div>
-    `,
-  };
+  try {
+    const questionLink = `${process.env.FRONTEND_URL}/question-detail/${questionId}`;
+    const emailHtml = createEmailTemplate({
+      title: "Your Question Has a New Answer!",
+      body: `Someone just answered your question: <strong>"${questionTitle}"</strong>. Click the button below to see the new answer and join the discussion.`,
+      buttonText: "View Your Question",
+      buttonLink: questionLink,
+    });
 
-  await transporter.sendMail(mailOptions);
+    await transporter.sendMail({
+      from: `"Evangadi Forum" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your question has been answered!",
+      html: emailHtml,
+    });
+    return true;
+  } catch (error) {
+    console.error("Error sending answer notification email:", error);
+    return false;
+  }
 }
 
 module.exports = {
