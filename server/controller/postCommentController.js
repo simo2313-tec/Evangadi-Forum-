@@ -4,18 +4,19 @@ const { sendCommentNotification } = require("../services/mailer");
 const xss = require("xss");
 
 async function postComment(req, res) {
-  // Validate authentication
-  if (!req.user?.user_id) {
+  // The user ID is now securely taken from the authenticated user's token.
+  const userId = req.user?.userid;
+  const { comment_text, answer_id, parent_comment_id } = req.body;
+
+  // Validate authentication first
+  if (!userId) {
     return res.status(StatusCodes.UNAUTHORIZED).json({
       success: false,
-      message: "Authentication required",
+      message: "Authentication required. Please log in.",
     });
   }
 
-  const userId = req.user.user_id;
-  const { comment_text, answer_id, parent_comment_id } = req.body;
-
-  // Validate required fields
+  // Validate required fields from the request body
   if (!comment_text?.trim() || !answer_id) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
@@ -26,7 +27,9 @@ async function postComment(req, res) {
   // Sanitize and validate inputs
   const sanitizedComment = xss(comment_text.trim());
   const answerId = parseInt(answer_id, 10);
-  const parentCommentId = parent_comment_id ? parseInt(parent_comment_id, 10) : null;
+  const parentCommentId = parent_comment_id
+    ? parseInt(parent_comment_id, 10)
+    : null;
 
   if (isNaN(answerId) || (parent_comment_id && isNaN(parentCommentId))) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -92,7 +95,7 @@ async function postComment(req, res) {
         "SELECT user_id FROM comment WHERE comment_id = ?",
         [parentCommentId]
       );
-      
+
       if (parentComment.length && parentComment[0].user_id !== userId) {
         const [parentCommentOwner] = await dbconnection.query(
           "SELECT user_email FROM registration WHERE user_id = ?",
@@ -107,11 +110,12 @@ async function postComment(req, res) {
     // Send notifications (fire-and-forget)
     if (notificationRecipients.size > 0) {
       Promise.all(
-        Array.from(notificationRecipients).map(email => 
-          sendCommentNotification(email, answerId, newCommentId)
-            .catch(err => console.error(`Failed to send notification to ${email}:`, err))
+        Array.from(notificationRecipients).map((email) =>
+          sendCommentNotification(email, answerId, newCommentId).catch((err) =>
+            console.error(`Failed to send notification to ${email}:`, err)
+          )
         )
-      ).catch(err => console.error("Notification error:", err));
+      ).catch((err) => console.error("Notification error:", err));
     }
 
     return res.status(StatusCodes.CREATED).json({
@@ -120,10 +124,9 @@ async function postComment(req, res) {
       data: {
         comment_id: newCommentId,
         answer_id: answerId,
-        parent_comment_id: parentCommentId
-      }
+        parent_comment_id: parentCommentId,
+      },
     });
-
   } catch (error) {
     console.error("Database error:", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

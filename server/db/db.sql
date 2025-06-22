@@ -51,25 +51,7 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   INDEX (token)
 );
 
-CREATE TABLE IF NOT EXISTS likes_dislikes (
-      like_dislike_id int NOT NULL AUTO_INCREMENT,
-      user_id int NOT NULL,
-      question_id int NULL,
-      answer_id int NULL,
-      is_like boolean NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (like_dislike_id),
-      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
-      FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE,
-      FOREIGN KEY (answer_id) REFERENCES answer(answer_id) ON DELETE CASCADE,
-      CONSTRAINT unique_user_question_vote UNIQUE (user_id, question_id),
-      CONSTRAINT unique_user_answer_vote UNIQUE (user_id, answer_id),
-      CONSTRAINT check_single_target CHECK (
-        (question_id IS NOT NULL AND answer_id IS NULL) OR 
-        (question_id IS NULL AND answer_id IS NOT NULL)
-      )
-);
--- FIXED: The 'comment' table is now created BEFORE 'likes_dislikes'
+-- The 'comment' table is now created BEFORE 'likes_dislikes'
 CREATE TABLE IF NOT EXISTS comment (
   comment_id INT NOT NULL AUTO_INCREMENT,
   comment_text TEXT NOT NULL,
@@ -77,8 +59,32 @@ CREATE TABLE IF NOT EXISTS comment (
   answer_id INT NOT NULL,
   parent_comment_id INT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (comment_id),
   FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
   FOREIGN KEY (answer_id) REFERENCES answer(answer_id) ON DELETE CASCADE,
   FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS likes_dislikes (
+      like_dislike_id int NOT NULL AUTO_INCREMENT,
+      user_id int NOT NULL,
+      question_id int NULL,
+      answer_id int NULL,
+      comment_id int NULL,
+      is_like boolean NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (like_dislike_id),
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
+      FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE,
+      FOREIGN KEY (answer_id) REFERENCES answer(answer_id) ON DELETE CASCADE,
+      FOREIGN KEY (comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE,
+      CONSTRAINT unique_user_question_vote UNIQUE (user_id, question_id),
+      CONSTRAINT unique_user_answer_vote UNIQUE (user_id, answer_id),
+      CONSTRAINT unique_user_comment_vote UNIQUE (user_id, comment_id),
+      CONSTRAINT check_single_target CHECK (
+        (question_id IS NOT NULL AND answer_id IS NULL AND comment_id IS NULL) OR 
+        (question_id IS NULL AND answer_id IS NOT NULL AND comment_id IS NULL) OR
+        (question_id IS NULL AND answer_id IS NULL AND comment_id IS NOT NULL)
+      )
 );
