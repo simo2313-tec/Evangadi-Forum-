@@ -1,6 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
-const { sendCommentNotification } = require("../services/mailer");
 const xss = require("xss");
 
 async function postComment(req, res) {
@@ -105,17 +104,6 @@ async function postComment(req, res) {
           notificationRecipients.add(parentCommentOwner[0].user_email);
         }
       }
-    }
-
-    // Send notifications (fire-and-forget)
-    if (notificationRecipients.size > 0) {
-      Promise.all(
-        Array.from(notificationRecipients).map((email) =>
-          sendCommentNotification(email, answerId, newCommentId).catch((err) =>
-            console.error(`Failed to send notification to ${email}:`, err)
-          )
-        )
-      ).catch((err) => console.error("Notification error:", err));
     }
 
     return res.status(StatusCodes.CREATED).json({
