@@ -31,7 +31,7 @@
 }
 .question_item_wrapper {
   width: 100%;
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
   align-items: stretch;
   border-bottom: 2px solid var(--border);
@@ -281,6 +281,123 @@ textarea {
 }
 .sort_select:focus {
   border: 1.5px solid var(--primary);
+}
+/* Comments section */
+.comments_section {
+  margin-top: 20px;
+  padding: 15px 20px;
+  border-top: 2px solid var(--border);
+  background-color: var(--background-light);
+  border-radius: 8px;
+}
+
+.comment_title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: var(--primary-blue);
+}
+
+.comment {
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.comment_header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.comment_usericon {
+  color: #1e3a5f;
+  font-size: 1.8rem;
+}
+
+.comment_username {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.comment_timestamp {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.comment_text {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.comment_actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.reply_button {
+  background: none;
+  border: none;
+  color: var(--primary-blue);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.reply_button:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.comment_form {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.comment_textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1.2rem;
+  resize: vertical;
+  color: var(--text-dark);
+}
+
+.comment_submit_button {
+  align-self: flex-start;
+  padding: 10px 20px;
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.comment_submit_button:hover {
+  background-color: var(--accent);
+}
+
+.error {
+  color: var(--error);
+  font-size: 1.1rem;
+  margin: 10px 0;
 }
 
 .error {
