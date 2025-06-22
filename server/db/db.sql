@@ -40,6 +40,17 @@ CREATE TABLE IF NOT EXISTS answer (
   FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
   FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
+  INDEX (token)
+);
+
 CREATE TABLE IF NOT EXISTS likes_dislikes (
       like_dislike_id int NOT NULL AUTO_INCREMENT,
       user_id int NOT NULL,
@@ -58,13 +69,16 @@ CREATE TABLE IF NOT EXISTS likes_dislikes (
         (question_id IS NULL AND answer_id IS NOT NULL)
       )
 );
-
-CREATE TABLE IF NOT EXISTS password_reset_tokens (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+-- FIXED: The 'comment' table is now created BEFORE 'likes_dislikes'
+CREATE TABLE IF NOT EXISTS comment (
+  comment_id INT NOT NULL AUTO_INCREMENT,
+  comment_text TEXT NOT NULL,
   user_id INT NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  expires_at DATETIME NOT NULL,
+  answer_id INT NOT NULL,
+  parent_comment_id INT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (comment_id),
   FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
-  INDEX (token)
+  FOREIGN KEY (answer_id) REFERENCES answer(answer_id) ON DELETE CASCADE,
+  FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
 );
