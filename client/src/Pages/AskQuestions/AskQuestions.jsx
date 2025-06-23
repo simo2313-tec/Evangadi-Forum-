@@ -10,7 +10,7 @@ import { ClipLoader } from "react-spinners";
 function AskQuestions() {
   const { userData } = useContext(UserContext);
   const token = userData?.token;
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
   const [question, setQuestion] = useState({
     title: "",
     description: "",
@@ -60,6 +60,7 @@ function AskQuestions() {
         position: "top-right",
         autoClose: 3000,
       });
+      navigate("/home");
     } catch (error) {
       if (error.response?.status === 401) {
         navigate("/landing");

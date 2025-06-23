@@ -16,7 +16,7 @@ function Home() {
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(20);
   const [pagination, setPagination] = useState({
     total: 0,
     page: 1,
@@ -28,9 +28,6 @@ function Home() {
   const navigate = useNavigate();
   const token = userData?.token;
 
-
-
-
   const handleAskQuestion = () => {
     if (!token || !userData?.userid) {
       navigate("/landing", {
@@ -40,9 +37,6 @@ function Home() {
       navigate("/ask-questions");
     }
   };
-
-
-
 
   useEffect(() => {
     setLoading(true);
@@ -82,11 +76,6 @@ function Home() {
       });
   }, [page, pageSize, sort, search]);
 
-
-
-
-
-  
   //  Vote handle
   const handleVote = async (question_id, action) => {
     if (!token) {
@@ -225,7 +214,9 @@ function Home() {
                               className={styles.usericon}
                             />
                             <span>
-                              {q.user_id === userData?.userid ? "You" : "@" + q.user_name}
+                              {q.user_id === userData?.userid
+                                ? "You"
+                                : "@" + q.user_name}
                             </span>
                           </div>
                         </div>

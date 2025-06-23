@@ -1,13 +1,15 @@
-* {
-  margin: 0;
-  padding: 0;
-}
 .header_container {
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: var(--white);
-  border-bottom: 0.5px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 .header {
   width: 80%;
@@ -17,8 +19,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 2rem;
-  background-color: var(--white);
-
+  background-color: transparent;
   position: relative;
   z-index: 100;
 }
@@ -86,12 +87,12 @@
 }
 
 .profile_icon {
-  background: var(--white);
+  background: transparent;
   color: #1e3a5f;
   border-radius: 50%;
   transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
     transform 0.3s ease-in-out;
-  padding: 5px;
+  padding: 2px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -116,7 +117,9 @@
     overflow: hidden;
     max-height: 0;
     flex-direction: column;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     padding: 0;
     border-radius: 0;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);

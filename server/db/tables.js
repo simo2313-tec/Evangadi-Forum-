@@ -2,22 +2,22 @@ const create_registration = `
   CREATE TABLE IF NOT EXISTS registration (
     user_id int NOT NULL AUTO_INCREMENT,
     user_name varchar(50) NOT NULL,
-    user_email varchar(254) NOT NULL,
+    user_email varchar(254) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     password varchar(100) NOT NULL,
     is_verified BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (user_id),
-    UNIQUE KEY (user_email)
+    verification_token varchar(255),
+    PRIMARY KEY (user_id)
   )`;
 
 const create_profile = `
     CREATE TABLE IF NOT EXISTS profile (
       user_profile_id int NOT NULL AUTO_INCREMENT,
-      user_id int NOT NULL,
+      user_id int NOT NULL UNIQUE,
       first_name varchar(50) NOT NULL,
       last_name varchar(50) NOT NULL,
       PRIMARY KEY (user_profile_id),
-      FOREIGN KEY (user_id) REFERENCES registration(user_id)
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE
     )`;
 
 const create_question = `
@@ -30,7 +30,7 @@ const create_question = `
       post_id int NOT NULL UNIQUE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (question_id),
-      FOREIGN KEY (user_id) REFERENCES registration(user_id)
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE
     )`;
 
 const create_answer = `
@@ -39,11 +39,26 @@ const create_answer = `
       answer text NOT NULL,
       user_id int NOT NULL,
       question_id int NOT NULL,
-      PRIMARY KEY (answer_id),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES registration(user_id),
-      FOREIGN KEY (question_id) REFERENCES question(question_id)
+      PRIMARY KEY (answer_id),
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
+      FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE
     )`;
+
+const create_comment = `
+  CREATE TABLE IF NOT EXISTS comment (
+    comment_id INT NOT NULL AUTO_INCREMENT,
+    comment_text TEXT NOT NULL,
+    user_id INT NOT NULL,
+    answer_id INT NOT NULL,
+    parent_comment_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (comment_id),
+    FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (answer_id) REFERENCES answer(answer_id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
+  )`;
 
 const create_likes_dislikes = `
     CREATE TABLE IF NOT EXISTS likes_dislikes (
@@ -54,11 +69,11 @@ const create_likes_dislikes = `
       is_like boolean NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (like_dislike_id),
-      FOREIGN KEY (user_id) REFERENCES registration(user_id),
+      FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE,
       FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE,
       FOREIGN KEY (answer_id) REFERENCES answer(answer_id) ON DELETE CASCADE,
-      CONSTRAINT unique_user_question UNIQUE (user_id, question_id),
-      CONSTRAINT unique_user_answer UNIQUE (user_id, answer_id),
+      CONSTRAINT unique_user_question_vote UNIQUE (user_id, question_id),
+      CONSTRAINT unique_user_answer_vote UNIQUE (user_id, answer_id),
       CONSTRAINT check_single_target CHECK (
         (question_id IS NOT NULL AND answer_id IS NULL) OR 
         (question_id IS NULL AND answer_id IS NOT NULL)
@@ -81,5 +96,6 @@ module.exports = {
   create_profile,
   create_question,
   create_answer,
+  create_comment,
   create_likes_dislikes,
 };

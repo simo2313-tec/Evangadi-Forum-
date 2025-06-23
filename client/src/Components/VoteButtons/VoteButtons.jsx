@@ -5,13 +5,20 @@ import styles from "./voteButtons.module.css";
 
 const formatVotes = (num) => {
   if (typeof num !== "number") return "0";
+  let formattedNum;
   if (Math.abs(num) >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    formattedNum = (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  } else if (Math.abs(num) >= 1000) {
+    formattedNum = (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  } else {
+    formattedNum = num.toString();
   }
-  if (Math.abs(num) >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+
+  if (num > 0) {
+    return `+${formattedNum}`;
   }
-  return num.toString();
+
+  return formattedNum; // This will already have a '-' if negative.
 };
 
 function VoteButtons({ likes = 0, dislikes = 0, userVote, onVote }) {
@@ -27,6 +34,9 @@ function VoteButtons({ likes = 0, dislikes = 0, userVote, onVote }) {
     onVote("dislike");
   };
 
+  const voteCountClass =
+    netVotes > 0 ? styles.positive : netVotes < 0 ? styles.negative : "";
+
   return (
     <div className={styles.vote_container}>
       <button
@@ -38,7 +48,9 @@ function VoteButtons({ likes = 0, dislikes = 0, userVote, onVote }) {
       >
         <LuArrowBigUpDash className={styles.icon} /> {/* Corrected usage */}
         <span className={styles.upvote_text}>Upvote</span>
-        <span className={styles.vote_count}>{formatVotes(netVotes)}</span>
+        <span className={`${styles.vote_count} ${voteCountClass}`}>
+          {formatVotes(netVotes)}
+        </span>
       </button>
       <button
         onClick={handleDownvoteClick}
