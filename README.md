@@ -13,6 +13,7 @@ A modern, full-stack Q&A platform built with React, Node.js, and MySQL, designed
 
 - **User Authentication**: Secure login & signup with JWT, XSS protection, and friendly error handling.
 - **Ask & Answer Questions**: Post questions, provide answers, and engage in meaningful discussions.
+- **Nested Comments**: Add comments to answers for more detailed discussions.
 - **Voting System**: Upvote/downvote questions and answers with real-time feedback and modern UI.
 - **Search & Filter**: Instantly search questions by tag, title, or description. Sort by most recent or most popular.
 - **Pagination**: Fast, server-side pagination for questions and answers.
@@ -83,6 +84,7 @@ Evangadi-Forum/
 - **JWT Auth**: Secure authentication and protected routes.
 - **Error Handling**: All API and UI errors are handled gracefully with toasts and spinners.
 - **Accessibility**: Keyboard navigation, proper aria-labels, and color contrast.
+- **Rate Limiting**: Protection against brute-force and denial-of-service attacks.
 
 ---
 
@@ -108,7 +110,7 @@ cd Evangadi-Forum
 ```bash
 cd server
 npm install
-# Configure your .env and MySQL connection in db.Config.js
+# Configure your .env file based on .env.sample and MySQL connection in db.Config.js
 node app.js
 ```
 
@@ -117,12 +119,13 @@ node app.js
 ```bash
 cd client
 npm install
+# Create a .env file based on .env.sample and add your API keys
 npm run dev
 ```
 
 ### 4. Open in Browser
 
-Visit [http://localhost:4321](http://localhost:5173) (or the port shown in your terminal).
+Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
 
 ---
 
@@ -156,4 +159,23 @@ This project is licensed under the MIT License.
 
 ---
 
-> Made with ❤️ by the Evangadi Forum team & contributors.
+> Made with ❤️ by the Evangadi Forum team.
+
+---
+
+## 👥 Contributors
+
+| FName        | LName        |
+| ------------ | ------------ |
+| Eden         | Teklezghi    |
+| Abdulhakim   | Sefa         |
+| EKRAM        | ABDU         |
+| Eyale        | Kerie        |
+| Fozia        | Hussein      |
+| Ketemaw      | Asmare       |
+| Mihret       | Bizuayehu    |
+| Seid         | Mohammed     |
+| SIMON        | GHEBREMEDHIN |
+| Tesfamichael | Tafere       |
+| Tewodros     | Gebretsadkan |
+| Yilak        | Muluneh      |
