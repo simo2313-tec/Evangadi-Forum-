@@ -2,11 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const dbconnection = require("./db/db.Config");
 const dotenv = require("dotenv");
+const helmet = require("helmet");
 
 // Configuring dotenv
 dotenv.config();
 
 const app = express();
+
+app.use(helmet()); // Sets various HTTP headers for security - prevent against clickjacking, MIME-type sniffing, XSS etc.
 
 const limiter = require("./middleware/rateLimiter");
 
