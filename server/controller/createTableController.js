@@ -7,6 +7,12 @@ const {
   create_likes_dislikes,
   create_comment,
   create_password_reset_tokens,
+  // Indexes
+  create_idx_question_user_id,
+  create_idx_question_tag,
+  create_idx_answer_question_id,
+  create_idx_comment_answer_id,
+  create_idx_comment_parent_comment_id,
 } = require("../db/tables.js");
 
 async function createTable(req, res) {
@@ -18,9 +24,17 @@ async function createTable(req, res) {
     await dbconnection.query(create_comment);
     await dbconnection.query(create_likes_dislikes);
     await dbconnection.query(create_password_reset_tokens);
-    res.send("All tables created successfully");
+
+    // Create indexes
+    await dbconnection.query(create_idx_question_user_id);
+    await dbconnection.query(create_idx_question_tag);
+    await dbconnection.query(create_idx_answer_question_id);
+    await dbconnection.query(create_idx_comment_answer_id);
+    await dbconnection.query(create_idx_comment_parent_comment_id);
+
+    res.send("All tables and indexes created successfully");
   } catch (err) {
-    res.status(500).send("Error creating tables: " + err.message);
+    res.status(500).send("Error creating tables or indexes: " + err.message);
   }
 }
 

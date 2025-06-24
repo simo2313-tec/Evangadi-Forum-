@@ -88,3 +88,10 @@ CREATE TABLE IF NOT EXISTS likes_dislikes (
         (question_id IS NULL AND answer_id IS NULL AND comment_id IS NOT NULL)
       )
 );
+
+-- Add indexes for performance optimization
+CREATE INDEX idx_question_user_id ON question(user_id);
+CREATE INDEX idx_question_tag ON question(tag);
+CREATE INDEX idx_answer_question_id ON answer(question_id);
+CREATE INDEX idx_comment_answer_id ON comment(answer_id);
+CREATE INDEX idx_comment_parent_comment_id ON comment(parent_comment_id);
