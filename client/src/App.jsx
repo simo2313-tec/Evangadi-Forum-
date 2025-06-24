@@ -1,56 +1,79 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import Home from "./Pages/Home";
-import Landing from "./Pages/Landing";
-import AskQuestions from "./Pages/AskQuestions";
-import QuestionDetail from "./Pages/QuestionDetailAndAnswer";
-import NotFound from "./Pages/NotFound";
-import "./App.css";
-import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ChatBot from "./Components/ChatBot";
 import { ProtectedRoute } from "./Components/ProtectedRoute/ProtectedRoute";
+import HashLoader from "react-spinners/HashLoader";
 
-import ForgotPassword from "./Pages/forgotpassword/ForgotPassword";
-import ResetPassword from "./Pages/forgotpassword/ResetPassword";
-import Profile from "./Pages/Profile";
+const Home = React.lazy(() => import("./Pages/Home"));
+const Landing = React.lazy(() => import("./Pages/Landing"));
+const AskQuestions = React.lazy(() => import("./Pages/AskQuestions"));
+const QuestionDetail = React.lazy(() =>
+  import("./Pages/QuestionDetailAndAnswer")
+);
+const NotFound = React.lazy(() => import("./Pages/NotFound"));
+const ForgotPassword = React.lazy(() =>
+  import("./Pages/forgotpassword/ForgotPassword")
+);
+const ResetPassword = React.lazy(() =>
+  import("./Pages/forgotpassword/ResetPassword")
+);
+const Profile = React.lazy(() => import("./Pages/Profile"));
 
 function App() {
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/landing" element={<Landing />} />
-        <Route
-          path="/ask-questions"
-          element={
-            <ProtectedRoute>
-              <AskQuestions />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/question-detail/:question_id"
-          element={<QuestionDetail />}
-        />
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/login" element={<Landing />} />
-        <Route path="/sign-up" element={<Landing />} />
+      <Suspense
+        fallback={
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <HashLoader color={"#007bff"} />
+            <p style={{ marginTop: "1rem" }}>Loading . . .</p>
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/landing" element={<Landing />} />
+          <Route
+            path="/ask-questions"
+            element={
+              <ProtectedRoute>
+                <AskQuestions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/question-detail/:question_id"
+            element={<QuestionDetail />}
+          />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="/login" element={<Landing />} />
+          <Route path="/sign-up" element={<Landing />} />
 
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-        <Route
-          path="/profile/:user_id"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+          <Route
+            path="/profile/:user_id"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+        <ChatBot />
+      </Suspense>
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -62,7 +85,6 @@ function App() {
         draggable
         pauseOnHover
       />
-      <ChatBot />
     </div>
   );
 }

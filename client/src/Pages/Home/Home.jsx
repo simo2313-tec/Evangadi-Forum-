@@ -189,6 +189,7 @@ function Home() {
                 loading={loadingQuestions}
                 size={50}
               />
+              <p>Loading questions . . .</p>
             </div>
           ) : questions.length === 0 ? (
             <p className={styles.no_questions_message}>

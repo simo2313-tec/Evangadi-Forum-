@@ -98,7 +98,8 @@ const create_likes_dislikes = `
 // Add indexes for performance optimization
 const create_idx_question_user_id =
   "CREATE INDEX idx_question_user_id ON question(user_id)";
-const create_idx_question_tag = "CREATE INDEX idx_question_tag ON question(tag)";
+const create_idx_question_tag =
+  "CREATE INDEX idx_question_tag ON question(tag)";
 const create_idx_answer_question_id =
   "CREATE INDEX idx_answer_question_id ON answer(question_id)";
 const create_idx_comment_answer_id =

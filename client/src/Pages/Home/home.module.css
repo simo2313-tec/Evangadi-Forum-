@@ -122,9 +122,11 @@
 
 .spinner_container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 50vh;
+  min-height: 200px; /* Adjust as needed */
+  padding: 2rem;
 }
 
 .vote_section {
