@@ -8,15 +8,23 @@ dotenv.config();
 
 const app = express();
 
+const limiter = require("./middleware/rateLimiter");
+
 // Middlewares
 app.use(
   cors({
-    origin: ["http://localhost:4321", "http://localhost:5173", "http://localhost:3000"],
+    origin: [
+      "http://localhost:4321",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.use(limiter); // request rate limiter
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -58,11 +66,15 @@ app.use("/api", authMiddleware, likeRouter);
 app.use("/api", authMiddleware, postCommentRouter);
 app.use("/api", authMiddleware, updateQuestionRouter);
 app.use("/api", authMiddleware, updateAnswerRouter);
-app.use("/api", authMiddleware, updateCommentRouter); 
+app.use("/api", authMiddleware, updateCommentRouter);
 
 // Profile routes
 const profileRoutes = require("./routes/profileRoutes");
 app.use("/api/profile", authMiddleware, profileRoutes);
+
+// Global error handler
+const globalErrorHandler = require("./middleware/globalErrorHandler");
+app.use(globalErrorHandler);
 
 // Start server and test database connection
 async function startServer() {
