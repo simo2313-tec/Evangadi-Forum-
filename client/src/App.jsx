@@ -1,9 +1,10 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import ChatBot from "./Components/ChatBot";
 import { ProtectedRoute } from "./Components/ProtectedRoute/ProtectedRoute";
 import HashLoader from "react-spinners/HashLoader";
+import ScrollToTopButton from "./Components/ScrollToTopButton/ScrollToTopButton";
 
 const Home = React.lazy(() => import("./Pages/Home"));
 const Landing = React.lazy(() => import("./Pages/Landing"));
@@ -21,8 +22,15 @@ const ResetPassword = React.lazy(() =>
 const Profile = React.lazy(() => import("./Pages/Profile"));
 
 function App() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [pathname]);
+
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
+      <ScrollToTopButton />
       <Suspense
         fallback={
           <div

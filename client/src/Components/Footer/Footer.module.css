@@ -55,7 +55,7 @@ ul li {
 }
 
 ul li a {
-  color: var(text-gray);
+  color: var(--text-gray);
   text-decoration: none;
   transition: 0.3s;
 }

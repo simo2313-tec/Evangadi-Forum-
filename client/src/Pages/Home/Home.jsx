@@ -239,12 +239,7 @@ function Home() {
                               textDecoration: "none",
                             }}
                           >
-                            <p
-                              className={styles.Qtitle}
-                              style={{ fontSize: "2.2rem" }}
-                            >
-                              {q.question_title}
-                            </p>
+                            <p className={styles.Qtitle}>{q.question_title}</p>
                           </Link>
                           <div className={styles.timeandvote}>
                             <Link
