@@ -12,10 +12,9 @@ async function editAnswer(req, res) {
   }
 
   try {
-
     // Verify answer exists and belongs to user
-    const [answerRecord] = await dbconnection.query(
-      "SELECT user_id FROM answer WHERE answer_id = ?",
+    const { rows: answerRecord } = await dbconnection.query(
+      "SELECT user_id FROM answer WHERE answer_id = $1",
       [answer_id]
     );
 
@@ -30,8 +29,8 @@ async function editAnswer(req, res) {
     }
 
     // Update answer
-    await dbconnection.execute(
-      "UPDATE answer SET answer = ? WHERE answer_id = ?",
+    await dbconnection.query(
+      "UPDATE answer SET answer = $1 WHERE answer_id = $2",
       [answer, answer_id]
     );
 
@@ -42,18 +41,15 @@ async function editAnswer(req, res) {
   }
 }
 
-
-
 // Delete Answer Endpoint
 async function deleteAnswer(req, res) {
   const { answer_id } = req.params;
   const user_id = req.user.userid;
 
   try {
-
     // Verify answer exists and belongs to user
-    const [answerRecord] = await dbconnection.query(
-      "SELECT user_id FROM answer WHERE answer_id = ?",
+    const { rows: answerRecord } = await dbconnection.query(
+      "SELECT user_id FROM answer WHERE answer_id = $1",
       [answer_id]
     );
 
@@ -68,9 +64,7 @@ async function deleteAnswer(req, res) {
     }
 
     // Delete answer
-    await dbconnection.query("DELETE FROM answer WHERE answer_id = ?", [
-      answer_id,
-    ]);
+    await dbconnection.query("DELETE FROM answer WHERE answer_id = $1", [answer_id]);
 
     res.json({ message: "Answer deleted successfully" });
   } catch (error) {

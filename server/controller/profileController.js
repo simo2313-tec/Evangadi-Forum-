@@ -116,8 +116,8 @@ exports.updateProfile = async (req, res) => {
 exports.deleteProfile = async (req, res) => {
   try {
     const { user_id } = req.params;
-    const result = await db.execute(
-      "DELETE FROM registration WHERE user_id = ?",
+    const result = await db.query(
+      "DELETE FROM registration WHERE user_id = $1",
       [user_id]
     );
 
