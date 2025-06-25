@@ -1,26 +1,79 @@
-# Evangadi Forum
+# Evangadi Forum 2.0: A Modern Full-Stack Q&A Experience
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://evangadi-forum-beta7.vercel.app/)
 
-Welcome to the **Evangadi Forum**! 🚀
+Welcome to **Evangadi Forum 2.0**! 🚀
 
-A modern, full-stack Q&A platform built with React, Node.js, and MySQL, designed for vibrant community discussions, knowledge sharing, and collaborative learning. This project is inspired by the original [Evangadi-Forum repository](https://github.com/mihret7/Evangadi-Forum) and has been deeply enhanced for security, accessibility, and a beautiful user experience.
+A modern, community-driven Q&A platform built for the next generation of learners and experts. Featuring a beautiful UI, real-time interactions, robust security, and seamless user experience—Evangadi Forum is your go-to place to ask, answer, and connect.
 
 ---
 
-## 🌟 Features
+## 🛠️ Tech Stack
 
-- **User Authentication**: Secure login & signup with JWT, XSS protection, and friendly error handling.
-- **Ask & Answer Questions**: Post questions, provide answers, and engage in meaningful discussions.
-- **Nested Comments**: Add comments to answers for more detailed discussions.
-- **Voting System**: Upvote/downvote questions and answers with real-time feedback and modern UI.
-- **Search & Filter**: Instantly search questions by tag, title, or description. Sort by most recent or most popular.
-- **Pagination**: Fast, server-side pagination for questions and answers.
-- **Responsive Design**: Glassmorphic, mobile-first UI with smooth animations and accessibility in mind.
-- **Chatbot**: Friendly, animated chatbot for instant help and onboarding.
-- **Robust Backend**: Node.js/Express API with MySQL, input sanitization, and modular controllers.
-- **Error Handling**: User-friendly toasts and loading spinners for all major flows.
+[![Tech Stack](https://skillicons.dev/icons?i=react,vite,html,css,js,nodejs,express,mysql,postgres,cypress,vscode,git,github,npm,vercel,render&perline=8)](https://skillicons.dev)
+
+- **Frontend**: React, Vite, HTML5, CSS3 (CSS Modules), JavaScript (ES6+), React Router, Axios
+- **Backend**: Node.js, Express.js, MySQL, PostgreSQL(For Render DB)
+- **Testing**: Cypress (E2E)
+- **Dev Tools & Deployment**: VS Code, Git, GitHub, npm, Vercel, Render
+
+---
+
+## 🌟 Key Features & Recent Updates
+
+- **UUID-Based Addressing**: All user profiles and questions use secure, non-sequential UUIDs for privacy and security.
+- **Public Profiles with Private Controls**: Profiles are publicly viewable, but only the owner can edit or delete.
+- **Modern Authentication**: JWT-based login/signup, with secure password hashing and XSS protection.
+- **Dynamic Q&A System**: Post, edit, and answer questions with instant feedback and pre-filled edit forms.
+- **Nested Comments & Voting**: Engage in deep discussions and upvote/downvote questions and answers.
+- **Responsive, Glassmorphic UI**: Mobile-first, beautiful design with smooth animations and a friendly chatbot.
+- **Comprehensive E2E Testing**: Cypress tests for all major user flows, including signup, login, and navigation.
+- **Performance & Security**: Indexed DB queries, input sanitization, strict authorization, and rate limiting.
+- **Easy Deployment**: Ready for Vercel and Render with optimized build scripts.
+
+---
+
+## 🔒 Security and Performance Enhancements
+
+- **UUIDs for All Public Entities**: Prevents enumeration and scraping.
+- **Strict Auth Middleware**: Only owners can edit/delete their content.
+- **Input Sanitization**: All user input is sanitized with `xss` on the backend.
+- **Optimized Queries**: Fast, indexed DB access for all major endpoints.
+- **Rate Limiting**: Protection against brute-force and denial-of-service attacks.
+
+---
+
+## ✅ Testing Strategy
+
+- **Cypress**: End-to-end tests for signup, login, question posting, and navigation. Ensures real user flows work perfectly.
+
+---
+
+## 🚀 Getting Started
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Tesfamichael12/Evangadi-Forum.git
+    cd Evangadi-Forum
+    ```
+2.  **Setup Backend**:
+    ```bash
+    cd server
+    npm install
+    # Set up your .env file with database credentials
+    npm start
+    ```
+3.  **Setup Frontend**:
+    ```bash
+    cd ../client
+    npm install
+    npm run dev
+    ```
+4.  **Run Cypress Tests**:
+    ```bash
+    npm run cypress:open
+    ```
 
 ---
 
@@ -44,97 +97,6 @@ Evangadi-Forum/
 │   └── ...
 └── ...
 ```
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend**: React, Vite, CSS Modules, React Router, React Icons, React Spinners, Toastify
-- **Backend**: Node.js, Express, MySQL, xss (sanitization), JWT
-- **Other**: Axios, dotenv, CORS, bcrypt, modern CSS
-
----
-
-## 🚦 Major User Flows
-
-### 1. Authentication
-
-- **Sign Up**: `/sign-up` — Register with email, username, and password. All input is sanitized.
-- **Login**: `/login` — Secure login with JWT. Friendly error messages and loading spinners.
-
-### 2. Home & Questions
-
-- **Home**: `/home` — See all questions, search, sort, and paginate. Responsive, glassmorphic UI.
-- **Ask Question**: `/ask-questions` — Authenticated users can post new questions.
-- **Question Detail**: `/question-detail/:id` — View question, answers, vote, and add your answer.
-
-### 3. Voting
-
-- Upvote/downvote on both questions and answers. Votes update instantly and are visually highlighted.
-
-### 4. Chatbot
-
-- Animated chatbot for onboarding and help, with smooth open/close transitions.
-
----
-
-## 🔒 Security & Best Practices
-
-- **XSS Protection**: All user input is sanitized on the backend using the `xss` npm package.
-- **JWT Auth**: Secure authentication and protected routes.
-- **Error Handling**: All API and UI errors are handled gracefully with toasts and spinners.
-- **Accessibility**: Keyboard navigation, proper aria-labels, and color contrast.
-- **Rate Limiting**: Protection against brute-force and denial-of-service attacks.
-
----
-
-## 📱 Responsive & Modern UI
-
-- Fully responsive layouts for mobile, tablet, and desktop.
-- Glassmorphic cards, pill-shaped search bar, and modern icons.
-- Smooth animations for chatbot, loading, and transitions.
-
----
-
-## 🚀 Getting Started
-
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/mihret7/Evangadi-Forum.git
-cd Evangadi-Forum
-```
-
-### 2. Setup the Backend
-
-```bash
-cd server
-npm install
-# Configure your .env file based on .env.sample and MySQL connection in db.Config.js
-node app.js
-```
-
-### 3. Setup the Frontend
-
-```bash
-cd client
-npm install
-# Create a .env file based on .env.sample and add your API keys
-npm run dev
-```
-
-### 4. Open in Browser
-
-Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
-
----
-
-## 🧩 Notable Files & Folders
-
-- `client/src/Pages/Home/Home.jsx` — Home page logic, search, sort, pagination, and question listing.
-- `client/src/Components/VoteButtons/VoteButtons.jsx` — Unified voting UI for questions and answers.
-- `server/controller/` — All backend controllers, including XSS sanitization and pagination.
-- `server/db/db.Config.js` — MySQL connection config.
 
 ---
 
