@@ -204,44 +204,42 @@ function Home() {
                 >
                   <Link
                     to={`/question-detail/${q.question_id}`}
-                    className={styles.link_container}
+                    className={styles.user_container}
                   >
-                    <div className={styles.user_container}>
-                      <div className={styles.user_question}>
-                        <div className={styles.usericon_and_username}>
-                          <div className={styles.inner_center}>
-                            <FaUserCircle
-                              size={80}
-                              className={styles.usericon}
-                            />
-                            <span>
-                              {q.user_id === userData?.userid
-                                ? "You"
-                                : "@" + q.user_name}
-                            </span>
-                          </div>
+                    <div className={styles.user_question}>
+                      <div className={styles.usericon_and_username}>
+                        <div className={styles.inner_center}>
+                          <FaUserCircle size={80} className={styles.usericon} />
+                          <span>
+                            {q.user_id === userData?.userid
+                              ? "You"
+                              : "@" + q.user_name}
+                          </span>
                         </div>
-                        <div>
-                          <div className={styles.Qbox}>
-                            <p className={styles.Qtitle}>{q.question_title}</p>
+                      </div>
+                      <div>
+                        <div className={styles.Qbox}>
+                          <p className={styles.Qtitle}>{q.question_title}</p>
+                          <div className={styles.timeandvote}>
                             <p className={styles.timestamp_title}>
                               {getTimeDifference(q.created_at)}
                             </p>
+                            <div className={styles.vote_section}>
+                              <VoteButtons
+                                likes={q.likes ?? 0}
+                                dislikes={q.dislikes ?? 0}
+                                userVote={q.user_vote_type}
+                                onVote={(action) =>
+                                  handleVote(q.question_id, action)
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <FaChevronRight size={20} className={styles.chevron} />
                     </div>
+                    <FaChevronRight size={20} className={styles.chevron} />
                   </Link>
-
-                  <div className={styles.vote_section}>
-                    <VoteButtons
-                      likes={q.likes ?? 0}
-                      dislikes={q.dislikes ?? 0}
-                      userVote={q.user_vote_type}
-                      onVote={(action) => handleVote(q.question_id, action)}
-                    />
-                  </div>
                 </div>
               ))}
               {/* Pagination Controls */}

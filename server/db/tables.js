@@ -23,7 +23,7 @@ const create_profile = `
 const create_question = `
   CREATE TABLE IF NOT EXISTS question (
     question_id int NOT NULL AUTO_INCREMENT,
-    question_title varchar(100) NOT NULL,
+    question_title varchar(500) NOT NULL,
     question_description text,
     tag varchar(20),
     user_id int NOT NULL,

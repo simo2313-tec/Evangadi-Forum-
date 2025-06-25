@@ -44,13 +44,27 @@
   padding-bottom: 1%;
 }
 .user_container {
+  position: relative;
+  text-decoration: none;
+  color: unset;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 135px;
+  width: 100%;
+  gap: 15px;
+  min-height: 135px;
+  height: auto;
   border-bottom: 2px solid var(--border);
-  padding-bottom: 15px;
+  padding: 15px;
+  border-radius: 10px;
   transition: all 0.3s ease-in-out;
+}
+
+.user_container:hover {
+  background-color: var(--landing-bg);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-color: transparent;
 }
 
 .user_container:hover .chevron {
@@ -66,12 +80,17 @@
 
 .user_question {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  flex: 1;
+  min-width: 0;
   height: 100%;
-  gap: 30px;
-  transition: gap 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.user_question > div:last-child {
+  flex: 1;
+  min-width: 0;
+}
+
 .usericon_and_username {
   display: flex;
   flex-direction: column;
@@ -88,6 +107,9 @@
 .link_container {
   text-decoration: none;
   color: unset;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 /* User icon animation */
@@ -111,10 +133,15 @@
 .Qbox {
   display: flex;
   flex-direction: column;
-  gap: 5%;
+  flex-grow: 1;
+  min-width: 0;
 }
 .Qtitle {
-  font-size: 2rem;
+  font-size: 1.8rem;
+  font-weight: 500;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 .timestamp_title {
   font-size: 1.2rem;
@@ -125,13 +152,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 200px; /* Adjust as needed */
+  min-height: 200px;
   padding: 2rem;
 }
 
 .vote_section {
-  margin-left: 135px;
-  margin-top: -60px;
+  position: absolute;
+  right: 1px;
+  bottom: 5px;
 }
 
 /* Pagination styles */

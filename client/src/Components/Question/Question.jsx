@@ -19,12 +19,24 @@ function Question({
       <div className={styles.main_content}>
         <div className={styles.question_header}>
           <h2>{questionDetail.question_title}</h2>
-          <div className={styles.question_meta}>
-            <span>
-              Asked by: @{questionDetail.user_name}
-              {userData?.userid === questionDetail.user_id && " (You)"}
-            </span>
-            <span>{getTimeDifference(questionDetail.created_at)}</span>
+          <div className={styles.question_meta_container}>
+            <div className={styles.question_meta}>
+              <span>
+                Asked by: @{questionDetail.user_name}
+                {userData?.userid === questionDetail.user_id && " (You)"}
+              </span>
+              <span>{getTimeDifference(questionDetail.created_at)}</span>
+            </div>
+            <div className={styles.vote_container}>
+              <VoteButtons
+                likes={questionDetail.likes}
+                dislikes={questionDetail.dislikes}
+                userVote={questionDetail.user_vote_type}
+                onVote={(action) =>
+                  handleVote("question", questionDetail.question_id, action)
+                }
+              />
+            </div>
           </div>
         </div>
 
@@ -59,16 +71,6 @@ function Question({
             Answer this Question
           </button>
         </div>
-      </div>
-      <div className={styles.vote_container}>
-        <VoteButtons
-          likes={questionDetail.likes}
-          dislikes={questionDetail.dislikes}
-          userVote={questionDetail.user_vote_type}
-          onVote={(action) =>
-            handleVote("question", questionDetail.question_id, action)
-          }
-        />
       </div>
     </div>
   );
