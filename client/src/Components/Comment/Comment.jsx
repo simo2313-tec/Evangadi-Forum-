@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { UserContext } from "../Context";
 import { FaUserCircle, FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -9,6 +10,7 @@ function Comment({
   comments,
   answerId,
   answerAuthor,
+  answerAuthorUUID, // Add this prop
   newComment,
   setNewComment,
   handleCommentSubmit,
@@ -52,18 +54,33 @@ function Comment({
           <div className={styles.comment_header}>
             <FaUserCircle size={30} className={styles.comment_usericon} />
             <span className={styles.comment_username}>
-              @{comment.user_name}
+              <Link
+                to={`/profile/${comment.user_uuid}`}
+                className={styles.author_link}
+              >
+                @{comment.user_name}
+              </Link>
               {comment.user_id === userData?.userid && " (You)"}
               {parentComment ? (
                 <>
-                  <span className={styles.reply_to_text}> to </span> @
-                  {parentComment.user_name}
+                  <span className={styles.reply_to_text}> to </span>
+                  <Link
+                    to={`/profile/${parentComment.user_uuid}`}
+                    className={styles.author_link}
+                  >
+                    @{parentComment.user_name}
+                  </Link>
                 </>
               ) : (
                 answerAuthor && (
                   <>
-                    <span className={styles.reply_to_text}> to </span> @
-                    {answerAuthor}
+                    <span className={styles.reply_to_text}> to </span>
+                    <Link
+                      to={`/profile/${answerAuthorUUID}`}
+                      className={styles.author_link}
+                    >
+                      @{answerAuthor}
+                    </Link>
                   </>
                 )
               )}

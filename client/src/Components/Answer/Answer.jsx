@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { UserContext } from "../Context/";
 import {
   FaUserCircle,
@@ -54,7 +55,12 @@ function Answer({
           <FaUserCircle size={40} className={styles.user_icon} />
           <div className={styles.answer_meta}>
             <span className={styles.username}>
-              @{answer.user_name}
+              <Link
+                to={`/profile/${answer.user_uuid}`}
+                className={styles.author_link}
+              >
+                @{answer.user_name}
+              </Link>
               {userData?.userid === answer.user_id && " (You)"}
             </span>
             <span className={styles.timestamp}>
@@ -170,6 +176,7 @@ function Answer({
               comments={comments[answer.answer_id]}
               answerId={answer.answer_id}
               answerAuthor={answer.user_name}
+              answerAuthorUUID={answer.user_uuid}
               newComment={newComment}
               setNewComment={setNewComment}
               handleCommentSubmit={handleCommentSubmit}

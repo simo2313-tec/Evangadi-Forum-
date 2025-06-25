@@ -73,7 +73,7 @@ app.use("/api/question", authMiddleware, updateQuestionRouter);
 
 // Profile routes
 const profileRoutes = require("./routes/profileRoutes");
-app.use("/api/profile", authMiddleware, profileRoutes);
+app.use("/api/profile", profileRoutes);
 
 // Global error handler
 const globalErrorHandler = require("./middleware/globalErrorHandler");

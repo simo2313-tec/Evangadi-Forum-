@@ -36,6 +36,7 @@ async function getquestions(req, res) {
       SELECT
         q.*,
         r.user_name,
+        r.user_uuid,
         COALESCE(ld.likes, 0) AS likes,
         COALESCE(ld.dislikes, 0) AS dislikes,
         CASE
@@ -94,6 +95,7 @@ async function getSingleQuestion(req, res) {
       SELECT
         q.*,
         r.user_name,
+        r.user_uuid,
         COALESCE(ld.likes, 0) AS likes,
         COALESCE(ld.dislikes, 0) AS dislikes,
         CASE

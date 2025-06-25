@@ -28,6 +28,7 @@ async function getAnswerComments(req, res) {
       SELECT 
         c.*, 
         r.user_name, 
+        r.user_uuid,
         p.first_name, 
         p.last_name,
         COALESCE(ld.likes, 0) AS likes,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaUserCircle, FaEdit } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
@@ -11,8 +11,10 @@ import styles from "./profile.module.css";
 
 const ProfilePage = () => {
   const { userData, setUserData } = useContext(UserContext);
+  const { user_uuid } = useParams();
   const navigate = useNavigate();
 
+  const [profileData, setProfileData] = useState(null);
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -25,30 +27,35 @@ const ProfilePage = () => {
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
 
   useEffect(() => {
-    if (!userData?.user_uuid) {
-      navigate("/login");
+    if (!user_uuid) {
+      navigate("/404");
       return;
     }
 
     setIsLoading(true);
     api
-      .get(`/profile/${userData.user_uuid}`)
+      .get(`/profile/${user_uuid}`)
       .then((res) => {
-        const profileData = {
+        const fetchedData = {
           first_name: res.data.first_name || "",
           last_name: res.data.last_name || "",
           user_name: res.data.user_name || "",
           user_email: res.data.user_email || "",
+          user_uuid: res.data.user_uuid,
         };
-        setForm(profileData);
-        setInitialForm(profileData); // Store initial state for cancel
+        setProfileData(fetchedData);
+        setForm(fetchedData);
+        setInitialForm(fetchedData);
       })
       .catch((err) => {
         console.error("Error fetching profile:", err);
         toast.error("Failed to fetch profile data.");
+        if (err.response?.status === 404) {
+          navigate("/404");
+        }
       })
       .finally(() => setIsLoading(false));
-  }, [userData, navigate]);
+  }, [user_uuid, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -58,11 +65,11 @@ const ProfilePage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data } = await api.put(`/profile/${userData.user_uuid}`, form);
+      const { data } = await api.put(`/profile/${user_uuid}`, form);
       if (data.user) {
         const newUserData = { ...userData, ...data.user };
         setUserData(newUserData);
-        setInitialForm(form); // Update initial state on successful save
+        setInitialForm(form);
       }
       toast.success("Profile updated successfully!");
       setIsEditing(false);
@@ -80,7 +87,7 @@ const ProfilePage = () => {
     }
     setIsLoading(true);
     try {
-      await api.delete(`/profile/${userData.user_uuid}`);
+      await api.delete(`/profile/${user_uuid}`);
       toast.success("Account deleted successfully. We're sad to see you go!");
       setUserData(null);
       navigate("/landing");
@@ -173,25 +180,27 @@ const ProfilePage = () => {
                 className={styles.userIcon}
                 style={{ color: "#1e3a5f" }}
               />
-              <h2 className={styles.userName}>{form.user_name}</h2>
+              <h2 className={styles.userName}>{profileData.user_name}</h2>
               <p
                 className={styles.fullName}
-              >{`${form.first_name} ${form.last_name}`}</p>
-              <p className={styles.email}>{form.user_email}</p>
-              <div className={styles.profileActions}>
-                <button
-                  className={styles.editButton}
-                  onClick={() => setIsEditing(true)}
-                >
-                  <FaEdit /> Edit Profile
-                </button>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => setShowDeleteConfirm(true)}
-                >
-                  Delete Account
-                </button>
-              </div>
+              >{`${profileData.first_name} ${profileData.last_name}`}</p>
+              <p className={styles.email}>{profileData.user_email}</p>
+              {userData?.user_uuid === user_uuid && (
+                <div className={styles.profileActions}>
+                  <button
+                    className={styles.editButton}
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <FaEdit /> Edit Profile
+                  </button>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    Delete Account
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

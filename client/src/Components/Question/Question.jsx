@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { UserContext } from "../Context";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -22,7 +23,13 @@ function Question({
           <div className={styles.question_meta_container}>
             <div className={styles.question_meta}>
               <span>
-                Asked by: @{questionDetail.user_name}
+                Asked by:{" "}
+                <Link
+                  to={`/profile/${questionDetail.user_uuid}`}
+                  className={styles.author_link}
+                >
+                  @{questionDetail.user_name}
+                </Link>
                 {userData?.userid === questionDetail.user_id && " (You)"}
               </span>
               <span>{getTimeDifference(questionDetail.created_at)}</span>

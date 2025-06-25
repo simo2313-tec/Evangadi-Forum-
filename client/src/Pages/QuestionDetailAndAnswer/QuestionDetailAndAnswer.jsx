@@ -230,11 +230,16 @@ function QuestionDetailAndAnswer() {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.put(`/question/${question_uuid}`, editedQuestion);
+      const updatePayload = {
+        title: editedQuestion.question_title,
+        description: editedQuestion.question_description,
+        tag: editedQuestion.tag,
+      };
+      await axios.put(`/question/${question_uuid}`, updatePayload);
       setQuestionDetail((prev) => ({
         ...prev,
-        question_title: editedQuestion.title,
-        question_description: editedQuestion.description,
+        question_title: editedQuestion.question_title,
+        question_description: editedQuestion.question_description,
         tag: editedQuestion.tag,
       }));
       setEditQuestionMode(false);
@@ -433,22 +438,22 @@ function QuestionDetailAndAnswer() {
             >
               <input
                 type="text"
-                value={editedQuestion?.title || ""}
+                value={editedQuestion?.question_title || ""}
                 onChange={(e) =>
                   setEditedQuestion((prev) => ({
                     ...prev,
-                    title: e.target.value,
+                    question_title: e.target.value,
                   }))
                 }
                 className={styles.edit_question_input}
                 placeholder="Question Title"
               />
               <textarea
-                value={editedQuestion?.description || ""}
+                value={editedQuestion?.question_description || ""}
                 onChange={(e) =>
                   setEditedQuestion((prev) => ({
                     ...prev,
-                    description: e.target.value,
+                    question_description: e.target.value,
                   }))
                 }
                 className={styles.edit_question_textarea}

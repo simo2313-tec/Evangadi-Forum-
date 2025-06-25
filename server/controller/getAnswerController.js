@@ -29,6 +29,7 @@ async function getAnswers(req, res) {
         a.created_at,
         a.user_id, 
         r.user_name,
+        r.user_uuid,
         p.first_name,
         p.last_name,
         COALESCE(ld.likes, 0) AS likes,

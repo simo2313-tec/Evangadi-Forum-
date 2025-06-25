@@ -202,28 +202,62 @@ function Home() {
                   key={q.question_id}
                   className={styles.question_item_wrapper}
                 >
-                  <Link
-                    to={`/question-detail/${q.question_id}`}
-                    className={styles.user_container}
-                  >
+                  <div className={styles.user_container}>
                     <div className={styles.user_question}>
-                      <div className={styles.usericon_and_username}>
-                        <div className={styles.inner_center}>
-                          <FaUserCircle size={80} className={styles.usericon} />
-                          <span>
-                            {q.user_id === userData?.userid
-                              ? "You"
-                              : "@" + q.user_name}
-                          </span>
+                      <Link
+                        to={`/profile/${q.user_uuid}`}
+                        style={{
+                          color: "var(--text-dark)",
+                          textDecoration: "none",
+                        }}
+                      >
+                        <div className={styles.usericon_and_username}>
+                          <div className={styles.inner_center}>
+                            <FaUserCircle
+                              size={80}
+                              className={styles.usericon}
+                            />
+                            <div style={{ textAlign: "center" }}>
+                              <span>{"@" + q.user_name}</span>
+                              {q.user_id === userData?.userid && (
+                                <div
+                                  style={{ fontSize: "0.9em", color: "#555" }}
+                                >
+                                  (You)
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                       <div>
                         <div className={styles.Qbox}>
-                          <p className={styles.Qtitle}>{q.question_title}</p>
-                          <div className={styles.timeandvote}>
-                            <p className={styles.timestamp_title}>
-                              {getTimeDifference(q.created_at)}
+                          <Link
+                            to={`/question-detail/${q.question_uuid}`}
+                            style={{
+                              color: "var(--text-dark)",
+                              textDecoration: "none",
+                            }}
+                          >
+                            <p
+                              className={styles.Qtitle}
+                              style={{ fontSize: "2.2rem" }}
+                            >
+                              {q.question_title}
                             </p>
+                          </Link>
+                          <div className={styles.timeandvote}>
+                            <Link
+                              to={`/question-detail/${q.question_uuid}`}
+                              style={{
+                                color: "var(--text-dark)",
+                                textDecoration: "none",
+                              }}
+                            >
+                              <p className={styles.timestamp_title}>
+                                {getTimeDifference(q.created_at)}
+                              </p>
+                            </Link>
                             <div className={styles.vote_section}>
                               <VoteButtons
                                 likes={q.likes ?? 0}
@@ -238,8 +272,13 @@ function Home() {
                         </div>
                       </div>
                     </div>
-                    <FaChevronRight size={20} className={styles.chevron} />
-                  </Link>
+                    <Link
+                      to={`/question-detail/${q.question_uuid}`}
+                      style={{ color: "var(--text-dark)" }}
+                    >
+                      <FaChevronRight size={20} className={styles.chevron} />
+                    </Link>
+                  </div>
                 </div>
               ))}
               {/* Pagination Controls */}
