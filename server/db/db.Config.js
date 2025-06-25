@@ -10,7 +10,7 @@ const dbconnection = new Pool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 5432,
   max: process.env.DB_CONNECTION_LIMIT || 10,
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
 });
 
 // All Pool methods are promise-based by default in 'pg'.
@@ -18,7 +18,3 @@ const dbconnection = new Pool({
 // const { rows } = await dbconnection.query('SELECT NOW()');
 
 module.exports = dbconnection;
-
-
-
-

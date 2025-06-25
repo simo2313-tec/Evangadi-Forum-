@@ -59,7 +59,10 @@ async function getAnswers(req, res) {
       LIMIT $3 OFFSET $4;
     `;
     const answerParams = [userId || 0, question_uuid, pageSize, offset];
-    const { rows: results } = await dbconnection.query(answersQuery, answerParams);
+    const { rows: results } = await dbconnection.query(
+      answersQuery,
+      answerParams
+    );
 
     if (total === 0) {
       return res.status(StatusCodes.OK).json({

@@ -25,7 +25,9 @@ async function getquestions(req, res) {
     let params = [userId || 0];
     let paramIdx = 2;
     if (search) {
-      whereClause = `WHERE (q.tag ILIKE $${paramIdx} OR q.question_title ILIKE $${paramIdx+1} OR q.question_description ILIKE $${paramIdx+2})`;
+      whereClause = `WHERE (q.tag ILIKE $${paramIdx} OR q.question_title ILIKE $${
+        paramIdx + 1
+      } OR q.question_description ILIKE $${paramIdx + 2})`;
       const likeSearch = `%${search}%`;
       params.push(likeSearch, likeSearch, likeSearch);
       paramIdx += 3;
@@ -33,7 +35,10 @@ async function getquestions(req, res) {
     // Get total count for pagination
     const countQuery = `SELECT COUNT(*) as total FROM question q ${whereClause}`;
     const countParams = params.slice(1);
-    const { rows: countRows } = await dbconnection.query(countQuery, countParams);
+    const { rows: countRows } = await dbconnection.query(
+      countQuery,
+      countParams
+    );
     const total = parseInt(countRows[0]?.total || 0, 10);
     // Fetch paginated questions
     params.push(pageSize, offset);
@@ -69,7 +74,10 @@ async function getquestions(req, res) {
         ${orderBy}
       LIMIT $${params.length - 1} OFFSET $${params.length};
     `;
-    const { rows: questions } = await dbconnection.query(questionsQuery, params);
+    const { rows: questions } = await dbconnection.query(
+      questionsQuery,
+      params
+    );
     res.status(StatusCodes.OK).json({
       questions,
       pagination: {

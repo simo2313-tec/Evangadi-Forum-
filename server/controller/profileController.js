@@ -68,7 +68,7 @@ exports.updateProfile = async (req, res) => {
   const client = await db.connect();
 
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
 
     // First, verify that the user_uuid from the URL corresponds to the authenticated user
     const { rows: userRows } = await client.query(
@@ -77,7 +77,7 @@ exports.updateProfile = async (req, res) => {
     );
 
     if (userRows.length === 0) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -85,7 +85,7 @@ exports.updateProfile = async (req, res) => {
 
     // Security check: Ensure the authenticated user is the owner of the profile
     if (userId !== authenticatedUserId) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -100,10 +100,10 @@ exports.updateProfile = async (req, res) => {
       [first_name, last_name, userId]
     );
 
-    await client.query('COMMIT');
+    await client.query("COMMIT");
     res.json({ message: "Profile updated successfully" });
   } catch (err) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     handleError(res, "Server error while updating profile.", err);
   } finally {
     client.release();

@@ -77,23 +77,23 @@ async function deleteComment(req, res) {
       data: {
         comment_id: commentIdNum,
         answer_id: comment[0].answer_id,
-        deleted_replies: true
-      }
+        deleted_replies: true,
+      },
     });
-
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Database error deleting comment:", {
       error: error.message,
       stack: error.stack,
       sql: error.sql,
-      params: { commentId, userId }
+      params: { commentId, userId },
     });
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Failed to delete comment due to server error",
-      system_message: process.env.NODE_ENV === "development" ? error.message : undefined
+      system_message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   } finally {
     client.release();
@@ -194,22 +194,22 @@ async function updateComment(req, res) {
     return res.status(StatusCodes.OK).json({
       success: true,
       message: "Comment updated successfully",
-      data: updatedComment[0]
+      data: updatedComment[0],
     });
-
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Database error updating comment:", {
       error: error.message,
       stack: error.stack,
       sql: error.sql,
-      params: { commentId, userId }
+      params: { commentId, userId },
     });
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Failed to update comment due to server error",
-      system_message: process.env.NODE_ENV === "development" ? error.message : undefined
+      system_message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   } finally {
     client.release();
