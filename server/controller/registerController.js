@@ -39,11 +39,10 @@ async function register(req, res) {
     const sanitizedEmail = xss(email);
 
     // Check for existing user
-    const [existing] = await dbConnection.query(
-      "SELECT * FROM registration WHERE user_name = ? OR user_email = ?",
+    const { rows: existing } = await dbConnection.query(
+      "SELECT * FROM registration WHERE user_name = $1 OR user_email = $2",
       [sanitizedUsername, sanitizedEmail]
     );
-    // return res.json({username: username})
     if (existing.length > 0) {
       return res
         .status(StatusCodes.CONFLICT) // 409
@@ -57,21 +56,26 @@ async function register(req, res) {
     const userUuid = uuidv4();
 
     // Insert user into registration table
-    const [result] = await dbConnection.query(
-      "INSERT INTO registration (user_name, user_email, password, user_uuid) VALUES (?, ?, ?, ?)",
-      [sanitizedUsername, sanitizedEmail, hashedPassword, userUuid]
-    );
+    const insertUserQuery =
+      "INSERT INTO registration (user_name, user_email, password, user_uuid) VALUES ($1, $2, $3, $4) RETURNING user_id";
+    const { rows: userRows } = await dbConnection.query(insertUserQuery, [
+      sanitizedUsername,
+      sanitizedEmail,
+      hashedPassword,
+      userUuid,
+    ]);
+    const userId = userRows[0].user_id;
 
     // Insert into profile table
     await dbConnection.query(
-      "INSERT INTO profile (user_id, first_name, last_name) VALUES (?, ?, ?)",
-      [result.insertId, sanitizedFirstName, sanitizedLastName]
+      "INSERT INTO profile (user_id, first_name, last_name) VALUES ($1, $2, $3)",
+      [userId, sanitizedFirstName, sanitizedLastName]
     );
 
     // Generate JWT
     const token = jwt.sign(
       {
-        userid: result.insertId,
+        userid: userId,
         username: sanitizedUsername,
         user_uuid: userUuid,
       },
@@ -80,7 +84,7 @@ async function register(req, res) {
     );
     res.status(StatusCodes.CREATED).json({
       message: "User registered successfully",
-      userid: result.insertId,
+      userid: userId,
       username: sanitizedUsername,
       user_uuid: userUuid,
       email: sanitizedEmail,

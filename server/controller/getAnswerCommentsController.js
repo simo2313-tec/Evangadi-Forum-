@@ -13,8 +13,8 @@ async function getAnswerComments(req, res) {
         .json({ success: false, message: "Invalid answer_id." });
     }
 
-    const [answer] = await dbconnection.query(
-      `SELECT answer_id FROM answer WHERE answer_id = ?`,
+    const { rows: answer } = await dbconnection.query(
+      `SELECT answer_id FROM answer WHERE answer_id = $1`,
       [answerIdNum]
     );
     if (answer.length === 0) {
@@ -23,7 +23,7 @@ async function getAnswerComments(req, res) {
         .json({ success: false, message: "Answer not found." });
     }
 
-    const [comments] = await dbconnection.query(
+    const { rows: comments } = await dbconnection.query(
       `
       SELECT 
         c.*, 
@@ -34,8 +34,8 @@ async function getAnswerComments(req, res) {
         COALESCE(ld.likes, 0) AS likes,
         COALESCE(ld.dislikes, 0) AS dislikes,
         CASE 
-          WHEN lu.is_like = 1 THEN 'like' 
-          WHEN lu.is_like = 0 THEN 'dislike' 
+          WHEN lu.is_like = true THEN 'like' 
+          WHEN lu.is_like = false THEN 'dislike' 
           ELSE NULL 
         END AS user_vote_type
       FROM comment c
@@ -44,13 +44,13 @@ async function getAnswerComments(req, res) {
       LEFT JOIN (
         SELECT 
           comment_id, 
-          SUM(CASE WHEN is_like = 1 THEN 1 ELSE 0 END) AS likes, 
-          SUM(CASE WHEN is_like = 0 THEN 1 ELSE 0 END) AS dislikes
+          SUM(CASE WHEN is_like = true THEN 1 ELSE 0 END) AS likes, 
+          SUM(CASE WHEN is_like = false THEN 1 ELSE 0 END) AS dislikes
         FROM likes_dislikes 
         GROUP BY comment_id
       ) ld ON c.comment_id = ld.comment_id
-      LEFT JOIN likes_dislikes lu ON c.comment_id = lu.comment_id AND lu.user_id = ?
-      WHERE c.answer_id = ?
+      LEFT JOIN likes_dislikes lu ON c.comment_id = lu.comment_id AND lu.user_id = $1
+      WHERE c.answer_id = $2
       ORDER BY c.created_at ASC
       `,
       [userId, answerIdNum]

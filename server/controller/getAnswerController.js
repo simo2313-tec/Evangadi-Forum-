@@ -16,13 +16,13 @@ async function getAnswers(req, res) {
   }
   try {
     // Get total count for pagination
-    const [[{ total }]] = await dbconnection.query(
-      `SELECT COUNT(a.answer_id) as total FROM answer a JOIN question q ON a.question_id = q.question_id WHERE q.question_uuid = ?`,
-      [question_uuid]
-    );
+    const countQuery = `SELECT COUNT(a.answer_id) as total FROM answer a JOIN question q ON a.question_id = q.question_id WHERE q.question_uuid = $1`;
+    const { rows: countRows } = await dbconnection.query(countQuery, [
+      question_uuid,
+    ]);
+    const total = parseInt(countRows[0]?.total || 0, 10);
 
-    const [results] = await dbconnection.query(
-      `
+    const answersQuery = `
       SELECT 
         a.answer_id,
         a.answer,
@@ -35,8 +35,8 @@ async function getAnswers(req, res) {
         COALESCE(ld.likes, 0) AS likes,
         COALESCE(ld.dislikes, 0) AS dislikes,
         CASE
-          WHEN ul.is_like = 1 THEN 'up'
-          WHEN ul.is_like = 0 THEN 'down'
+          WHEN ul.is_like = true THEN 'up'
+          WHEN ul.is_like = false THEN 'down'
           ELSE NULL
         END AS user_vote_type
       FROM question q
@@ -46,20 +46,20 @@ async function getAnswers(req, res) {
       LEFT JOIN (
         SELECT
           answer_id,
-          SUM(CASE WHEN is_like = 1 THEN 1 ELSE 0 END) AS likes,
-          SUM(CASE WHEN is_like = 0 THEN 1 ELSE 0 END) AS dislikes
+          SUM(CASE WHEN is_like = true THEN 1 ELSE 0 END) AS likes,
+          SUM(CASE WHEN is_like = false THEN 1 ELSE 0 END) AS dislikes
         FROM
           likes_dislikes
         GROUP BY
           answer_id
       ) AS ld ON a.answer_id = ld.answer_id
-      LEFT JOIN likes_dislikes ul ON ul.answer_id = a.answer_id AND ul.user_id = ?
-      WHERE q.question_uuid = ?
+      LEFT JOIN likes_dislikes ul ON ul.answer_id = a.answer_id AND ul.user_id = $1
+      WHERE q.question_uuid = $2
       ORDER BY ${orderBy}
-      LIMIT ? OFFSET ?;
-    `,
-      [userId || 0, question_uuid, pageSize, offset]
-    );
+      LIMIT $3 OFFSET $4;
+    `;
+    const answerParams = [userId || 0, question_uuid, pageSize, offset];
+    const { rows: results } = await dbconnection.query(answersQuery, answerParams);
 
     if (total === 0) {
       return res.status(StatusCodes.OK).json({

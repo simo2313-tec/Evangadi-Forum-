@@ -85,10 +85,10 @@ CREATE TABLE IF NOT EXISTS likes_dislikes (
 );
 
 -- Indexes
-CREATE INDEX IF NOT EXISTS idx_question_user_id ON question(user_id);
-CREATE INDEX IF NOT EXISTS idx_question_uuid ON question(question_uuid);
-CREATE INDEX IF NOT EXISTS idx_registration_uuid ON registration(user_uuid);
-CREATE INDEX IF NOT EXISTS idx_question_tag ON question(tag);
-CREATE INDEX IF NOT EXISTS idx_answer_question_id ON answer(question_id);
-CREATE INDEX IF NOT EXISTS idx_comment_answer_id ON comment(answer_id);
-CREATE INDEX IF NOT EXISTS idx_comment_parent_comment_id ON comment(parent_comment_id);
+CREATE INDEX idx_question_user_id ON question(user_id);
+CREATE INDEX idx_question_uuid ON question(question_uuid);
+CREATE INDEX idx_registration_uuid ON registration(user_uuid);
+CREATE INDEX idx_question_tag ON question(tag);
+CREATE INDEX idx_answer_question_id ON answer(question_id);
+CREATE INDEX idx_comment_answer_id ON comment(answer_id);
+CREATE INDEX idx_comment_parent_comment_id ON comment(parent_comment_id);

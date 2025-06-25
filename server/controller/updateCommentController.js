@@ -23,21 +23,22 @@ async function deleteComment(req, res) {
     });
   }
 
+  const client = await dbconnection.connect();
   try {
     // Begin transaction
-    await dbconnection.query("START TRANSACTION");
+    await client.query("BEGIN");
 
     // Verify comment exists and get basic info
-    const [comment] = await dbconnection.query(
+    const { rows: comment } = await client.query(
       `SELECT user_id, answer_id 
        FROM comment 
-       WHERE comment_id = ? 
-       FOR UPDATE`, // Lock row for update
+       WHERE comment_id = $1 
+       FOR UPDATE`,
       [commentIdNum]
     );
 
     if (!comment.length) {
-      await dbconnection.query("ROLLBACK");
+      await client.query("ROLLBACK");
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
         message: "Comment not found",
@@ -46,7 +47,7 @@ async function deleteComment(req, res) {
 
     // Check authorization
     if (comment[0].user_id !== userId) {
-      await dbconnection.query("ROLLBACK");
+      await client.query("ROLLBACK");
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         message: "Unauthorized to delete this comment",
@@ -54,21 +55,21 @@ async function deleteComment(req, res) {
     }
 
     // First delete child comments (replies)
-    await dbconnection.query(
+    await client.query(
       `DELETE FROM comment 
-       WHERE parent_comment_id = ?`,
+       WHERE parent_comment_id = $1`,
       [commentIdNum]
     );
 
     // Then delete the main comment
-    await dbconnection.query(
+    await client.query(
       `DELETE FROM comment 
-       WHERE comment_id = ?`,
+       WHERE comment_id = $1`,
       [commentIdNum]
     );
 
     // Commit transaction
-    await dbconnection.query("COMMIT");
+    await client.query("COMMIT");
 
     return res.status(StatusCodes.OK).json({
       success: true,
@@ -81,7 +82,7 @@ async function deleteComment(req, res) {
     });
 
   } catch (error) {
-    await dbconnection.query("ROLLBACK");
+    await client.query("ROLLBACK");
     console.error("Database error deleting comment:", {
       error: error.message,
       stack: error.stack,
@@ -94,6 +95,8 @@ async function deleteComment(req, res) {
       message: "Failed to delete comment due to server error",
       system_message: process.env.NODE_ENV === "development" ? error.message : undefined
     });
+  } finally {
+    client.release();
   }
 }
 
@@ -129,21 +132,22 @@ async function updateComment(req, res) {
   // Sanitize input
   const sanitizedComment = xss(comment_text.trim());
 
+  const client = await dbconnection.connect();
   try {
     // Begin transaction
-    await dbconnection.query("START TRANSACTION");
+    await client.query("BEGIN");
 
     // Verify comment exists and get basic info
-    const [comment] = await dbconnection.query(
+    const { rows: comment } = await client.query(
       `SELECT user_id, answer_id 
        FROM comment 
-       WHERE comment_id = ? 
-       FOR UPDATE`, // Lock row for update
+       WHERE comment_id = $1 
+       FOR UPDATE`,
       [commentIdNum]
     );
 
     if (!comment.length) {
-      await dbconnection.query("ROLLBACK");
+      await client.query("ROLLBACK");
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
         message: "Comment not found",
@@ -152,7 +156,7 @@ async function updateComment(req, res) {
 
     // Check authorization
     if (comment[0].user_id !== userId) {
-      await dbconnection.query("ROLLBACK");
+      await client.query("ROLLBACK");
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         message: "Unauthorized to edit this comment",
@@ -160,16 +164,16 @@ async function updateComment(req, res) {
     }
 
     // Update comment
-    const [result] = await dbconnection.query(
+    const result = await client.query(
       `UPDATE comment 
-       SET comment_text = ?, updated_at = CURRENT_TIMESTAMP 
-       WHERE comment_id = ?`,
+       SET comment_text = $1, updated_at = CURRENT_TIMESTAMP 
+       WHERE comment_id = $2`,
       [sanitizedComment, commentIdNum]
     );
 
     // Verify update was successful
-    if (result.affectedRows === 0) {
-      await dbconnection.query("ROLLBACK");
+    if (result.rowCount === 0) {
+      await client.query("ROLLBACK");
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to update comment",
@@ -177,13 +181,13 @@ async function updateComment(req, res) {
     }
 
     // Commit transaction
-    await dbconnection.query("COMMIT");
+    await client.query("COMMIT");
 
     // Get the updated comment
-    const [updatedComment] = await dbconnection.query(
+    const { rows: updatedComment } = await client.query(
       `SELECT comment_id, comment_text, created_at, updated_at 
        FROM comment 
-       WHERE comment_id = ?`,
+       WHERE comment_id = $1`,
       [commentIdNum]
     );
 
@@ -194,7 +198,7 @@ async function updateComment(req, res) {
     });
 
   } catch (error) {
-    await dbconnection.query("ROLLBACK");
+    await client.query("ROLLBACK");
     console.error("Database error updating comment:", {
       error: error.message,
       stack: error.stack,
@@ -207,6 +211,8 @@ async function updateComment(req, res) {
       message: "Failed to update comment due to server error",
       system_message: process.env.NODE_ENV === "development" ? error.message : undefined
     });
+  } finally {
+    client.release();
   }
 }
 

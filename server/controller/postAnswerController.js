@@ -29,8 +29,8 @@ async function postAnswer(req, res) {
 
   try {
     // Check if question exists
-    const [question] = await dbconnection.query(
-      "SELECT question_id FROM question WHERE question_uuid = ?",
+    const { rows: question } = await dbconnection.query(
+      "SELECT question_id FROM question WHERE question_uuid = $1",
       [question_uuid]
     );
     if (question.length === 0) {
@@ -44,20 +44,21 @@ async function postAnswer(req, res) {
     // Insert answer
     const insertQuery = `
       INSERT INTO answer (answer, user_id, question_id, created_at)
-      VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+      RETURNING answer_id
     `;
-    const [result] = await dbconnection.query(insertQuery, [
+    const { rows: insertRows } = await dbconnection.query(insertQuery, [
       sanitizedAnswer,
       user_id, // Use the secure user_id from the token
       questionIdNum,
     ]);
 
     // Fetch email of the user who asked the question
-    const [questionRows] = await dbconnection.query(
+    const { rows: questionRows } = await dbconnection.query(
       `SELECT r.user_email 
        FROM question q 
        JOIN registration r ON q.user_id = r.user_id 
-       WHERE q.question_id = ?`,
+       WHERE q.question_id = $1`,
       [questionIdNum]
     );
 
@@ -69,7 +70,7 @@ async function postAnswer(req, res) {
     res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Answer posted successfully.",
-      answerId: result.insertId,
+      answerId: insertRows[0].answer_id,
     });
   } catch (error) {
     console.error("Error posting answer:", {

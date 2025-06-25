@@ -15,8 +15,8 @@ async function editQuestion(req, res) {
 
   try {
     // Verify question exists and belongs to user
-    const [question] = await dbconnection.query(
-      "SELECT user_id FROM question WHERE question_uuid = ?",
+    const { rows: question } = await dbconnection.query(
+      "SELECT user_id FROM question WHERE question_uuid = $1",
       [question_uuid]
     );
 
@@ -34,7 +34,7 @@ async function editQuestion(req, res) {
 
     // Update question
     await dbconnection.query(
-      "UPDATE question SET question_title = ?, question_description = ?, tag = ? WHERE question_uuid = ?",
+      "UPDATE question SET question_title = $1, question_description = $2, tag = $3 WHERE question_uuid = $4",
       [title, description, tag || null, question_uuid]
     );
     res.json({ message: "Question updated successfully" });
@@ -53,8 +53,8 @@ async function deleteQuestion(req, res) {
 
   try {
     // Verify question exists and belongs to user
-    const [question] = await dbconnection.query(
-      "SELECT user_id FROM question WHERE question_uuid = ?",
+    const { rows: question } = await dbconnection.query(
+      "SELECT user_id FROM question WHERE question_uuid = $1",
       [question_uuid]
     );
 
@@ -71,7 +71,7 @@ async function deleteQuestion(req, res) {
     }
 
     // Delete question (answers will be deleted via ON DELETE CASCADE if configured)
-    await dbconnection.query("DELETE FROM question WHERE question_uuid = ?", [
+    await dbconnection.query("DELETE FROM question WHERE question_uuid = $1", [
       question_uuid,
     ]);
 

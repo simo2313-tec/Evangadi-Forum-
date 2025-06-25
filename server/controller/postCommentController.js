@@ -39,8 +39,8 @@ async function postComment(req, res) {
 
   try {
     // Verify answer exists
-    const [answer] = await dbconnection.query(
-      "SELECT user_id FROM answer WHERE answer_id = ?",
+    const { rows: answer } = await dbconnection.query(
+      "SELECT user_id FROM answer WHERE answer_id = $1",
       [answerId]
     );
 
@@ -53,11 +53,10 @@ async function postComment(req, res) {
 
     // Verify parent comment if provided
     if (parentCommentId) {
-      const [parentComment] = await dbconnection.query(
-        "SELECT comment_id, user_id FROM comment WHERE comment_id = ? AND answer_id = ?",
+      const { rows: parentComment } = await dbconnection.query(
+        "SELECT comment_id, user_id FROM comment WHERE comment_id = $1 AND answer_id = $2",
         [parentCommentId, answerId]
       );
-
       if (!parentComment.length) {
         return res.status(StatusCodes.NOT_FOUND).json({
           success: false,
@@ -67,20 +66,23 @@ async function postComment(req, res) {
     }
 
     // Insert comment
-    const [result] = await dbconnection.query(
-      "INSERT INTO comment (comment_text, user_id, answer_id, parent_comment_id) VALUES (?, ?, ?, ?)",
-      [sanitizedComment, userId, answerId, parentCommentId]
-    );
-
-    const newCommentId = result.insertId;
+    const insertQuery =
+      "INSERT INTO comment (comment_text, user_id, answer_id, parent_comment_id) VALUES ($1, $2, $3, $4) RETURNING comment_id";
+    const { rows: insertRows } = await dbconnection.query(insertQuery, [
+      sanitizedComment,
+      userId,
+      answerId,
+      parentCommentId,
+    ]);
+    const newCommentId = insertRows[0].comment_id;
 
     // Get recipients for notifications (answer owner and parent comment owner if different)
     const notificationRecipients = new Set();
 
     // Add answer owner if not the commenter
     if (answer[0].user_id !== userId) {
-      const [answerOwner] = await dbconnection.query(
-        "SELECT user_email FROM registration WHERE user_id = ?",
+      const { rows: answerOwner } = await dbconnection.query(
+        "SELECT user_email FROM registration WHERE user_id = $1",
         [answer[0].user_id]
       );
       if (answerOwner.length) {
@@ -90,14 +92,13 @@ async function postComment(req, res) {
 
     // Add parent comment owner if exists and different from commenter
     if (parentCommentId) {
-      const [parentComment] = await dbconnection.query(
-        "SELECT user_id FROM comment WHERE comment_id = ?",
+      const { rows: parentComment } = await dbconnection.query(
+        "SELECT user_id FROM comment WHERE comment_id = $1",
         [parentCommentId]
       );
-
       if (parentComment.length && parentComment[0].user_id !== userId) {
-        const [parentCommentOwner] = await dbconnection.query(
-          "SELECT user_email FROM registration WHERE user_id = ?",
+        const { rows: parentCommentOwner } = await dbconnection.query(
+          "SELECT user_email FROM registration WHERE user_id = $1",
           [parentComment[0].user_id]
         );
         if (parentCommentOwner.length) {

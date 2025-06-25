@@ -23,15 +23,20 @@ async function getquestions(req, res) {
     const search = req.query.search ? req.query.search.trim() : null;
     let whereClause = "";
     let params = [userId || 0];
+    let paramIdx = 2;
     if (search) {
-      whereClause = `WHERE (q.tag LIKE ? OR q.question_title LIKE ? OR q.question_description LIKE ?)`;
+      whereClause = `WHERE (q.tag ILIKE $${paramIdx} OR q.question_title ILIKE $${paramIdx+1} OR q.question_description ILIKE $${paramIdx+2})`;
       const likeSearch = `%${search}%`;
       params.push(likeSearch, likeSearch, likeSearch);
+      paramIdx += 3;
     }
     // Get total count for pagination
     const countQuery = `SELECT COUNT(*) as total FROM question q ${whereClause}`;
-    const [[{ total }]] = await dbconnection.query(countQuery, params.slice(1));
+    const countParams = params.slice(1);
+    const { rows: countRows } = await dbconnection.query(countQuery, countParams);
+    const total = parseInt(countRows[0]?.total || 0, 10);
     // Fetch paginated questions
+    params.push(pageSize, offset);
     const questionsQuery = `
       SELECT
         q.*,
@@ -40,8 +45,8 @@ async function getquestions(req, res) {
         COALESCE(ld.likes, 0) AS likes,
         COALESCE(ld.dislikes, 0) AS dislikes,
         CASE
-          WHEN ul.is_like = 1 THEN 'up'
-          WHEN ul.is_like = 0 THEN 'down'
+          WHEN ul.is_like = true THEN 'up'
+          WHEN ul.is_like = false THEN 'down'
           ELSE NULL
         END AS user_vote_type
       FROM
@@ -51,21 +56,20 @@ async function getquestions(req, res) {
       LEFT JOIN (
         SELECT
           question_id,
-          SUM(CASE WHEN is_like = 1 THEN 1 ELSE 0 END) AS likes,
-          SUM(CASE WHEN is_like = 0 THEN 1 ELSE 0 END) AS dislikes
+          SUM(CASE WHEN is_like = true THEN 1 ELSE 0 END) AS likes,
+          SUM(CASE WHEN is_like = false THEN 1 ELSE 0 END) AS dislikes
         FROM
           likes_dislikes
         GROUP BY
           question_id
       ) AS ld ON q.question_id = ld.question_id
-      LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = ?
+      LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = $1
       ${whereClause}
       ORDER BY
         ${orderBy}
-      LIMIT ? OFFSET ?;
+      LIMIT $${params.length - 1} OFFSET $${params.length};
     `;
-    params.push(pageSize, offset);
-    const [questions] = await dbconnection.query(questionsQuery, params);
+    const { rows: questions } = await dbconnection.query(questionsQuery, params);
     res.status(StatusCodes.OK).json({
       questions,
       pagination: {
@@ -90,7 +94,7 @@ async function getSingleQuestion(req, res) {
   try {
     const { question_uuid } = req.params;
     const userId = req.user?.userid;
-    const [questions] = await dbconnection.query(
+    const { rows: questions } = await dbconnection.query(
       `
       SELECT
         q.*,
@@ -99,8 +103,8 @@ async function getSingleQuestion(req, res) {
         COALESCE(ld.likes, 0) AS likes,
         COALESCE(ld.dislikes, 0) AS dislikes,
         CASE
-          WHEN ul.is_like = 1 THEN 'up'
-          WHEN ul.is_like = 0 THEN 'down'
+          WHEN ul.is_like = true THEN 'up'
+          WHEN ul.is_like = false THEN 'down'
           ELSE NULL
         END AS user_vote_type
       FROM
@@ -110,15 +114,15 @@ async function getSingleQuestion(req, res) {
       LEFT JOIN (
         SELECT
           question_id,
-          SUM(CASE WHEN is_like = 1 THEN 1 ELSE 0 END) AS likes,
-          SUM(CASE WHEN is_like = 0 THEN 1 ELSE 0 END) AS dislikes
+          SUM(CASE WHEN is_like = true THEN 1 ELSE 0 END) AS likes,
+          SUM(CASE WHEN is_like = false THEN 1 ELSE 0 END) AS dislikes
         FROM
           likes_dislikes
         GROUP BY
           question_id
       ) AS ld ON q.question_id = ld.question_id
-      LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = ?
-      WHERE q.question_uuid = ?
+      LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = $1
+      WHERE q.question_uuid = $2
     `,
       [userId || 0, question_uuid]
     );

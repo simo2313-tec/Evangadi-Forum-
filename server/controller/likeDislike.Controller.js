@@ -18,16 +18,16 @@ async function handleVote(req, res, type, isLike) {
 
   try {
     await dbconnection.query(
-      `INSERT INTO likes_dislikes (user_id, ${typeIdColumn}, is_like) VALUES (?, ?, ?)
-       ON DUPLICATE KEY UPDATE is_like = ?`,
-      [userId, id, isLike, isLike]
+      `INSERT INTO likes_dislikes (user_id, ${typeIdColumn}, is_like) VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, ${typeIdColumn}) DO UPDATE SET is_like = $3`,
+      [userId, id, isLike]
     );
 
-    const [counts] = await dbconnection.query(
+    const { rows: counts } = await dbconnection.query(
       `SELECT
-        SUM(CASE WHEN is_like = 1 THEN 1 ELSE 0 END) as likes,
-        SUM(CASE WHEN is_like = 0 THEN 1 ELSE 0 END) as dislikes
-       FROM likes_dislikes WHERE ${typeIdColumn} = ?`,
+        SUM(CASE WHEN is_like = true THEN 1 ELSE 0 END) as likes,
+        SUM(CASE WHEN is_like = false THEN 1 ELSE 0 END) as dislikes
+       FROM likes_dislikes WHERE ${typeIdColumn} = $1`,
       [id]
     );
 
@@ -43,9 +43,9 @@ async function handleVote(req, res, type, isLike) {
   }
 }
 
-const likeQuestion = (req, res) => handleVote(req, res, "question", 1);
-const dislikeQuestion = (req, res) => handleVote(req, res, "question", 0);
-const likeAnswer = (req, res) => handleVote(req, res, "answer", 1);
-const dislikeAnswer = (req, res) => handleVote(req, res, "answer", 0);
+const likeQuestion = (req, res) => handleVote(req, res, "question", true);
+const dislikeQuestion = (req, res) => handleVote(req, res, "question", false);
+const likeAnswer = (req, res) => handleVote(req, res, "answer", true);
+const dislikeAnswer = (req, res) => handleVote(req, res, "answer", false);
 
 module.exports = { likeQuestion, dislikeQuestion, likeAnswer, dislikeAnswer };

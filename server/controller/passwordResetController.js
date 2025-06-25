@@ -13,8 +13,8 @@ const forgotPassword = async (req, res) => {
   }
 
   try {
-    const [userResult] = await dbConnection.query(
-      "SELECT user_id, user_name FROM registration WHERE user_email = ?",
+    const { rows: userResult } = await dbConnection.query(
+      "SELECT user_id, user_name FROM registration WHERE user_email = $1",
       [email]
     );
 
@@ -31,7 +31,7 @@ const forgotPassword = async (req, res) => {
     const expiresAt = new Date(Date.now() + 3600000);
 
     await dbConnection.query(
-      "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)",
+      "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
       [user.user_id, hashedToken, expiresAt]
     );
 
@@ -55,8 +55,8 @@ const verifyResetToken = async (req, res) => {
     const { token } = req.params;
     const hashedToken = await bcrypt.hash(token, 10);
 
-    const [tokenResult] = await dbConnection.query(
-      "SELECT * FROM password_reset_tokens WHERE token = ? AND expires_at > NOW()",
+    const { rows: tokenResult } = await dbConnection.query(
+      "SELECT * FROM password_reset_tokens WHERE token = $1 AND expires_at > NOW()",
       [hashedToken]
     );
 
@@ -80,7 +80,7 @@ const resetPassword = async (req, res) => {
   const { password } = req.body;
 
   try {
-    const [tokenResult] = await dbConnection.query(
+    const { rows: tokenResult } = await dbConnection.query(
       "SELECT * FROM password_reset_tokens WHERE expires_at > NOW()"
     );
 
@@ -111,12 +111,12 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     await dbConnection.query(
-      "UPDATE registration SET password = ? WHERE user_id = ?",
+      "UPDATE registration SET password = $1 WHERE user_id = $2",
       [hashedPassword, user_id]
     );
 
     await dbConnection.query(
-      "DELETE FROM password_reset_tokens WHERE user_id = ?",
+      "DELETE FROM password_reset_tokens WHERE user_id = $1",
       [user_id]
     );
 

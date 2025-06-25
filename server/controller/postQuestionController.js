@@ -31,14 +31,19 @@ async function postQuestion(req, res) {
     const questionUuid = uuidv4();
 
     // Insert question into database
-    const [result] = await dbconnection.query(
-      "INSERT INTO question (question_title, question_description, tag, user_id, question_uuid) VALUES (?, ?, ?, ?, ?)",
-      [sanitizedTitle, sanitizedDescription, sanitizedTag, userId, questionUuid]
-    );
+    const insertQuery =
+      "INSERT INTO question (question_title, question_description, tag, user_id, question_uuid) VALUES ($1, $2, $3, $4, $5) RETURNING question_id";
+    const { rows: insertRows } = await dbconnection.query(insertQuery, [
+      sanitizedTitle,
+      sanitizedDescription,
+      sanitizedTag,
+      userId,
+      questionUuid,
+    ]);
 
     res.status(StatusCodes.CREATED).json({
       message: "Question posted successfully",
-      questionId: result.insertId,
+      questionId: insertRows[0].question_id,
     });
   } catch (error) {
     console.error("Error posting question:", error);

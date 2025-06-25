@@ -31,9 +31,9 @@ const fetchUserProfile = async (userUuid) => {
       COALESCE(p.last_name, '') as last_name
     FROM registration r
     LEFT JOIN profile p ON r.user_id = p.user_id
-    WHERE r.user_uuid = ?;
+    WHERE r.user_uuid = $1;
   `;
-  const [rows] = await db.execute(query, [userUuid]);
+  const { rows } = await db.query(query, [userUuid]);
   return rows[0];
 };
 
@@ -65,71 +65,46 @@ exports.updateProfile = async (req, res) => {
 
   const { first_name, last_name, user_name } = req.body;
 
-  const client = await db.getConnection();
+  const client = await db.connect();
 
   try {
-    await client.beginTransaction();
+    await client.query('BEGIN');
 
     // First, verify that the user_uuid from the URL corresponds to the authenticated user
-    const [userRows] = await client.query(
-      "SELECT user_id FROM registration WHERE user_uuid = ?",
+    const { rows: userRows } = await client.query(
+      "SELECT user_id FROM registration WHERE user_uuid = $1",
       [user_uuid]
     );
 
     if (userRows.length === 0) {
-      await client.rollback();
-      return res.status(404).json({ message: "User profile not found." });
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const targetUserId = userRows[0].user_id;
+    const userId = userRows[0].user_id;
 
     // Security check: Ensure the authenticated user is the owner of the profile
-    if (targetUserId !== authenticatedUserId) {
-      await client.rollback();
-      return res
-        .status(403)
-        .json({ message: "Forbidden: You can only update your own profile." });
+    if (userId !== authenticatedUserId) {
+      await client.query('ROLLBACK');
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
-    // Update registration table with the authenticated user's ID
+    if (user_name) {
+      await client.query(
+        "UPDATE registration SET user_name = $1 WHERE user_id = $2",
+        [user_name, userId]
+      );
+    }
     await client.query(
-      "UPDATE registration SET user_name = ? WHERE user_id = ?",
-      [user_name, authenticatedUserId]
+      "UPDATE profile SET first_name = $1, last_name = $2 WHERE user_id = $3",
+      [first_name, last_name, userId]
     );
 
-    // Upsert profile table with the authenticated user's ID
-    const upsertProfileQuery = `
-      INSERT INTO profile (user_id, first_name, last_name)
-      VALUES (?, ?, ?)
-      ON DUPLICATE KEY UPDATE 
-        first_name = VALUES(first_name), 
-        last_name = VALUES(last_name);
-    `;
-    await client.query(upsertProfileQuery, [
-      authenticatedUserId,
-      first_name,
-      last_name,
-    ]);
-
-    await client.commit();
-
-    // Fetch the newly updated profile to return, using the UUID
-    const updatedProfile = await fetchUserProfile(user_uuid);
-
-    res.json({
-      message: "Profile updated successfully",
-      user: {
-        userid: updatedProfile.user_id,
-        user_uuid: updatedProfile.user_uuid, // also return uuid
-        username: updatedProfile.user_name,
-        email: updatedProfile.user_email,
-        firstname: updatedProfile.first_name,
-        lastname: updatedProfile.last_name, // also return lastname
-      },
-    });
+    await client.query('COMMIT');
+    res.json({ message: "Profile updated successfully" });
   } catch (err) {
-    await client.rollback();
-    handleError(res, "Update failed.", err);
+    await client.query('ROLLBACK');
+    handleError(res, "Server error while updating profile.", err);
   } finally {
     client.release();
   }

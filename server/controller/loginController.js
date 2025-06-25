@@ -18,8 +18,8 @@ async function login(req, res) {
   }
 
   try {
-    const [user] = await dbConnection.query(
-      "SELECT r.user_name, r.user_id, r.user_uuid, r.user_email, r.password, p.first_name FROM registration r JOIN profile p ON r.user_id = p.user_id WHERE r.user_email = ?",
+    const { rows: user } = await dbConnection.query(
+      "SELECT r.user_name, r.user_id, r.user_uuid, r.user_email, r.password, p.first_name FROM registration r JOIN profile p ON r.user_id = p.user_id WHERE r.user_email = $1",
       [email]
     );
 
