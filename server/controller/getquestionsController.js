@@ -1,9 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
 
-
 // this module contains both endpoints related with fetching questions
-
 
 /**
  * Fetches all questions, joining with user_name and like/dislike counts.
@@ -89,7 +87,7 @@ async function getquestions(req, res) {
  */
 async function getSingleQuestion(req, res) {
   try {
-    const { id } = req.params;
+    const { question_uuid } = req.params;
     const userId = req.user?.userid;
     const [questions] = await dbconnection.query(
       `
@@ -118,10 +116,11 @@ async function getSingleQuestion(req, res) {
           question_id
       ) AS ld ON q.question_id = ld.question_id
       LEFT JOIN likes_dislikes ul ON ul.question_id = q.question_id AND ul.user_id = ?
-      WHERE q.question_id = ?
+      WHERE q.question_uuid = ?
     `,
-      [userId || 0, id]
+      [userId || 0, question_uuid]
     );
+
     if (questions.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)

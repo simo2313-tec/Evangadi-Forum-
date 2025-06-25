@@ -67,9 +67,9 @@ app.use("/api", authMiddleware, postQuestionRoutes);
 app.use("/api", authMiddleware, postAnswerRoutes);
 app.use("/api", authMiddleware, likeRouter);
 app.use("/api", authMiddleware, postCommentRouter);
-app.use("/api", authMiddleware, updateQuestionRouter);
 app.use("/api", authMiddleware, updateAnswerRouter);
 app.use("/api", authMiddleware, updateCommentRouter);
+app.use("/api/question", authMiddleware, updateQuestionRouter);
 
 // Profile routes
 const profileRoutes = require("./routes/profileRoutes");

@@ -19,7 +19,7 @@ async function login(req, res) {
 
   try {
     const [user] = await dbConnection.query(
-      "SELECT r.user_name, r.user_id, r.user_email, r.password, p.first_name FROM registration r JOIN profile p ON r.user_id = p.user_id WHERE r.user_email = ?",
+      "SELECT r.user_name, r.user_id, r.user_uuid, r.user_email, r.password, p.first_name FROM registration r JOIN profile p ON r.user_id = p.user_id WHERE r.user_email = ?",
       [email]
     );
 
@@ -39,16 +39,22 @@ async function login(req, res) {
     }
 
     const userid = rows.user_id;
+    const user_uuid = rows.user_uuid;
     const username = rows.user_name;
     const first_name = rows.first_name; // Get first_name from the query result
 
-    const token = jwt.sign({ userid, username }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
+    const token = jwt.sign(
+      { userid, username, user_uuid },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "30d",
+      }
+    );
 
     res.status(StatusCodes.OK).json({
       message: "User login successful",
       userid: rows.user_id,
+      user_uuid: rows.user_uuid,
       username: rows.user_name,
       email: rows.user_email,
       first_name, // Add first_name to the response

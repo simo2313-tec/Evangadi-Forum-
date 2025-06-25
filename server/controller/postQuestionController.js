@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const dbconnection = require("../db/db.Config");
 const xss = require("xss");
+const { v4: uuidv4 } = require("uuid");
 
 async function postQuestion(req, res) {
   try {
@@ -26,13 +27,13 @@ async function postQuestion(req, res) {
     const sanitizedDescription = xss(description);
     const sanitizedTag = tag ? xss(tag) : null;
 
-    // Generate a unique post_id before insert
-    const postId = Math.floor(Math.random() * 2147483647) + 1;
+    // Generate a unique UUID for the question
+    const questionUuid = uuidv4();
 
     // Insert question into database
     const [result] = await dbconnection.query(
-      "INSERT INTO question (question_title, question_description, tag, user_id, post_id) VALUES (?, ?, ?, ?, ?)",
-      [sanitizedTitle, sanitizedDescription, sanitizedTag, userId, postId]
+      "INSERT INTO question (question_title, question_description, tag, user_id, question_uuid) VALUES (?, ?, ?, ?, ?)",
+      [sanitizedTitle, sanitizedDescription, sanitizedTag, userId, questionUuid]
     );
 
     res.status(StatusCodes.CREATED).json({

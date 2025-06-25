@@ -25,14 +25,14 @@ const ProfilePage = () => {
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
 
   useEffect(() => {
-    if (!userData?.userid) {
+    if (!userData?.user_uuid) {
       navigate("/login");
       return;
     }
 
     setIsLoading(true);
     api
-      .get(`/profile/${userData.userid}`)
+      .get(`/profile/${userData.user_uuid}`)
       .then((res) => {
         const profileData = {
           first_name: res.data.first_name || "",
@@ -58,7 +58,7 @@ const ProfilePage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data } = await api.put(`/profile/${userData.userid}`, form);
+      const { data } = await api.put(`/profile/${userData.user_uuid}`, form);
       if (data.user) {
         const newUserData = { ...userData, ...data.user };
         setUserData(newUserData);
@@ -80,7 +80,7 @@ const ProfilePage = () => {
     }
     setIsLoading(true);
     try {
-      await api.delete(`/profile/${userData.userid}`);
+      await api.delete(`/profile/${userData.user_uuid}`);
       toast.success("Account deleted successfully. We're sad to see you go!");
       setUserData(null);
       navigate("/landing");

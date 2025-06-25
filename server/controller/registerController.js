@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
 const dbConnection = require("../db/db.Config");
 const xss = require("xss");
+const { v4: uuidv4 } = require("uuid");
 
 async function register(req, res) {
   try {
@@ -52,10 +53,13 @@ async function register(req, res) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Generate UUID for the new user
+    const userUuid = uuidv4();
+
     // Insert user into registration table
     const [result] = await dbConnection.query(
-      "INSERT INTO registration (user_name, user_email, password) VALUES (?, ?, ?)",
-      [sanitizedUsername, sanitizedEmail, hashedPassword]
+      "INSERT INTO registration (user_name, user_email, password, user_uuid) VALUES (?, ?, ?, ?)",
+      [sanitizedUsername, sanitizedEmail, hashedPassword, userUuid]
     );
 
     // Insert into profile table
@@ -66,7 +70,11 @@ async function register(req, res) {
 
     // Generate JWT
     const token = jwt.sign(
-      { userid: result.insertId, username: sanitizedUsername },
+      {
+        userid: result.insertId,
+        username: sanitizedUsername,
+        user_uuid: userUuid,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "30d" }
     );
@@ -74,6 +82,7 @@ async function register(req, res) {
       message: "User registered successfully",
       userid: result.insertId,
       username: sanitizedUsername,
+      user_uuid: userUuid,
       email: sanitizedEmail,
       first_name: sanitizedFirstName,
       token,

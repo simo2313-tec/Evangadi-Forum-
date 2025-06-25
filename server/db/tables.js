@@ -1,6 +1,7 @@
 const create_registration = `
   CREATE TABLE IF NOT EXISTS registration (
     user_id int NOT NULL AUTO_INCREMENT,
+    user_uuid varchar(36) NOT NULL UNIQUE,
     user_name varchar(50) NOT NULL,
     user_email varchar(254) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -23,11 +24,11 @@ const create_profile = `
 const create_question = `
   CREATE TABLE IF NOT EXISTS question (
     question_id int NOT NULL AUTO_INCREMENT,
+    question_uuid varchar(36) NOT NULL UNIQUE,
     question_title varchar(500) NOT NULL,
     question_description text,
     tag varchar(20),
     user_id int NOT NULL,
-    post_id int NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (question_id),
     FOREIGN KEY (user_id) REFERENCES registration(user_id) ON DELETE CASCADE
@@ -96,16 +97,13 @@ const create_likes_dislikes = `
   )`;
 
 // Add indexes for performance optimization
-const create_idx_question_user_id =
-  "CREATE INDEX idx_question_user_id ON question(user_id)";
-const create_idx_question_tag =
-  "CREATE INDEX idx_question_tag ON question(tag)";
-const create_idx_answer_question_id =
-  "CREATE INDEX idx_answer_question_id ON answer(question_id)";
-const create_idx_comment_answer_id =
-  "CREATE INDEX idx_comment_answer_id ON comment(answer_id)";
-const create_idx_comment_parent_comment_id =
-  "CREATE INDEX idx_comment_parent_comment_id ON comment(parent_comment_id)";
+const create_idx_question_user_id = `CREATE INDEX IF NOT EXISTS idx_question_user_id ON question(user_id)`;
+const create_idx_question_uuid = `CREATE INDEX IF NOT EXISTS idx_question_uuid ON question(question_uuid)`;
+const create_idx_registration_uuid = `CREATE INDEX IF NOT EXISTS idx_registration_uuid ON registration(user_uuid)`;
+const create_idx_question_tag = `CREATE INDEX IF NOT EXISTS idx_question_tag ON question(tag)`;
+const create_idx_answer_question_id = `CREATE INDEX IF NOT EXISTS idx_answer_question_id ON answer(question_id)`;
+const create_idx_comment_answer_id = `CREATE INDEX IF NOT EXISTS idx_comment_answer_id ON comment(answer_id)`;
+const create_idx_comment_parent_comment_id = `CREATE INDEX IF NOT EXISTS idx_comment_parent_comment_id ON comment(parent_comment_id)`;
 
 module.exports = {
   create_registration,
@@ -115,8 +113,9 @@ module.exports = {
   create_password_reset_tokens,
   create_comment,
   create_likes_dislikes,
-  // Indexes
   create_idx_question_user_id,
+  create_idx_question_uuid,
+  create_idx_registration_uuid,
   create_idx_question_tag,
   create_idx_answer_question_id,
   create_idx_comment_answer_id,

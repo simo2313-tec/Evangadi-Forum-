@@ -3,7 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 
 // Edit Question Endpoint
 async function editQuestion(req, res) {
-  const { question_id } = req.params;
+  const { question_uuid } = req.params;
   const { title, description, tag } = req.body;
   const user_id = req.user.userid;
 
@@ -16,12 +16,14 @@ async function editQuestion(req, res) {
   try {
     // Verify question exists and belongs to user
     const [question] = await dbconnection.query(
-      "SELECT user_id FROM question WHERE question_id = ?",
-      [question_id]
+      "SELECT user_id FROM question WHERE question_uuid = ?",
+      [question_uuid]
     );
 
     if (question.length === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: "Question not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "Question not found" });
     }
 
     if (question[0].user_id !== user_id) {
@@ -32,36 +34,34 @@ async function editQuestion(req, res) {
 
     // Update question
     await dbconnection.query(
-      "UPDATE question SET question_title = ?, question_description = ?, tag = ? WHERE question_id = ?",
-      [title, description, tag || null, question_id]
+      "UPDATE question SET question_title = ?, question_description = ?, tag = ? WHERE question_uuid = ?",
+      [title, description, tag || null, question_uuid]
     );
     res.json({ message: "Question updated successfully" });
   } catch (error) {
     console.error("Error editing question:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 }
 
-
-
-
-
-
 // Delete Question Endpoint
 async function deleteQuestion(req, res) {
-  const { question_id } = req.params;
+  const { question_uuid } = req.params;
   const user_id = req.user.userid;
 
   try {
-
     // Verify question exists and belongs to user
     const [question] = await dbconnection.query(
-      "SELECT user_id FROM question WHERE question_id = ?",
-      [question_id]
+      "SELECT user_id FROM question WHERE question_uuid = ?",
+      [question_uuid]
     );
 
     if (question.length === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: "Question not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "Question not found" });
     }
 
     if (question[0].user_id !== user_id) {
@@ -71,14 +71,16 @@ async function deleteQuestion(req, res) {
     }
 
     // Delete question (answers will be deleted via ON DELETE CASCADE if configured)
-    await dbconnection.query("DELETE FROM question WHERE question_id = ?", [
-      question_id,
+    await dbconnection.query("DELETE FROM question WHERE question_uuid = ?", [
+      question_uuid,
     ]);
 
     res.json({ message: "Question deleted successfully" });
   } catch (error) {
     console.error("Error deleting question:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 }
 

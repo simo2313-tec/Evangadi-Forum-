@@ -52,7 +52,7 @@ function App() {
             }
           />
           <Route
-            path="/question-detail/:question_id"
+            path="/question-detail/:question_uuid"
             element={<QuestionDetail />}
           />
           <Route path="/404" element={<NotFound />} />
@@ -64,7 +64,7 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           <Route
-            path="/profile/:user_id"
+            path="/profile/:user_uuid"
             element={
               <ProtectedRoute>
                 <Profile />

@@ -2,7 +2,7 @@ const dbconnection = require("../db/db.Config");
 const { StatusCodes } = require("http-status-codes");
 
 async function getAnswers(req, res) {
-  const { question_id } = req.params;
+  const { question_uuid } = req.params;
   const userId = req.user?.userid;
   // Pagination params
   const page = parseInt(req.query.page, 10) || 1;
@@ -17,8 +17,8 @@ async function getAnswers(req, res) {
   try {
     // Get total count for pagination
     const [[{ total }]] = await dbconnection.query(
-      `SELECT COUNT(*) as total FROM answer WHERE question_id = ?`,
-      [question_id]
+      `SELECT COUNT(a.answer_id) as total FROM answer a JOIN question q ON a.question_id = q.question_id WHERE q.question_uuid = ?`,
+      [question_uuid]
     );
 
     const [results] = await dbconnection.query(
@@ -53,11 +53,11 @@ async function getAnswers(req, res) {
           answer_id
       ) AS ld ON a.answer_id = ld.answer_id
       LEFT JOIN likes_dislikes ul ON ul.answer_id = a.answer_id AND ul.user_id = ?
-      WHERE q.question_id = ?
+      WHERE q.question_uuid = ?
       ORDER BY ${orderBy}
       LIMIT ? OFFSET ?;
     `,
-      [userId || 0, question_id, pageSize, offset]
+      [userId || 0, question_uuid, pageSize, offset]
     );
 
     if (total === 0) {
@@ -89,7 +89,7 @@ async function getAnswers(req, res) {
     });
   } catch (err) {
     console.error(
-      `Error fetching answers for question_id ${question_id}:`,
+      `Error fetching answers for question_uuid ${question_uuid}:`,
       err
     );
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

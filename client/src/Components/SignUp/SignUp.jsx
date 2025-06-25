@@ -83,7 +83,8 @@ function SignUp() {
       });
       toast.success("Registration successful!");
       setUserData({
-        userid: response.data.userid, // Fixed response structure
+        userid: response.data.userid,
+        user_uuid: response.data.user_uuid,
         username: response.data.username,
         email: response.data.email,
         token: response.data.token,

@@ -9,6 +9,8 @@ const {
   create_password_reset_tokens,
   // Indexes
   create_idx_question_user_id,
+  create_idx_question_uuid,
+  create_idx_registration_uuid,
   create_idx_question_tag,
   create_idx_answer_question_id,
   create_idx_comment_answer_id,
@@ -27,6 +29,8 @@ async function createTable(req, res) {
 
     // Create indexes
     await dbconnection.query(create_idx_question_user_id);
+    await dbconnection.query(create_idx_question_uuid);
+    await dbconnection.query(create_idx_registration_uuid);
     await dbconnection.query(create_idx_question_tag);
     await dbconnection.query(create_idx_answer_question_id);
     await dbconnection.query(create_idx_comment_answer_id);

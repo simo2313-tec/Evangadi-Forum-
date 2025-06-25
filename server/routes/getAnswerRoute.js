@@ -1,9 +1,8 @@
 const express = require("express");
 const { getAnswers } = require("../controller/getAnswerController");
 
+const getAnswerRouter = express.Router();
 
-const getAnswerRouter=express.Router()
+getAnswerRouter.get("/answer/:question_uuid", getAnswers);
 
-getAnswerRouter.get("/answer/:question_id", getAnswers)
-
-module.exports=getAnswerRouter
+module.exports = getAnswerRouter;

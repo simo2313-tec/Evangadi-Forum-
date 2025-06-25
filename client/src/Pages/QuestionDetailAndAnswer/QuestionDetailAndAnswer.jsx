@@ -13,7 +13,7 @@ import Answer from "../../Components/Answer/Answer";
 function QuestionDetailAndAnswer() {
   const { userData } = useContext(UserContext);
   const token = userData?.token;
-  const { question_id } = useParams();
+  const { question_uuid } = useParams();
   const navigate = useNavigate();
   const answerFormRef = useRef(null);
 
@@ -152,40 +152,41 @@ function QuestionDetailAndAnswer() {
   };
 
   // Fetch question details
-  const getQuestionDetail = async () => {
+  const fetchQuestionDetail = async () => {
     setLoadingQuestion(true);
     try {
-      const res = await axios.get(`/question/${question_id}`);
-      setQuestionDetail(res.data.question);
-      setEditedQuestion({
-        title: res.data.question.question_title,
-        description: res.data.question.question_description || "",
-        tag: res.data.question.tag || "",
+      const res = await axios.get(`/question/${question_uuid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+      setQuestionDetail(res.data.question);
+      setEditedQuestion(res.data.question);
     } catch (err) {
-      console.error("Failed to fetch question details", err);
-      toast.error("Failed to fetch question details");
+      console.error("Failed to fetch question detail:", err);
+      toast.error(err.response?.data?.message || "Failed to load question");
+      // navigate("/404");
     } finally {
       setLoadingQuestion(false);
     }
   };
 
-  // Fetch answers
-  const getAllAnswers = async () => {
+  // Fetch all answers for the current question
+  const fetchAllAnswersForQuestion = async () => {
     setLoadingAnswers(true);
     try {
-      const res = await axios.get(`/answer/${question_id}?sort=${answerSort}`);
-      if (Array.isArray(res.data.answers)) {
-        setAllQuestionAnswers(res.data.answers);
-        res.data.answers.forEach((answer) => {
-          fetchComments(answer.answer_id);
-        });
-      } else {
-        setAllQuestionAnswers([]);
-      }
+      const res = await axios.get(`/answer/${question_uuid}`, {
+        params: {
+          sort: answerSort,
+          filter_user: filterYourAnswers ? userData.userid : undefined,
+        },
+      });
+      const answers = res.data.answers || [];
+      setAllQuestionAnswers(answers);
+      answers.forEach((answer) => fetchComments(answer.answer_id));
     } catch (err) {
-      console.error("Failed to fetch answers", err);
-      setAllQuestionAnswers([]);
+      console.error("Failed to fetch answers:", err);
+      toast.error(err.response?.data?.message || "Failed to load answers");
     } finally {
       setLoadingAnswers(false);
     }
@@ -200,9 +201,9 @@ function QuestionDetailAndAnswer() {
     }
     setLoading(true);
     try {
-      await axios.post("/answer", { answer, question_id });
+      await axios.post("/answer", { answer, question_uuid });
       setAnswer("");
-      getAllAnswers();
+      fetchAllAnswersForQuestion();
     } catch (err) {
       console.error("Error posting answer:", err);
       toast.error(err.response?.data?.message || "Failed to post answer");
@@ -229,7 +230,7 @@ function QuestionDetailAndAnswer() {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.put(`/question/${question_id}`, editedQuestion);
+      await axios.put(`/question/${question_uuid}`, editedQuestion);
       setQuestionDetail((prev) => ({
         ...prev,
         question_title: editedQuestion.title,
@@ -263,7 +264,7 @@ function QuestionDetailAndAnswer() {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`/question/${question_id}`);
+      await axios.delete(`/question/${question_uuid}`);
       navigate("/home");
     } catch (err) {
       console.error("Failed to delete question", err);
@@ -393,12 +394,16 @@ function QuestionDetailAndAnswer() {
   };
 
   useEffect(() => {
-    getQuestionDetail();
-  }, [question_id]);
+    if (question_uuid) {
+      fetchQuestionDetail();
+    }
+  }, [question_uuid, token]);
 
   useEffect(() => {
-    getAllAnswers();
-  }, [question_id, answerSort]);
+    if (question_uuid) {
+      fetchAllAnswersForQuestion();
+    }
+  }, [question_uuid, token, answerSort, filterYourAnswers]);
 
   const filteredAnswers = useMemo(() => {
     if (filterYourAnswers) {

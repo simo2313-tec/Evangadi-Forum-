@@ -5,7 +5,7 @@ const xss = require("xss");
 
 async function postAnswer(req, res) {
   // The user_id is now taken from the authenticated user token, not the request body.
-  const { answer, question_id } = req.body;
+  const { answer, question_uuid } = req.body;
   const user_id = req.user?.userid;
 
   // Validate authentication first
@@ -17,30 +17,21 @@ async function postAnswer(req, res) {
   }
 
   // Validate input
-  if (!answer || !question_id) {
+  if (!answer || !question_uuid) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
-      message: "Answer and question_id are required.",
+      message: "Answer and question_uuid are required.",
     });
   }
 
   // Sanitize answer to prevent XSS
   const sanitizedAnswer = xss(answer);
 
-  // Validate types
-  const questionIdNum = parseInt(question_id);
-  if (isNaN(questionIdNum)) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      success: false,
-      message: "Invalid question_id.",
-    });
-  }
-
   try {
     // Check if question exists
     const [question] = await dbconnection.query(
-      "SELECT question_id FROM question WHERE question_id = ?",
-      [questionIdNum]
+      "SELECT question_id FROM question WHERE question_uuid = ?",
+      [question_uuid]
     );
     if (question.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -48,6 +39,7 @@ async function postAnswer(req, res) {
         message: "Question not found.",
       });
     }
+    const questionIdNum = question[0].question_id;
 
     // Insert answer
     const insertQuery = `
@@ -66,12 +58,12 @@ async function postAnswer(req, res) {
        FROM question q 
        JOIN registration r ON q.user_id = r.user_id 
        WHERE q.question_id = ?`,
-      [question_id]
+      [questionIdNum]
     );
 
     if (questionRows.length > 0) {
       const email = questionRows[0].user_email;
-      await sendAnswerNotification(email, question_id);
+      await sendAnswerNotification(email, question_uuid);
     }
 
     res.status(StatusCodes.CREATED).json({

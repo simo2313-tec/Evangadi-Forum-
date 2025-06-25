@@ -49,6 +49,7 @@ function Login() {
 
       setUserData({
         userid: response.data.userid, // Fixed response structure
+        user_uuid: response.data.user_uuid,
         username: response.data.username,
         email: response.data.email,
         token: response.data.token,

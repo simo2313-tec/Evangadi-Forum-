@@ -20,19 +20,20 @@ const handleError = (res, message = "An unexpected error occurred.", error) => {
  * @param {string} userId - The ID of the user to fetch.
  * @returns {Promise<object|null>} The user's profile data or null if not found.
  */
-const fetchUserProfile = async (userId) => {
+const fetchUserProfile = async (userUuid) => {
   const query = `
     SELECT 
       r.user_id, 
+      r.user_uuid,
       r.user_name, 
       r.user_email, 
       COALESCE(p.first_name, '') as first_name, 
       COALESCE(p.last_name, '') as last_name
     FROM registration r
     LEFT JOIN profile p ON r.user_id = p.user_id
-    WHERE r.user_id = ?;
+    WHERE r.user_uuid = ?;
   `;
-  const [rows] = await db.execute(query, [userId]);
+  const [rows] = await db.execute(query, [userUuid]);
   return rows[0];
 };
 
@@ -43,7 +44,7 @@ const fetchUserProfile = async (userId) => {
  */
 exports.getProfile = async (req, res) => {
   try {
-    const profile = await fetchUserProfile(req.params.user_id);
+    const profile = await fetchUserProfile(req.params.user_uuid);
 
     if (!profile) {
       return res.status(404).json({ message: "User not found" });
@@ -59,21 +60,44 @@ exports.getProfile = async (req, res) => {
  * UPDATE a user's profile and registration info.
  */
 exports.updateProfile = async (req, res) => {
-  const { user_id } = req.params;
+  const { user_uuid } = req.params; // Use user_uuid from URL
+  const authenticatedUserId = req.user.userid; // Use authenticated user's ID from token
+
   const { first_name, last_name, user_name } = req.body;
 
-  const client = await db.getConnection(); // to use transactions
+  const client = await db.getConnection();
 
   try {
     await client.beginTransaction();
 
-    // Update registration table
-    await client.query(
-      "UPDATE registration SET user_name = ? WHERE user_id = ?",
-      [user_name, user_id]
+    // First, verify that the user_uuid from the URL corresponds to the authenticated user
+    const [userRows] = await client.query(
+      "SELECT user_id FROM registration WHERE user_uuid = ?",
+      [user_uuid]
     );
 
-    // Upsert profile table
+    if (userRows.length === 0) {
+      await client.rollback();
+      return res.status(404).json({ message: "User profile not found." });
+    }
+
+    const targetUserId = userRows[0].user_id;
+
+    // Security check: Ensure the authenticated user is the owner of the profile
+    if (targetUserId !== authenticatedUserId) {
+      await client.rollback();
+      return res
+        .status(403)
+        .json({ message: "Forbidden: You can only update your own profile." });
+    }
+
+    // Update registration table with the authenticated user's ID
+    await client.query(
+      "UPDATE registration SET user_name = ? WHERE user_id = ?",
+      [user_name, authenticatedUserId]
+    );
+
+    // Upsert profile table with the authenticated user's ID
     const upsertProfileQuery = `
       INSERT INTO profile (user_id, first_name, last_name)
       VALUES (?, ?, ?)
@@ -81,27 +105,33 @@ exports.updateProfile = async (req, res) => {
         first_name = VALUES(first_name), 
         last_name = VALUES(last_name);
     `;
-    await client.query(upsertProfileQuery, [user_id, first_name, last_name]);
+    await client.query(upsertProfileQuery, [
+      authenticatedUserId,
+      first_name,
+      last_name,
+    ]);
 
     await client.commit();
 
-    // Fetch the newly updated profile to return
-    const updatedProfile = await fetchUserProfile(user_id);
+    // Fetch the newly updated profile to return, using the UUID
+    const updatedProfile = await fetchUserProfile(user_uuid);
 
     res.json({
       message: "Profile updated successfully",
       user: {
         userid: updatedProfile.user_id,
+        user_uuid: updatedProfile.user_uuid, // also return uuid
         username: updatedProfile.user_name,
         email: updatedProfile.user_email,
         firstname: updatedProfile.first_name,
+        lastname: updatedProfile.last_name, // also return lastname
       },
     });
   } catch (err) {
     await client.rollback();
     handleError(res, "Update failed.", err);
   } finally {
-    client.release(); // Release the client back to the pool
+    client.release();
   }
 };
 
