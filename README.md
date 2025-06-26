@@ -1,7 +1,7 @@
 # Evangadi Forum 2.0: A Modern Full-Stack Q&A Experience
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://evangadi-forum-beta7.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://evangadi-forum-d74j.vercel.app/)
 
 Welcome to **Evangadi Forum 2.0**! 🚀
 
